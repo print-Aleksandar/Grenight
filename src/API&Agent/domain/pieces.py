@@ -1,15 +1,15 @@
-from abc import ABC
-from board_configs import COLUMNS, ROWS, PAWN_DOUBLE_STEP
-from board_initialization import had_first_move_func, rows_moved_func
+from abc import ABC, abstractmethod
+from domain.board_configs import COLUMNS, ROWS
 from domain.exceptions import ForwardOnlyException
 
 
 class Piece(ABC):
     def __init__(self,
                  uid: str,
+                 is_white: bool,
                  position: tuple[int, int],
-                 can_be_captured: bool,
                  had_first_move: bool,
+                 can_be_captured: bool,
                  is_moving_sequence: bool,
                  do_attacking_position_requires_enemy_on_it: bool,
                  can_be_on_attacked_position: bool,
@@ -18,10 +18,10 @@ class Piece(ABC):
 
         # PARAMS AND DERIVED ATTRIBUTES:
         self.uid = uid
-        self.is_white = uid[0] == 'w'
+        self.is_white = is_white
         self.position = position
-        self.can_be_captured = can_be_captured
         self.had_first_move = had_first_move
+        self.can_be_captured = can_be_captured
         self.is_moving_sequence = is_moving_sequence
         self.do_attacking_position_requires_enemy_on_it = do_attacking_position_requires_enemy_on_it
         self.can_be_on_attacked_position = can_be_on_attacked_position
@@ -29,13 +29,19 @@ class Piece(ABC):
         self.attacking_positions = attacking_positions
 
         # PAWN RUNTIME ATTRIBUTES:
-        rows_moved = rows_moved_func(uid=uid, position=position)
+        self.can_implement_pawn_moves = True if isinstance(self, Pawn) else False
 
-        self.can_implement_pawn_moves = len(uid) > 2 and uid[2] == 'p'
-        self.is_next_move_pawn_promotion = self.can_implement_pawn_moves and rows_moved == ROWS - 3
+        self.is_next_move_pawn_promotion = self.can_implement_pawn_moves and \
+                                           ((self.is_white and self.position[0] == ROWS - 2)
+                                            or (not self.is_white and self.position[0] == 1))
 
-        self.is_en_passant_vulnerable = False # IMPLEMENTED IN APPLICATION LAYER
-        self.can_capture_en_passant = PAWN_DOUBLE_STEP and rows_moved == 3
+        self.is_current_move_pawn_promotion = self.can_implement_pawn_moves and \
+                                              ((self.is_white and self.position[0] == ROWS - 1)
+                                               or (not self.is_white and self.position[0] == 0))
+
+    @abstractmethod
+    def new_position(self, position: tuple[int, int]) -> None:
+        pass
 
 
 def is_position_within_board(position: tuple[int, int]) -> bool:
@@ -45,10 +51,6 @@ def is_position_within_board(position: tuple[int, int]) -> bool:
 
 def filter_positions_within_board(positions: list[tuple[int, int]]) -> list[tuple[int, int]]:
     return [p for p in positions if is_position_within_board(p)]
-
-
-def forward_factor_by_uid(uid: str) -> int:
-    return 1 if uid[0] == 'w' else -1
 
 
 def make_sequence(position: tuple[int, int],
@@ -78,7 +80,7 @@ def make_sequence(position: tuple[int, int],
 
     # BISHOP/QUEEN SEQUENCE
     if diagonal:
-        min_dim = max(COLUMNS, ROWS)
+        min_dim = min(COLUMNS, ROWS)
         sequence.extend([(y + i, x + i) for i in range(-min_dim, min_dim)
                          if 0 <= (y + i) < ROWS and 0 <= (x + i) < COLUMNS
                          and ((y + i), (x + i)) != position])
@@ -92,62 +94,100 @@ def make_sequence(position: tuple[int, int],
 class Pawn(Piece):
     def __init__(self,
                  uid: str,
-                 position: tuple[int, int]) -> None:
+                 is_white: bool,
+                 position: tuple[int, int],
+                 had_first_move: bool) -> None:
 
         y, x = position
-        had_first_move = had_first_move_func(uid=uid, position=position)
 
-        forward_factor = forward_factor_by_uid(uid=uid)
+        forward_factor = 1 if is_white else -1
         moving_positions = filter_positions_within_board(make_sequence(
-                             position=position,
-                             directional=True,
-                             diagonal=False,
-                             forward_only=True,
-                             forward_factor=forward_factor,
-                             max_rows_forward=2 if had_first_move else 1))
+            position=position,
+            directional=True,
+            diagonal=False,
+            forward_only=True,
+            forward_factor=forward_factor,
+            max_rows_forward=1))
 
         attacking_positions = filter_positions_within_board(
             [(y + (1 * forward_factor), x + 1), (y + (1 * forward_factor), x - 1)]
         )
 
         super().__init__(uid=uid,
+                         is_white=is_white,
                          position=position,
-                         can_be_captured=True,
                          had_first_move=had_first_move,
+                         can_be_captured=True,
                          is_moving_sequence=True,
                          do_attacking_position_requires_enemy_on_it=True,
                          can_be_on_attacked_position=True,
                          moving_positions=moving_positions,
                          attacking_positions=attacking_positions)
 
+    def new_position(self, position: tuple[int, int]) -> None:
+
+        self.position = position
+        y, x = position
+        self.had_first_move = True
+
+        forward_factor = 1 if self.is_white else -1
+        moving_positions = filter_positions_within_board(make_sequence(
+            position=position,
+            directional=True,
+            diagonal=False,
+            forward_only=True,
+            forward_factor=forward_factor,
+            max_rows_forward=1))
+
+        attacking_positions = filter_positions_within_board(
+            [(y + (1 * forward_factor), x + 1), (y + (1 * forward_factor), x - 1)]
+        )
+
+        self.moving_positions = moving_positions
+        self.attacking_positions = attacking_positions
+
 
 class Knight(Piece):
     def __init__(self,
                  uid: str,
-                 position: tuple[int, int]) -> None:
+                 is_white: bool,
+                 position: tuple[int, int],
+                 had_first_move: bool) -> None:
 
         y, x = position
-        had_first_move = had_first_move_func(uid=uid, position=position)
 
         dyx = [(2, 1), (1, 2), (2, -1), (1, -2), (-2, 1), (-1, 2), (-2, -1), (-1, -2)]
         positions = filter_positions_within_board([(y + dy, x + dx) for (dy, dx) in dyx])
 
         super().__init__(uid=uid,
+                         is_white=is_white,
                          position=position,
-                         can_be_captured=True,
                          had_first_move=had_first_move,
+                         can_be_captured=True,
                          is_moving_sequence=False,
                          do_attacking_position_requires_enemy_on_it=False,
                          can_be_on_attacked_position=True,
                          moving_positions=positions,
                          attacking_positions=positions)
 
+    def new_position(self, position: tuple[int, int]) -> None:
+
+        self.position = position
+        y, x = position
+        self.had_first_move = True
+
+        dyx = [(2, 1), (1, 2), (2, -1), (1, -2), (-2, 1), (-1, 2), (-2, -1), (-1, -2)]
+        positions = filter_positions_within_board([(y + dy, x + dx) for (dy, dx) in dyx])
+
+        self.moving_positions = positions
+        self.attacking_positions = positions
+
 
 class Bishop(Piece):
     def __init__(self, uid: str,
-                 position: tuple[int, int]) -> None:
-
-        had_first_move = had_first_move_func(uid=uid, position=position)
+                 is_white: bool,
+                 position: tuple[int, int],
+                 had_first_move: bool) -> None:
 
         positions = filter_positions_within_board(make_sequence(
             position=position,
@@ -157,21 +197,37 @@ class Bishop(Piece):
         ))
 
         super().__init__(uid=uid,
+                         is_white=is_white,
                          position=position,
-                         can_be_captured=True,
                          had_first_move=had_first_move,
+                         can_be_captured=True,
                          is_moving_sequence=True,
-                         do_attacking_position_requires_enemy_on_it=True,
+                         do_attacking_position_requires_enemy_on_it=False,
                          can_be_on_attacked_position=True,
                          moving_positions=positions,
                          attacking_positions=positions)
 
+    def new_position(self, position: tuple[int, int]) -> None:
+
+        self.position = position
+        self.had_first_move = True
+
+        positions = filter_positions_within_board(make_sequence(
+            position=position,
+            directional=False,
+            diagonal=True,
+            forward_only=False
+        ))
+
+        self.moving_positions = positions
+        self.attacking_positions = positions
+
 
 class Rook(Piece):
     def __init__(self, uid: str,
-                 position: tuple[int, int]) -> None:
-
-        had_first_move = had_first_move_func(uid=uid, position=position)
+                 is_white: bool,
+                 position: tuple[int, int],
+                 had_first_move: bool) -> None:
 
         positions = filter_positions_within_board(make_sequence(
             position=position,
@@ -181,21 +237,37 @@ class Rook(Piece):
         ))
 
         super().__init__(uid=uid,
+                         is_white=is_white,
                          position=position,
-                         can_be_captured=True,
                          had_first_move=had_first_move,
+                         can_be_captured=True,
                          is_moving_sequence=True,
-                         do_attacking_position_requires_enemy_on_it=True,
+                         do_attacking_position_requires_enemy_on_it=False,
                          can_be_on_attacked_position=True,
                          moving_positions=positions,
                          attacking_positions=positions)
 
+    def new_position(self, position: tuple[int, int]) -> None:
+
+        self.position = position
+        self.had_first_move = True
+
+        positions = filter_positions_within_board(make_sequence(
+            position=position,
+            directional=True,
+            diagonal=False,
+            forward_only=False
+        ))
+
+        self.moving_positions = positions
+        self.attacking_positions = positions
+
 
 class Queen(Piece):
     def __init__(self, uid: str,
-                 position: tuple[int, int]) -> None:
-
-        had_first_move = had_first_move_func(uid=uid, position=position)
+                 is_white: bool,
+                 position: tuple[int, int],
+                 had_first_move: bool) -> None:
 
         positions = filter_positions_within_board(make_sequence(
             position=position,
@@ -205,32 +277,62 @@ class Queen(Piece):
         ))
 
         super().__init__(uid=uid,
+                         is_white=is_white,
                          position=position,
-                         can_be_captured=True,
                          had_first_move=had_first_move,
+                         can_be_captured=True,
                          is_moving_sequence=True,
-                         do_attacking_position_requires_enemy_on_it=True,
+                         do_attacking_position_requires_enemy_on_it=False,
                          can_be_on_attacked_position=True,
                          moving_positions=positions,
                          attacking_positions=positions)
 
+    def new_position(self, position: tuple[int, int]) -> None:
+
+        self.position = position
+        self.had_first_move = True
+
+        positions = filter_positions_within_board(make_sequence(
+            position=position,
+            directional=True,
+            diagonal=True,
+            forward_only=False
+        ))
+
+        self.moving_positions = positions
+        self.attacking_positions = positions
+
 
 class King(Piece):
     def __init__(self, uid: str,
-                 position: tuple[int, int]) -> None:
+                 is_white: bool,
+                 position: tuple[int, int],
+                 had_first_move: bool) -> None:
 
         y, x = position
-        had_first_move = had_first_move_func(uid=uid, position=position)
 
         dyx = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, 1), (1, 1), (1, -1), (-1, -1)]
         positions = filter_positions_within_board([(y + dy, x + dx) for (dy, dx) in dyx])
 
         super().__init__(uid=uid,
+                         is_white=is_white,
                          position=position,
-                         can_be_captured=False,
                          had_first_move=had_first_move,
+                         can_be_captured=False,
                          is_moving_sequence=False,
                          do_attacking_position_requires_enemy_on_it=False,
                          can_be_on_attacked_position=False,
                          moving_positions=positions,
                          attacking_positions=positions)
+
+    def new_position(self, position: tuple[int, int]) -> None:
+
+        self.position = position
+        y, x = position
+        self.had_first_move = True
+
+        dyx = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, 1), (1, 1), (1, -1), (-1, -1)]
+        positions = filter_positions_within_board([(y + dy, x + dx) for (dy, dx) in dyx])
+
+        self.moving_positions = positions
+        self.attacking_positions = positions

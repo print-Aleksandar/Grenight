@@ -2,6 +2,16 @@ from domain.pieces import Piece
 from domain.board_configs import POSITIONS
 
 
+class BoardGetter:
+    def __init__(self, getter_call: list) -> None:
+
+        self.white_pieces = getter_call[0]
+        self.black_pieces = getter_call[1]
+        self.white_positions = getter_call[2]
+        self.black_positions = getter_call[3]
+        self.free_positions = getter_call[4]
+
+
 def all_per_move_getter(pieces: list[Piece]) -> list:
 
     white_pieces = [piece for piece in pieces if piece.is_white]

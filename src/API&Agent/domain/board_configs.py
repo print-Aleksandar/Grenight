@@ -19,7 +19,8 @@ CURRENT_BOARD_CONFIG = BoardConfig(*BOARD_4x5_CONFIG)
 
 
 COLUMNS = CURRENT_BOARD_CONFIG.columns
-ROWS = CURRENT_BOARD_CONFIG.columns
+ROWS = CURRENT_BOARD_CONFIG.rows
 PAWN_DOUBLE_STEP = CURRENT_BOARD_CONFIG.pawn_double_step
 CASTLING = CURRENT_BOARD_CONFIG.castling
-POSITIONS = [[(y, x) for x in range(COLUMNS)] for y in range(ROWS)]
+POSITIONS = []
+[POSITIONS.extend([(y,x) for x in range(COLUMNS)]) for y in range(ROWS)]
