@@ -40,17 +40,13 @@ def create_initial_board() -> list[Piece]:
     return pieces
 
 
-INITIAL_BOARD_STATIC = create_initial_board()
-
-
-
 PIECES_CLASSES = {
     0: Pawn,
     1: Knight,
     2: Bishop,
     3: Rook,
     4: Queen,
-    5: King,
+    5: King
 }
 
 PIECES_NUMBERS = dict()

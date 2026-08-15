@@ -1,11 +1,13 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from domain.board_initialization import create_initial_board
 from domain.requests import MoveRequest, ValidMovesPlayerRequest, ValidMovesPieceRequest
 from domain.responses import ValidMovesPlayerResponse, ValidMovesPieceResponse
 from domain.dtos import (MoveRequestDTO, MoveResponseDTO,
                          ValidMovesPlayerRequestDTO, ValidMovesPlayerResponseDTO,
                          ValidMovesPieceRequestDTO, ValidMovesPieceResponseDTO,
-                         get_piece_from_dto, get_dto_from_piece)
-from domain.exceptions import NonExistentValidMoveException, ApiValidatorException
+                         InitialBoardResponseDTO, get_piece_from_dto, get_dto_from_piece)
+from domain.exceptions import ApiValidatorException
 from application.game_service import (make_move, reject_move,
                                       gather_valid_moves_color, gather_valid_moves_piece)
 from api.validators import (non_existent_valid_piece_with_uid_exception,
@@ -21,12 +23,28 @@ from api.validators import (non_existent_valid_piece_with_uid_exception,
 app = FastAPI()
 
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
 
 
-@app.post("api/play_turn")
+@app.get("/api/get_initial_board")
+def get_initial_board() -> InitialBoardResponseDTO:
+
+    return InitialBoardResponseDTO(
+        pieces=[get_dto_from_piece(piece) for piece in create_initial_board()]
+    )
+
+
+@app.post("/api/play_turn")
 def play_turn(request_arg: MoveRequestDTO) -> MoveResponseDTO:
 
     request = MoveRequest(
@@ -62,33 +80,18 @@ def play_turn(request_arg: MoveRequestDTO) -> MoveResponseDTO:
                 exception_message=response.exception_message
             )
 
+    response = make_move(request)
+    return MoveResponseDTO(
+        pieces=[get_dto_from_piece(piece) for piece in response.pieces],
+        is_game_finished=response.is_game_finished,
+        is_draw=response.is_draw,
+        is_white_winner=response.is_white_winner,
+        is_white_on_turn=response.is_white_on_turn,
+        is_next_move_promotion=response.is_next_move_promotion,
+        exception_message=response.exception_message
+    )
 
-    try:
-        response = make_move(request)
-        return MoveResponseDTO(
-            pieces=[get_dto_from_piece(piece) for piece in response.pieces],
-            is_game_finished=response.is_game_finished,
-            is_draw=response.is_draw,
-            is_white_winner=response.is_white_winner,
-            is_white_on_turn=response.is_white_on_turn,
-            is_next_move_promotion=response.is_next_move_promotion,
-            exception_message=response.exception_message
-        )
-
-    except NonExistentValidMoveException as e:
-        response = reject_move(request, e.__class__.__name__)
-        return MoveResponseDTO(
-            pieces=[get_dto_from_piece(piece) for piece in response.pieces],
-            is_game_finished=response.is_game_finished,
-            is_draw=response.is_draw,
-            is_white_winner=response.is_white_winner,
-            is_white_on_turn=response.is_white_on_turn,
-            is_next_move_promotion=response.is_next_move_promotion,
-            exception_message=response.exception_message
-        )
-
-
-@app.post("api/get_color_valid_moves")
+@app.post("/api/get_color_valid_moves")
 def get_color_valid_moves(arg_request: ValidMovesPlayerRequestDTO) -> ValidMovesPlayerResponseDTO:
 
     request = ValidMovesPlayerRequest(
@@ -121,7 +124,7 @@ def get_color_valid_moves(arg_request: ValidMovesPlayerRequestDTO) -> ValidMoves
     )
 
 
-@app.post("api/get_piece_valid_moves")
+@app.post("/api/get_piece_valid_moves")
 def get_piece_valid_moves(arg_request: ValidMovesPieceRequestDTO) -> ValidMovesPieceResponseDTO:
 
     request = ValidMovesPieceRequest(

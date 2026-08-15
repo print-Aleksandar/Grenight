@@ -1,0 +1,39 @@
+#board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    width: min(90vw, 400px);
+    aspect-ratio: 4 / 5;
+    border: 2px solid #333
+}
+
+.square {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem
+}
+
+.square.white {
+    background: floralwhite;
+}
+
+.square.black {
+    background: #245C3A
+}
+
+.square.black.first_click {
+    background: rgba(36, 92, 58, 0.85);
+}
+
+.square.white.first_click {
+    background: lightgray;
+}
+
+.piece {
+    width: 100%;
+    height: 100%;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}

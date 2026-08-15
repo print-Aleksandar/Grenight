@@ -33,12 +33,15 @@ class Move(ABC):
             self.new_white_attacks = self.gather_new_white_attacks()
             self.new_black_attacks = self.gather_new_black_attacks()
             self.new_enemy_attacks = self.gather_new_enemy_attacks()
+            self.new_ally_attacks = self.gather_new_ally_attacks()
 
             self.new_white_pieces = self.gather_new_white_pieces()
             self.new_black_pieces = self.gather_new_black_pieces()
             self.new_ally_pieces = self.gather_new_ally_pieces()
+            self.new_enemy_pieces = self.gather_new_enemy_pieces()
 
-        self.is_move_valid = self.are_ally_pieces_safe() if self.supports else False
+        self.is_move_valid = self.is_ally_king_safe() if self.supports else False
+        self.is_enemy_in_check = self.is_enemy_king_safe() if self.supports and self.is_move_valid else None
 
     def gather_new_white_attacks(self) -> list[tuple[int, int]]:
         dummy = []
@@ -59,6 +62,9 @@ class Move(ABC):
     def gather_new_enemy_attacks(self) -> list[tuple[int, int]]:
         return self.gather_new_black_attacks() if self.is_white else self.gather_new_white_attacks()
 
+    def gather_new_ally_attacks(self) -> list[tuple[int, int]]:
+        return self.gather_new_white_attacks() if self.is_white else self.gather_new_black_attacks()
+
     def gather_new_white_pieces(self) -> list[Piece]:
         return [piece for piece in self.new_pieces if piece.is_white]
 
@@ -68,15 +74,24 @@ class Move(ABC):
     def gather_new_ally_pieces(self) -> list[Piece]:
         return self.gather_new_white_pieces() if self.is_white else self.gather_new_black_pieces()
 
+    def gather_new_enemy_pieces(self) -> list[Piece]:
+        return self.gather_new_black_pieces() if self.is_white else self.gather_new_white_pieces()
+
     def is_piece_white(self) -> bool:
         return get_piece_by_uid(self.current_pieces, self.uid).is_white
 
-    def are_ally_pieces_safe(self) -> bool:
-        for ally_piece in [piece for piece in self.new_pieces
-                           if piece.is_white == self.is_piece_white()]:
+    def is_ally_king_safe(self) -> bool:
+        for ally_piece in self.new_ally_pieces:
             if not ally_piece.can_be_on_attacked_position and \
                 ally_piece.position in self.new_enemy_attacks:
                     return False
+        return True
+
+    def is_enemy_king_safe(self) -> bool:
+        for enemy_piece in self.new_enemy_pieces:
+            if not enemy_piece.can_be_on_attacked_position and \
+                enemy_piece.position in self.new_ally_attacks:
+                return False
         return True
 
     @abstractmethod

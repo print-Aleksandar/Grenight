@@ -1,10 +1,10 @@
-from domain.exceptions import NonExistentValidMoveException
+from domain.exceptions import NonExistentValidMoveException, PiecePinnedException
 from domain.pieces import Piece
 from domain.requests import MoveRequest, ValidMovesPlayerRequest, ValidMovesPieceRequest
 from domain.responses import MoveResponse, ValidMovesPlayerResponse, ValidMovesPieceResponse
 from application.board_getter import all_per_move_getter, BoardGetter, get_piece_by_uid
 from application.filters import filter_valid_attacks, filter_initial_moves
-from application.moves import MoveRegistry
+from application.moves import MoveRegistry, Move
 
 
 def filter_valid_player_moves(pieces: list[Piece],
@@ -45,17 +45,21 @@ def is_current_state_safe_for_player(pieces: list[Piece],
 
 
 def reject_move(request: MoveRequest,
-                exception: str) -> MoveResponse:
+                exception: str,
+                move: Move | None = None) -> MoveResponse:
 
     return MoveResponse(request.pieces, False, False, False,
-                        request.is_white_on_turn, request.is_current_move_promotion, exception)
+                        request.is_white_on_turn, request.is_current_move_promotion,
+                        None if move is None else move.is_enemy_in_check,
+                        None if move is None else move.is_move_valid, exception)
 
 
-def return_ongoing(request: MoveRequest, new_pieces: list[Piece],
-                   is_next_move_promotion: bool) -> MoveResponse:
+def return_ongoing(request: MoveRequest,
+                   move_registry: MoveRegistry) -> MoveResponse:
 
-    return MoveResponse(new_pieces, False, False, False,
-                        not request.is_white_on_turn, is_next_move_promotion)
+    return MoveResponse(move_registry.move.new_pieces, False, False, False,
+                        not request.is_white_on_turn, move_registry.is_next_move_promotion,
+                        move_registry.move.is_enemy_in_check, move_registry.move.is_move_valid)
 
 
 def return_draw(request: MoveRequest, new_pieces: list[Piece]) -> MoveResponse:
@@ -79,16 +83,17 @@ def make_move(request: MoveRequest) -> MoveResponse:
                                                current_uids_with_valid_attacks, current_board_getter)
 
     if request.position not in current_valid_moves[request.uid]:
-        raise NonExistentValidMoveException()
+        return reject_move(request, NonExistentValidMoveException.__class__.__name__, None)
 
-    move = MoveRegistry(request.pieces, request.uid, request.position,
+
+    move_registry = MoveRegistry(request.pieces, request.uid, request.position,
                         current_board_getter.free_positions, request.is_current_move_promotion,
                         request.promote_to)
 
-    if not move.move.is_move_valid:
-        raise NonExistentValidMoveException()
+    if not move_registry.move.is_move_valid:
+        return reject_move(request, PiecePinnedException.__class__.__name__, move_registry.move)
 
-    new_pieces = move.move.new_pieces
+    new_pieces = move_registry.move.new_pieces
 
     new_board_getter = BoardGetter(all_per_move_getter(new_pieces))
     new_uids_with_valid_attacks = filter_valid_attacks(new_board_getter)
@@ -107,7 +112,7 @@ def make_move(request: MoveRequest) -> MoveResponse:
         if not is_enemy_now_safe:
             return return_winner(request, new_pieces)
         return return_draw(request, new_pieces)
-    return return_ongoing(request, new_pieces, move.is_next_move_promotion)
+    return return_ongoing(request, move_registry)
 
 
 def gather_valid_moves_color(request: ValidMovesPlayerRequest) -> ValidMovesPlayerResponse:

@@ -27,5 +27,9 @@ class PlayerNotOnTurnException(ApiValidatorException):
     pass
 
 
+class PiecePinnedException(ApiValidatorException):
+    pass
+
+
 class NotAllowedActionForEnemyPiecesException(ApiValidatorException):
     pass
