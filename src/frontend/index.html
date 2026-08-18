@@ -6,8 +6,29 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <button id="restart_game_button">Restart Game</button>
-    <div id="board"></div>
-    <script src="app.js"></script>
+
+<div id="main">
+    <div>
+        <button id="restart_game_button">Restart Game</button>
+        <div id="board_container">
+            <div id="board_wrapper">
+                <div id="board"></div>
+            </div>
+            <div id="promotion_modal_wrapper">
+                <div id="promotion_modal">
+                    <div data-figure="knight" class="promotion_square black"></div>
+                    <div data-figure="bishop" class="promotion_square white"></div>
+                    <div data-figure="rook" class="promotion_square black"></div>
+                    <div data-figure="queen" class="promotion_square white"></div>
+                </div>
+            </div>
+        </div>
+        <h1 style="text-align: center;"><span id="status" style="color: darkred;"></span></h1>
+    </div>
+</div>
+
+
+
+<script src="app.js"></script>
 </body>
 </html>

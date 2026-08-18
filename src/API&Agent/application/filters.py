@@ -1,5 +1,5 @@
 from application.board_getter import BoardGetter
-from domain.pieces import Piece
+from domain.pieces import Piece, is_position_within_board
 from domain.board_configs import ROWS, COLUMNS
 
 
@@ -38,19 +38,19 @@ def filter_valid_attacks(board_getter: BoardGetter) \
                          elif dy > 0:
                               y_range = range(0, ROWS)
                          else:
-                              y_range = [0 for _ in range(ROWS)]
+                              y_range = [0 for _ in range(max(ROWS, COLUMNS))]
 
                          if dx < 0:
                               x_range = range(0, -COLUMNS, -1)
                          elif dx > 0:
                               x_range = range(0, COLUMNS)
                          else:
-                              x_range = [0 for _ in range(COLUMNS)]
+                              x_range = [0 for _ in range(max(ROWS, COLUMNS))]
 
                          for cy, cx in zip(y_range, x_range):
                               pos = (y + cy, x + cx)
 
-                              if pos != piece.position:
+                              if pos != piece.position and is_position_within_board(pos):
                                    if pos not in piece.attacking_positions:
                                         break
 
@@ -94,19 +94,19 @@ def filter_valid_attacks(board_getter: BoardGetter) \
                          elif dy > 0:
                               y_range = range(0, ROWS)
                          else:
-                              y_range = [0 for _ in range(ROWS)]
+                              y_range = [0 for _ in range(max(ROWS, COLUMNS))]
 
                          if dx < 0:
                               x_range = range(0, -COLUMNS, -1)
                          elif dx > 0:
                               x_range = range(0, COLUMNS)
                          else:
-                              x_range = [0 for _ in range(COLUMNS)]
+                              x_range = [0 for _ in range(max(ROWS, COLUMNS))]
 
                          for cy, cx in zip(y_range, x_range):
                               pos = (y + cy, x + cx)
 
-                              if pos != piece.position:
+                              if pos != piece.position and is_position_within_board(pos):
                                    if pos not in piece.attacking_positions:
                                         break
 

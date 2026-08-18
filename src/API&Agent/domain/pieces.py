@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from domain.board_configs import COLUMNS, ROWS
-from domain.exceptions import ForwardOnlyException
 
 
 class Piece(ABC):
@@ -66,7 +65,8 @@ def make_sequence(position: tuple[int, int],
     # PAWN SEQUENCE
     if forward_only:
         if diagonal or not directional or forward_factor not in (-1, 1) or 1 < max_rows_forward > 2:
-            raise ForwardOnlyException()
+            # Note: exception removed here, error not occurred.
+            return None
         sequence.append((y + (1 * forward_factor), x))
         if max_rows_forward == 2:
             sequence.append((y + (2 * forward_factor), x))
@@ -80,11 +80,11 @@ def make_sequence(position: tuple[int, int],
 
     # BISHOP/QUEEN SEQUENCE
     if diagonal:
-        min_dim = min(COLUMNS, ROWS)
-        sequence.extend([(y + i, x + i) for i in range(-min_dim, min_dim)
+        max_dim = max(COLUMNS, ROWS)
+        sequence.extend([(y + i, x + i) for i in range(-max_dim, max_dim)
                          if 0 <= (y + i) < ROWS and 0 <= (x + i) < COLUMNS
                          and ((y + i), (x + i)) != position])
-        sequence.extend([(y + i, x - i) for i in range(-min_dim, min_dim)
+        sequence.extend([(y + i, x - i) for i in range(-max_dim, max_dim)
                          if 0 <= (y + i) < ROWS and 0 <= (x - i) < COLUMNS
                          and ((y + i), (x - i)) != position])
 

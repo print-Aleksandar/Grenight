@@ -2,7 +2,8 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from domain.pieces import Piece, Rook, Bishop, Knight, Queen
 from domain.board_initialization import PIECES_CLASSES
-from domain.exceptions import NonExistentPiecePromotionException, NonExistentValidMoveException
+from domain.exceptions import NonExistentPiecePromotionException, NonExistentValidMoveException, \
+    TryingToTakeEnemyKingException
 from application.board_getter import BoardGetter, all_per_move_getter, get_piece_by_uid, get_piece_by_position
 from application.filters import filter_valid_attacks
 
@@ -41,7 +42,7 @@ class Move(ABC):
             self.new_enemy_pieces = self.gather_new_enemy_pieces()
 
         self.is_move_valid = self.is_ally_king_safe() if self.supports else False
-        self.is_enemy_in_check = self.is_enemy_king_safe() if self.supports and self.is_move_valid else None
+        self.is_enemy_in_check = self.is_enemy_king_in_check() if self.supports and self.is_move_valid else None
 
     def gather_new_white_attacks(self) -> list[tuple[int, int]]:
         dummy = []
@@ -87,12 +88,12 @@ class Move(ABC):
                     return False
         return True
 
-    def is_enemy_king_safe(self) -> bool:
+    def is_enemy_king_in_check(self) -> bool:
         for enemy_piece in self.new_enemy_pieces:
             if not enemy_piece.can_be_on_attacked_position and \
                 enemy_piece.position in self.new_ally_attacks:
-                return False
-        return True
+                return True
+        return False
 
     @abstractmethod
     def new_state(self) -> list[Piece] | None:
@@ -151,7 +152,7 @@ class MoveRegistry:
         raise NonExistentValidMoveException()
 
     def is_next_promotable(self) -> bool:
-        return PromotionAddition(self.current_pieces, self.uid,
+        return PromotionAddition(self.move.new_pieces, self.uid,
                                  self.position, self.current_free_positions,
                                  self.is_current_move_promotion, self.promote_to).func_supports()
 
@@ -200,7 +201,11 @@ class EnemyPositionMove(Move):
     def func_supports(self) -> bool:
         piece = get_piece_by_uid(self.current_pieces, self.uid)
         attacked_piece = get_piece_by_position(self.current_pieces, self.position)
-        return piece.is_white != attacked_piece.is_white and attacked_piece.can_be_captured \
+        if attacked_piece is None:
+            return False
+        if not attacked_piece.can_be_on_attacked_position:
+            raise TryingToTakeEnemyKingException()
+        return piece.is_white != attacked_piece.is_white \
                if attacked_piece is not None else False
 
 
@@ -216,7 +221,7 @@ class PromotionAddition(Move):
                          current_free_positions, is_current_move_promotion, promote_to)
 
     def new_state(self) -> list[Piece] | None:
-        return None
+        return self.current_pieces
 
     def func_supports(self) -> bool:
         piece = get_piece_by_uid(self.current_pieces, self.uid)

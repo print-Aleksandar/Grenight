@@ -1,17 +1,21 @@
-# DEBUG:
-class ForwardOnlyException(Exception):
-    pass
-
-
 class NonExistentPiecePromotionException(Exception):
     pass
 
-# VALIDATORS:
-class ApiValidatorException(Exception):
+
+class NonExistentValidMoveException(Exception):
     pass
 
 
-class NonExistentValidMoveException(ApiValidatorException):
+class PiecePinnedException(Exception):
+    pass
+
+
+class TryingToTakeEnemyKingException(Exception):
+    pass
+
+
+# VALIDATORS:
+class ApiValidatorException(Exception):
     pass
 
 
@@ -24,10 +28,6 @@ class NonExistentBoardPositionException(ApiValidatorException):
 
 
 class PlayerNotOnTurnException(ApiValidatorException):
-    pass
-
-
-class PiecePinnedException(ApiValidatorException):
     pass
 
 

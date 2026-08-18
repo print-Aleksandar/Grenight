@@ -9,7 +9,6 @@ class MoveResponse:
                  is_white_on_turn: bool,
                  is_next_move_promotion: bool,
                  is_enemy_in_check: bool | None = None,
-                 is_piece_pinned: bool | None = None,
                  exception_message: str | None = None) -> None:
 
         self.pieces = pieces
@@ -18,7 +17,6 @@ class MoveResponse:
         self.is_white_winner = is_white_winner
         self.is_white_on_turn = is_white_on_turn
         self.is_next_move_promotion = is_next_move_promotion
-        self.is_piece_pinned = is_piece_pinned
         self.is_enemy_in_check = is_enemy_in_check
         self.exception_message = exception_message
 

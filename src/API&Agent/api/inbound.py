@@ -69,7 +69,7 @@ def play_turn(request_arg: MoveRequestDTO) -> MoveResponseDTO:
             validator()
 
         except ApiValidatorException as e:
-            response = reject_move(request, e.__class__.__name__)
+            response = reject_move(request, e.__name__)
             return MoveResponseDTO(
                 pieces=[get_dto_from_piece(piece) for piece in response.pieces],
                 is_game_finished=response.is_game_finished,
@@ -77,7 +77,8 @@ def play_turn(request_arg: MoveRequestDTO) -> MoveResponseDTO:
                 is_white_winner=response.is_white_winner,
                 is_white_on_turn=response.is_white_on_turn,
                 is_next_move_promotion=response.is_next_move_promotion,
-                exception_message=response.exception_message
+                exception_message=response.exception_message,
+                is_enemy_in_check=response.is_enemy_in_check
             )
 
     response = make_move(request)
@@ -88,7 +89,8 @@ def play_turn(request_arg: MoveRequestDTO) -> MoveResponseDTO:
         is_white_winner=response.is_white_winner,
         is_white_on_turn=response.is_white_on_turn,
         is_next_move_promotion=response.is_next_move_promotion,
-        exception_message=response.exception_message
+        exception_message=response.exception_message,
+        is_enemy_in_check=response.is_enemy_in_check
     )
 
 @app.post("/api/get_color_valid_moves")
@@ -111,7 +113,7 @@ def get_color_valid_moves(arg_request: ValidMovesPlayerRequestDTO) -> ValidMoves
             validator()
 
         except ApiValidatorException as e:
-            response = ValidMovesPlayerResponse(None, e.__class__.__name__)
+            response = ValidMovesPlayerResponse(None, e.__name__)
             return ValidMovesPlayerResponseDTO(
                 uids_with_valid_moves=response.uids_with_valid_moves,
                 exception_message=response.exception_message
@@ -144,7 +146,7 @@ def get_piece_valid_moves(arg_request: ValidMovesPieceRequestDTO) -> ValidMovesP
             validator()
 
         except ApiValidatorException as e:
-            response = ValidMovesPieceResponse(request.uid, None, e.__class__.__name__)
+            response = ValidMovesPieceResponse(request.uid, None, e.__name__)
             return ValidMovesPieceResponseDTO(
                 uid=response.uid,
                 valid_moves=response.valid_moves,

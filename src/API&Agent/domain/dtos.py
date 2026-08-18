@@ -16,7 +16,6 @@ def get_piece_from_dto(piece_dto: PieceDTO) -> Piece:
 
 
 def get_dto_from_piece(piece: Piece) -> PieceDTO:
-    print(type(piece))
     return PieceDTO(uid=piece.uid, is_white=piece.is_white,
                     position=piece.position, had_first_move=piece.had_first_move,
                     class_number=PIECES_NUMBERS[type(piece)])
@@ -54,7 +53,6 @@ class MoveResponseDTO(BaseModel):
     is_white_on_turn: bool
     is_next_move_promotion: bool
     is_enemy_in_check: bool | None = None
-    is_piece_pinned: bool | None = None
     exception_message: str | None = None
 
 
