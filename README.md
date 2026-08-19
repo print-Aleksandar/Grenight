@@ -1,10 +1,10 @@
-# Grenight — Green Knight Chess Platform
+# <img src="src/frontend/logo/logo_transparent.png" alt="Grenight logo" width="115px"> — Green Knight Chess Platform
 
 Grenight started as a way to exercise the integration and implementation of multiple technologies, while working through the fundamentals of structural, object-oriented, and functional programming, and system design. Along the way came the realization that processing a single chess move can be treated much like a stateless math script — and that idea became the foundation of Grenight, the Green Knight Chess Platform.
 
 The goal of the final product is a production-ready chess platform where players can play matches in their browser, either against each other or against my own agent. Given the complexity of the project — from building the chess logic and exposing it as a stateless API, to building an agent, integrating it with the frontend, and making the whole thing production-ready as platfrom — project will pass through several phases:
 
-## 4×5 Board — API & Frontend (Phase 1: Finished)
+## 5×4 Board — API & Frontend (Phase 1: Finished)
 
 Phase 1 focused on building the core chess logic and exposing it through a stateless API, together with a lightweight frontend for testing and interaction.
 
@@ -24,8 +24,4 @@ The frontend was updated to display only valid positions when a piece is clicked
 
 A PvP and PvE game mode selection was added. The PvE mode currently uses an agent with a random policy. The integration between the frontend and backend will remain unchanged in the next phase when the random policy is replaced with the RL agent.
 
-## RL Agent (Phase 2: Currently)
-
-<p align="center" style="margin-top: 125px;">
-  <img src="src/frontend/logo/logo_transparent.png" alt="Grenight logo" max_width="250px">
-</p>
+## RL Environment & Agents - Researching and Implementing (Phase 2: Currently)

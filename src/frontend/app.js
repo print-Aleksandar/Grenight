@@ -248,6 +248,10 @@ function restart_game_registry(event) {
 // RESTARTING GAME:
 async function restart_game() {
 
+    if (firstSquareDiv) {
+        firstSquareDiv.classList.remove("first_click");
+    }
+    clear_valid_move_highlights();
     is_current_game_finished = false
     status.innerText = "";
     if (!is_board_disabled) {
@@ -353,14 +357,12 @@ async function attempt_move(firstSquareDivArg, secondSquareDiv) {
 
             if (response.status === 409) {
 
+                triggerShake();
+
                 if (errorData.detail === "PiecePinnedException") {
 
                     const squares = [find_king_square(is_white_on_turn), originSquare];
                     flash_red(squares);
-
-                } else if (errorData.detail === "NonExistentValidMoveException") {
-
-                    triggerShake();
                 }
             }
 
@@ -384,8 +386,8 @@ async function attempt_move(firstSquareDivArg, secondSquareDiv) {
             return show_promotion_modal();
         }
 
-        is_white_on_turn = !is_white_on_turn;
-        is_from_white_player = !is_from_white_player;
+        is_white_on_turn = data.is_white_on_turn;
+        is_from_white_player = data.is_from_white_player;
 
         if (is_playing_against_agent) {
             setTimeout(() => {
@@ -454,8 +456,8 @@ async function promote_pawn(squareDivPromotionPieceEvent) {
 
         end_game_if_finished(data.is_game_finished, data.is_draw, data.is_white_winner);
 
-        is_white_on_turn = !is_white_on_turn;
-        is_from_white_player = !is_from_white_player;
+        is_white_on_turn = data.is_white_on_turn;
+        is_from_white_player = data.is_from_white_player;
 
         if (is_playing_against_agent) {
             setTimeout(() => {
@@ -513,8 +515,8 @@ async function call_agent_for_move() {
 
         end_game_if_finished(data.is_game_finished, data.is_draw, data.is_white_winner);
 
-        is_white_on_turn = !is_white_on_turn;
-        is_from_white_player = !is_from_white_player;
+        is_white_on_turn = data.is_white_on_turn;
+        is_from_white_player = data.is_from_white_player;
 
     } catch (error) {
         console.error("call_agent_for_move failed:", error);
@@ -556,8 +558,8 @@ async function call_agent_for_promotion() {
 
         end_game_if_finished(data.is_game_finished, data.is_draw, data.is_white_winner);
 
-        is_white_on_turn = !is_white_on_turn;
-        is_from_white_player = !is_from_white_player;
+        is_white_on_turn = data.is_white_on_turn;
+        is_from_white_player = data.is_from_white_player;
 
     } catch (error) {
         console.error("call_agent_for_move failed:", error);
