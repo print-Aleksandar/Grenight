@@ -30,16 +30,12 @@ class Piece(ABC):
         # PAWN RUNTIME ATTRIBUTES:
         self.can_implement_pawn_moves = True if isinstance(self, Pawn) else False
 
-        self.is_next_move_pawn_promotion = self.can_implement_pawn_moves and \
-                                           ((self.is_white and self.position[0] == ROWS - 2)
-                                            or (not self.is_white and self.position[0] == 1))
-
         self.is_current_move_pawn_promotion = self.can_implement_pawn_moves and \
                                               ((self.is_white and self.position[0] == ROWS - 1)
                                                or (not self.is_white and self.position[0] == 0))
 
     @abstractmethod
-    def new_position(self, position: tuple[int, int]) -> None:
+    def moved_to(self, position: tuple[int, int]) -> "Piece":
         pass
 
 
@@ -57,7 +53,7 @@ def make_sequence(position: tuple[int, int],
                   diagonal: bool,
                   forward_only = False,
                   forward_factor = 1,
-                  max_rows_forward = 1) -> list[tuple[int, int]]:
+                  max_rows_forward = 1) -> list[tuple[int, int]] | None:
 
     sequence = []
     y, x = position
@@ -124,27 +120,9 @@ class Pawn(Piece):
                          moving_positions=moving_positions,
                          attacking_positions=attacking_positions)
 
-    def new_position(self, position: tuple[int, int]) -> None:
-
-        self.position = position
-        y, x = position
-        self.had_first_move = True
-
-        forward_factor = 1 if self.is_white else -1
-        moving_positions = filter_positions_within_board(make_sequence(
-            position=position,
-            directional=True,
-            diagonal=False,
-            forward_only=True,
-            forward_factor=forward_factor,
-            max_rows_forward=1))
-
-        attacking_positions = filter_positions_within_board(
-            [(y + (1 * forward_factor), x + 1), (y + (1 * forward_factor), x - 1)]
-        )
-
-        self.moving_positions = moving_positions
-        self.attacking_positions = attacking_positions
+    def moved_to(self, position: tuple[int, int]) -> "Piece":
+        return Pawn(uid=self.uid, is_white=self.is_white,
+                    position=position, had_first_move=True)
 
 
 class Knight(Piece):
@@ -170,17 +148,9 @@ class Knight(Piece):
                          moving_positions=positions,
                          attacking_positions=positions)
 
-    def new_position(self, position: tuple[int, int]) -> None:
-
-        self.position = position
-        y, x = position
-        self.had_first_move = True
-
-        dyx = [(2, 1), (1, 2), (2, -1), (1, -2), (-2, 1), (-1, 2), (-2, -1), (-1, -2)]
-        positions = filter_positions_within_board([(y + dy, x + dx) for (dy, dx) in dyx])
-
-        self.moving_positions = positions
-        self.attacking_positions = positions
+    def moved_to(self, position: tuple[int, int]) -> "Piece":
+        return Knight(uid=self.uid, is_white=self.is_white,
+                      position=position, had_first_move=True)
 
 
 class Bishop(Piece):
@@ -207,20 +177,9 @@ class Bishop(Piece):
                          moving_positions=positions,
                          attacking_positions=positions)
 
-    def new_position(self, position: tuple[int, int]) -> None:
-
-        self.position = position
-        self.had_first_move = True
-
-        positions = filter_positions_within_board(make_sequence(
-            position=position,
-            directional=False,
-            diagonal=True,
-            forward_only=False
-        ))
-
-        self.moving_positions = positions
-        self.attacking_positions = positions
+    def moved_to(self, position: tuple[int, int]) -> "Piece":
+        return Bishop(uid=self.uid, is_white=self.is_white,
+                      position=position, had_first_move=True)
 
 
 class Rook(Piece):
@@ -247,20 +206,9 @@ class Rook(Piece):
                          moving_positions=positions,
                          attacking_positions=positions)
 
-    def new_position(self, position: tuple[int, int]) -> None:
-
-        self.position = position
-        self.had_first_move = True
-
-        positions = filter_positions_within_board(make_sequence(
-            position=position,
-            directional=True,
-            diagonal=False,
-            forward_only=False
-        ))
-
-        self.moving_positions = positions
-        self.attacking_positions = positions
+    def moved_to(self, position: tuple[int, int]) -> "Piece":
+        return Rook(uid=self.uid, is_white=self.is_white,
+                    position=position, had_first_move=True)
 
 
 class Queen(Piece):
@@ -287,20 +235,9 @@ class Queen(Piece):
                          moving_positions=positions,
                          attacking_positions=positions)
 
-    def new_position(self, position: tuple[int, int]) -> None:
-
-        self.position = position
-        self.had_first_move = True
-
-        positions = filter_positions_within_board(make_sequence(
-            position=position,
-            directional=True,
-            diagonal=True,
-            forward_only=False
-        ))
-
-        self.moving_positions = positions
-        self.attacking_positions = positions
+    def moved_to(self, position: tuple[int, int]) -> "Piece":
+        return Queen(uid=self.uid, is_white=self.is_white,
+                     position=position, had_first_move=True)
 
 
 class King(Piece):
@@ -325,14 +262,6 @@ class King(Piece):
                          moving_positions=positions,
                          attacking_positions=positions)
 
-    def new_position(self, position: tuple[int, int]) -> None:
-
-        self.position = position
-        y, x = position
-        self.had_first_move = True
-
-        dyx = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, 1), (1, 1), (1, -1), (-1, -1)]
-        positions = filter_positions_within_board([(y + dy, x + dx) for (dy, dx) in dyx])
-
-        self.moving_positions = positions
-        self.attacking_positions = positions
+    def moved_to(self, position: tuple[int, int]) -> "Piece":
+        return King(uid=self.uid, is_white=self.is_white,
+                    position=position, had_first_move=True)

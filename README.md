@@ -14,8 +14,18 @@ Pawn promotion is also implemented as a two-step process: once a pawn reaches th
 
 The current frontend is intentionally lightweight and serves primarily as a testing and development interface rather than the final product. Clicking a piece displays its initial valid moves based only on its movement rules, pin and king-safety validation happens when the move is submitted.
 
+## Refactoring (Phase 1.1: Finished)
+
+This phase focused on improving accuracy and optimizing the parts of the system that will have a larger impact in later phases. The main optimization was replacing deep copies with structural sharing, reusing unchanged piece instances and creating a new instance only when a piece changes position.
+
+Accuracy was also improved in the API. Invalid moves no longer return `200 OK` with an unnecessarily unchanged board. They now return `409 Conflict` with an appropriate error message.
+
+The frontend was updated to display only valid positions when a piece is clicked instead of showing its initial movement positions. A visual effect was also added when a `NonExistentValidMoveException` occurs.
+
+A PvP and PvE game mode selection was added. The PvE mode currently uses an agent with a random policy. The integration between the frontend and backend will remain unchanged in the next phase when the random policy is replaced with the RL agent.
+
 ## RL Agent (Phase 2: Currently)
 
-<p align="center">
-  <img src="branding/logo_transparent.png" alt="Grenight logo" width="250" height="250">
+<p align="center" style="margin-top: 125px;">
+  <img src="src/frontend/logo/logo_transparent.png" alt="Grenight logo" max_width="250px">
 </p>

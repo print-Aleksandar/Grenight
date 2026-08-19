@@ -31,18 +31,18 @@ class MoveRequestDTO(BaseModel):
     promote_to: int | None = None
 
 
-class ValidMovesPlayerRequestDTO(BaseModel):
-    pieces: list[PieceDTO]
-    is_from_white_player: bool
-    is_white: bool
-    is_white_on_turn: bool
-
-
 class ValidMovesPieceRequestDTO(BaseModel):
     pieces: list[PieceDTO]
     uid: str
     is_from_white_player: bool
     is_white_on_turn: bool
+
+
+class AgentMoveRequestDTO(BaseModel):
+    pieces: list[PieceDTO]
+    is_for_white: bool
+    is_white_on_turn: bool
+    is_current_move_promotion: bool
 
 
 class MoveResponseDTO(BaseModel):
@@ -53,19 +53,13 @@ class MoveResponseDTO(BaseModel):
     is_white_on_turn: bool
     is_next_move_promotion: bool
     is_enemy_in_check: bool | None = None
-    exception_message: str | None = None
-
-
-class ValidMovesPlayerResponseDTO(BaseModel):
-    uids_with_valid_moves: dict[str, list[tuple[int, int]]] | None
-    exception_message: str | None = None
 
 
 class ValidMovesPieceResponseDTO(BaseModel):
     uid: str
     valid_moves: list[tuple[int, int]] | None
-    exception_message: str | None = None
 
 
 class InitialBoardResponseDTO(BaseModel):
     pieces: list[PieceDTO]
+    is_white_on_turn: bool

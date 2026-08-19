@@ -12,10 +12,12 @@ const CLASS_NUMBERS = {
 };
 
 // TEMPORARY DATA HOLDERS (BACKEND WILL PASS THIS):
-let is_white_on_turn = true;
-let is_from_white_player = true;
+let is_white_on_turn = null;
+let is_from_white_player = null;
 let is_board_disabled = false;
 let pawn_to_promote = null;
+let is_playing_against_agent = null;
+let is_current_game_finished = null;
 
 
 // CLASSES:
@@ -53,7 +55,8 @@ class PieceDTO {
 
 
 // CONSTANT HTML ELEMENTS:
-const restart_game_button = document.getElementById('restart_game_button');
+const restart_pvp_button = document.getElementById('restart_pvp');
+const restart_pve_button = document.getElementById('restart_pve');
 const board = document.getElementById('board');
 const board_wrapper = document.getElementById('board_wrapper');
 const status = document.getElementById('status');
@@ -223,7 +226,20 @@ function end_game_if_finished(is_game_finished, is_draw, is_white_winner) {
 
     disable_board();
     is_board_disabled = true;
+    is_current_game_finished = true;
+}
 
+function restart_game_registry(event) {
+
+    const btn = event.currentTarget;
+
+    if (btn === restart_pvp_button) {
+        is_playing_against_agent = false;
+    } else {
+        is_playing_against_agent = true;
+    }
+
+    return restart_game();
 }
 /* FUNCTIONALITIES: END */
 
@@ -232,11 +248,13 @@ function end_game_if_finished(is_game_finished, is_draw, is_white_winner) {
 // RESTARTING GAME:
 async function restart_game() {
 
+    is_current_game_finished = false
     status.innerText = "";
     if (!is_board_disabled) {
         disable_board();
     }
     enable_board();
+    hide_promotion_modal();
     is_board_disabled = false;
     firstSquareDiv = null;
     current_valid_move_positions = [];
@@ -250,6 +268,9 @@ async function restart_game() {
 
         const data = await response.json();
         await render_board(data.pieces);
+
+        is_white_on_turn = data.is_white_on_turn;
+        is_from_white_player = data.is_white_on_turn;
 
     } catch (error) {
         console.error("restart_game failed:", error);
@@ -274,13 +295,14 @@ async function fetch_valid_moves_for_piece(uid) {
             })
         });
 
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-        const data = await response.json();
-        if (data.exception_message) {
-            console.warn("get_piece_valid_moves exception:", data.exception_message);
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.warn("get_piece_valid_moves exception:", errorData.detail);
             return [];
         }
+
+        const data = await response.json();
+
         return data.valid_moves || [];
 
     } catch (error) {
@@ -325,41 +347,50 @@ async function attempt_move(firstSquareDivArg, secondSquareDiv) {
         firstSquareDiv = null;
 
         if (!response.ok) {
+
             const errorData = await response.json();
             console.error("Validation Error Details:", errorData.detail);
+
+            if (response.status === 409) {
+
+                if (errorData.detail === "PiecePinnedException") {
+
+                    const squares = [find_king_square(is_white_on_turn), originSquare];
+                    flash_red(squares);
+
+                } else if (errorData.detail === "NonExistentValidMoveException") {
+
+                    triggerShake();
+                }
+            }
+
             return;
         }
 
         const data = await response.json();
 
-        if (!data.exception_message) {
+        await render_board(data.pieces);
 
-            await render_board(data.pieces);
+        if (data.is_enemy_in_check) {
 
-            if (data.is_enemy_in_check) {
+            const enemyKingSquare = find_king_square(!is_white_on_turn);
+            flash_red([enemyKingSquare]);
+        }
 
-                const enemyKingSquare = find_king_square(!is_white_on_turn);
-                flash_red([enemyKingSquare]);
-            }
+        end_game_if_finished(data.is_game_finished, data.is_draw, data.is_white_winner);
 
-            end_game_if_finished(data.is_game_finished, data.is_draw, data.is_white_winner);
+        if (data.is_next_move_promotion === true) {
+            pawn_to_promote = secondSquareDiv;
+            return show_promotion_modal();
+        }
 
-            if (data.is_next_move_promotion === true) {
-                pawn_to_promote = secondSquareDiv;
-                return show_promotion_modal();
-            }
+        is_white_on_turn = !is_white_on_turn;
+        is_from_white_player = !is_from_white_player;
 
-            is_white_on_turn = !is_white_on_turn;
-            is_from_white_player = !is_from_white_player;
-
-        } else {
-
-            const exceptionMessage = data.exception_message
-            if (exceptionMessage === "PiecePinnedException") {
-
-                const squares = [find_king_square(is_white_on_turn), originSquare];
-                flash_red(squares)
-            }
+        if (is_playing_against_agent) {
+            setTimeout(() => {
+                return call_agent_for_move();
+            }, 500);
         }
 
     } catch (error) {
@@ -410,35 +441,134 @@ async function promote_pawn(squareDivPromotionPieceEvent) {
         }
 
         const data = await response.json();
-        console.log(data.pieces);
 
-        if (!data.exception_message) {
+        await render_board(data.pieces);
 
-            await render_board(data.pieces);
+        if (data.is_enemy_in_check) {
 
-            if (data.is_enemy_in_check) {
+            const enemyKingSquare = find_king_square(!is_white_on_turn);
+            flash_red([enemyKingSquare]);
+        }
 
-                const enemyKingSquare = find_king_square(!is_white_on_turn);
-                flash_red([enemyKingSquare]);
-            }
+        hide_promotion_modal();
 
-            hide_promotion_modal();
+        end_game_if_finished(data.is_game_finished, data.is_draw, data.is_white_winner);
 
-            end_game_if_finished(data.is_game_finished, data.is_draw, data.is_white_winner);
+        is_white_on_turn = !is_white_on_turn;
+        is_from_white_player = !is_from_white_player;
 
-            is_white_on_turn = !is_white_on_turn;
-            is_from_white_player = !is_from_white_player;
+        if (is_playing_against_agent) {
+            setTimeout(() => {
+                return call_agent_for_move();
+            }, 500);
         }
 
     } catch (error) {
         console.error("promote_pawn failed:", error);
     }
 }
+
+async function call_agent_for_move() {
+
+    if (is_current_game_finished) {
+        return;
+    }
+
+    const pieces = get_pieces();
+    const piecesDto = make_dto_from_pieces(pieces);
+
+    try {
+        const response = await fetch(`${API_BASE}/api/agent_move`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                pieces: piecesDto,
+                is_for_white: is_white_on_turn,
+                is_white_on_turn: is_white_on_turn,
+                is_current_move_promotion: false
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Validation Error Details:", errorData.detail);
+            return;
+        }
+
+        const data = await response.json();
+
+        await render_board(data.pieces);
+
+        if (data.is_enemy_in_check) {
+
+            const enemyKingSquare = find_king_square(!is_white_on_turn);
+            flash_red([enemyKingSquare]);
+        }
+
+        if (data.is_next_move_promotion === true) {
+            setTimeout(() => {
+                return call_agent_for_promotion();
+            }, 500);
+        }
+
+        end_game_if_finished(data.is_game_finished, data.is_draw, data.is_white_winner);
+
+        is_white_on_turn = !is_white_on_turn;
+        is_from_white_player = !is_from_white_player;
+
+    } catch (error) {
+        console.error("call_agent_for_move failed:", error);
+    }
+}
+
+async function call_agent_for_promotion() {
+
+    const pieces = get_pieces();
+    const piecesDto = make_dto_from_pieces(pieces);
+
+    try {
+        const response = await fetch(`${API_BASE}/api/agent_move`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                pieces: piecesDto,
+                is_for_white: is_white_on_turn,
+                is_white_on_turn: is_white_on_turn,
+                is_current_move_promotion: true
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Validation Error Details:", errorData.detail);
+            return;
+        }
+
+        const data = await response.json();
+
+        await render_board(data.pieces);
+
+        if (data.is_enemy_in_check) {
+
+            const enemyKingSquare = find_king_square(!is_white_on_turn);
+            flash_red([enemyKingSquare]);
+        }
+
+        end_game_if_finished(data.is_game_finished, data.is_draw, data.is_white_winner);
+
+        is_white_on_turn = !is_white_on_turn;
+        is_from_white_player = !is_from_white_player;
+
+    } catch (error) {
+        console.error("call_agent_for_move failed:", error);
+    }
+}
 /* API CALLS: END */
 
 
 // ADDING FUNCTIONS TO HTML ELEMENTS:
-restart_game_button.addEventListener("click", restart_game);
+restart_pvp_button.addEventListener("click", restart_game_registry);
+restart_pve_button.addEventListener("click", restart_game_registry);
 
 promotionSquaresDivs.forEach((promotionSquareDiv) => {
     promotionSquareDiv.addEventListener("click", promote_pawn);
@@ -469,6 +599,13 @@ function flash_red(squareDivs) {
     setTimeout(() => {
         squareDivs.forEach(s => s && s.classList.remove("red_highlight"));
     }, 1500);
+}
+
+function triggerShake() {
+    board_wrapper.classList.add('shake-active');
+    setTimeout(() => {
+        board_wrapper.classList.remove('shake-active');
+    }, 500);
 }
 /* HIGHLIGHTING: END */
 
@@ -506,7 +643,3 @@ function find_king_square(is_white) {
 
     return kingDiv ? kingDiv.parentElement : null;
 }
-
-(async () => {
-    await restart_game();
-})();

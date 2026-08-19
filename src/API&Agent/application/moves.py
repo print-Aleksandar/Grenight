@@ -1,11 +1,10 @@
 from abc import ABC, abstractmethod
-from copy import deepcopy
-from domain.pieces import Piece, Rook, Bishop, Knight, Queen
+from domain.pieces import Piece, Knight, Bishop, Rook, Queen
 from domain.board_initialization import PIECES_CLASSES
-from domain.exceptions import NonExistentPiecePromotionException, NonExistentValidMoveException, \
-    TryingToTakeEnemyKingException
+from domain.exceptions import NonExistentPiecePromotionException, NonExistentValidMoveException
 from application.board_getter import BoardGetter, all_per_move_getter, get_piece_by_uid, get_piece_by_position
 from application.filters import filter_valid_attacks
+
 
 class Move(ABC):
     def __init__(self, current_pieces: list[Piece],
@@ -171,9 +170,10 @@ class FreePositionMove(Move):
     def new_state(self) -> list[Piece] | None:
         if not self.supports:
             return None
-        dummy = deepcopy(self.current_pieces)
-        get_piece_by_uid(dummy, self.uid).new_position(self.position)
-        return dummy
+
+        moved_piece = get_piece_by_uid(self.current_pieces, self.uid)
+        new_piece = moved_piece.moved_to(self.position)
+        return [new_piece if p.uid == self.uid else p for p in self.current_pieces]
 
     def func_supports(self) -> bool:
         return self.position in self.current_free_positions
@@ -192,19 +192,18 @@ class EnemyPositionMove(Move):
     def new_state(self) -> list[Piece] | None:
         if not self.supports:
             return None
-        dummy = deepcopy(self.current_pieces)
-        piece = get_piece_by_uid(dummy, self.uid)
-        attacked_piece = get_piece_by_position(dummy, self.position)
-        piece.new_position(self.position)
-        return [piece for piece in dummy if piece.uid != attacked_piece.uid]
+
+        moved_piece = get_piece_by_uid(self.current_pieces, self.uid)
+        attacked_piece = get_piece_by_position(self.current_pieces, self.position)
+        new_piece = moved_piece.moved_to(self.position)
+        return [new_piece if p.uid == self.uid else p
+                for p in self.current_pieces if p.uid != attacked_piece.uid]
 
     def func_supports(self) -> bool:
         piece = get_piece_by_uid(self.current_pieces, self.uid)
         attacked_piece = get_piece_by_position(self.current_pieces, self.position)
         if attacked_piece is None:
             return False
-        if not attacked_piece.can_be_on_attacked_position:
-            raise TryingToTakeEnemyKingException()
         return piece.is_white != attacked_piece.is_white \
                if attacked_piece is not None else False
 
@@ -225,7 +224,7 @@ class PromotionAddition(Move):
 
     def func_supports(self) -> bool:
         piece = get_piece_by_uid(self.current_pieces, self.uid)
-        return piece.can_implement_pawn_moves and piece.is_next_move_pawn_promotion \
+        return piece.can_implement_pawn_moves and piece.is_current_move_pawn_promotion \
                     and self.promote_to is None
 
 
@@ -244,8 +243,6 @@ class FinishingPromotionMove(Move):
         piece = get_piece_by_uid(self.current_pieces, self.uid)
         return self.is_current_move_promotion \
             and piece.can_implement_pawn_moves and piece.is_current_move_pawn_promotion \
-            and (PIECES_CLASSES.get(self.promote_to, None) is not None
-                 and PIECES_CLASSES.get(self.promote_to, None) in [Knight, Bishop, Rook, Queen]) \
             and piece.position == self.position
 
     def new_state(self) -> list[Piece] | None:
@@ -256,7 +253,7 @@ class FinishingPromotionMove(Move):
         pieces = [piece for piece in self.current_pieces if self.uid != piece.uid]
         cls = PIECES_CLASSES.get(self.promote_to, None)
 
-        if cls is not None:
+        if cls is not None and cls in [Knight, Bishop, Rook, Queen]:
             promoted_piece = cls(uid=self.uid, is_white=self.is_white,
                                  position=self.position, had_first_move=piece.had_first_move)
         else:

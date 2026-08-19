@@ -1,35 +1,42 @@
-class NonExistentPiecePromotionException(Exception):
+class GrenightException(Exception):
     pass
 
 
-class NonExistentValidMoveException(Exception):
+class NonExistentPiecePromotionException(GrenightException):
     pass
 
 
-class PiecePinnedException(Exception):
+class NonExistentValidMoveException(GrenightException):
     pass
 
 
-class TryingToTakeEnemyKingException(Exception):
+class PiecePinnedException(GrenightException):
     pass
 
 
-# VALIDATORS:
-class ApiValidatorException(Exception):
+class NonExistentValidPieceWithUidException(GrenightException):
     pass
 
 
-class NonExistentValidPieceWithUidException(ApiValidatorException):
+class NonExistentBoardPositionException(GrenightException):
     pass
 
 
-class NonExistentBoardPositionException(ApiValidatorException):
+class PlayerNotOnMoveTurnException(GrenightException):
     pass
 
 
-class PlayerNotOnTurnException(ApiValidatorException):
+class PlayerNotOnPieceValidMovesTurnException(GrenightException):
     pass
 
 
-class NotAllowedActionForEnemyPiecesException(ApiValidatorException):
+class PlayerWantsToPlayWithEnemyPieceException(GrenightException):
+    pass
+
+
+class PlayerWantsToGatherValidMovesForEnemyPieceException(GrenightException):
+    pass
+
+
+class AgentNotOnTurnException(GrenightException):
     pass
