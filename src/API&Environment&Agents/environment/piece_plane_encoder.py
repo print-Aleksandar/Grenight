@@ -1,7 +1,6 @@
 import numpy as np
-from domain.pieces import Piece
+from domain.pieces import Piece, PIECES_NUMBERS
 from domain.configs import ROWS, COLUMNS
-from domain.board_initialization import PIECES_NUMBERS
 
 
 class PiecePlaneEncoder:

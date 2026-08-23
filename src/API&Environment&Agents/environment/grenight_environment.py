@@ -1,9 +1,9 @@
 import numpy as np
 from domain.configs import MAX_ALLOWED_STEPS_WITHOUT_PAWN_MOVE_OR_CAPTURING
-from domain.pieces import Piece
+from domain.pieces import Piece, PIECES_NUMBERS
 from domain.requests import MoveRequest, AgentMoveRequest
 from domain.exceptions import GrenightException
-from domain.board_initialization import create_initial_board, PIECES_NUMBERS
+from domain.board_initialization import create_initial_board
 from application.game_service import make_move, gather_valid_moves_player
 from application.board_getter import get_piece_by_position, get_piece_by_uid
 from environment.action_encoder import ActionEncoder
