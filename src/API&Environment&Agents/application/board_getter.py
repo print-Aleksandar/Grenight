@@ -1,5 +1,5 @@
 from domain.pieces import Piece
-from domain.board_configs import POSITIONS
+from domain.board_initialization import POSITIONS
 
 
 class BoardGetter:

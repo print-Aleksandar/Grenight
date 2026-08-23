@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
-from domain.pieces import Piece, Knight, Bishop, Rook, Queen
-from domain.board_initialization import PIECES_CLASSES
+from domain.pieces import Piece, Knight, Bishop, Rook, Queen, PIECES_CLASSES
 from domain.exceptions import NonExistentPiecePromotionException, NonExistentValidMoveException
 from application.board_getter import BoardGetter, all_per_move_getter, get_piece_by_uid, get_piece_by_position
 from application.filters import filter_valid_attacks

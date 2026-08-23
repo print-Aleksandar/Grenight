@@ -8,6 +8,7 @@ from domain.dtos import (MoveRequestDTO, MoveResponseDTO,
 from domain.exceptions import GrenightException
 from application.game_service import (make_move,
                                       gather_valid_moves_piece)
+from application.tmp_random_policy_agent import play_random_valid_move
 from api.api_validators import (non_existent_valid_piece_with_uid_exception,
                                 non_existent_board_position_exception,
                                 player_not_on_turn_move_exception,
@@ -15,8 +16,6 @@ from api.api_validators import (non_existent_valid_piece_with_uid_exception,
                                 player_not_on_piece_valid_moves_turn_exception,
                                 player_wants_to_gather_valid_moves_for_enemy_piece_exception,
                                 agent_not_on_turn_exception)
-from application.random_policy import play_random_valid_move
-
 
 app = FastAPI()
 

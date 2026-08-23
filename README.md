@@ -4,7 +4,7 @@ Grenight started as a way to exercise the integration and implementation of mult
 
 The goal of the final product is a production-ready chess platform where players can play matches in their browser, either against each other or against my own agent. Given the complexity of the project — from building the chess logic and exposing it as a stateless API, to building an agent, integrating it with the frontend, and making the whole thing production-ready as platfrom — project will pass through several phases:
 
-## 5×4 Board — API & Frontend (Phase 1: Finished)
+## 4x5 Board — API & Frontend (Phase 1: Finished)
 
 Phase 1 focused on building the core chess logic and exposing it through a stateless API, together with a lightweight frontend for testing and interaction.
 

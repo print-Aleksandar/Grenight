@@ -1,5 +1,5 @@
 from domain.requests import MoveRequest, ValidMovesPieceRequest, AgentMoveRequest
-from domain.board_configs import POSITIONS
+from domain.board_initialization import POSITIONS
 from application.board_getter import get_piece_by_uid
 from domain.exceptions import (NonExistentValidPieceWithUidException,
                                NonExistentBoardPositionException,

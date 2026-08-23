@@ -1,6 +1,6 @@
 from application.board_getter import BoardGetter
 from domain.pieces import Piece, is_position_within_board
-from domain.board_configs import ROWS, COLUMNS
+from domain.configs import ROWS, COLUMNS
 
 
 def filter_valid_attacks(board_getter: BoardGetter) \

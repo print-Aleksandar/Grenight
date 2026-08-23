@@ -1,5 +1,5 @@
-from domain.exceptions import NonExistentValidMoveException, PiecePinnedException
 from domain.pieces import Piece
+from domain.exceptions import NonExistentValidMoveException, PiecePinnedException
 from domain.requests import MoveRequest, ValidMovesPieceRequest, AgentMoveRequest
 from domain.responses import MoveResponse, ValidMovesPieceResponse
 from application.board_getter import all_per_move_getter, BoardGetter, get_piece_by_uid

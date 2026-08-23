@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from domain.board_configs import COLUMNS, ROWS
+from domain.configs import COLUMNS, ROWS
 
 
 class Piece(ABC):
@@ -28,11 +28,24 @@ class Piece(ABC):
         self.attacking_positions = attacking_positions
 
         # PAWN RUNTIME ATTRIBUTES:
-        self.can_implement_pawn_moves = True if isinstance(self, Pawn) else False
+        self.can_implement_pawn_moves = self.is_this_piece_pawn()
+        self.is_next_move_pawn_promotion = self.is_pawn_on_pre_last_rank()
+        self.is_current_move_pawn_promotion = self.is_pawn_on_last_rank()
 
-        self.is_current_move_pawn_promotion = self.can_implement_pawn_moves and \
-                                              ((self.is_white and self.position[0] == ROWS - 1)
-                                               or (not self.is_white and self.position[0] == 0))
+    def is_this_piece_pawn(self) -> bool:
+        return isinstance(self, Pawn)
+
+    def is_pawn_on_pre_last_rank(self) -> bool:
+        if not self.can_implement_pawn_moves:
+            return False
+        return ((self.is_white and self.position[0] == ROWS - 2)
+                or (not self.is_white and self.position[0] == 1))
+
+    def is_pawn_on_last_rank(self) -> bool:
+        if not self.can_implement_pawn_moves:
+            return False
+        return ((self.is_white and self.position[0] == ROWS - 1)
+                or (not self.is_white and self.position[0] == 0))
 
     @abstractmethod
     def moved_to(self, position: tuple[int, int]) -> "Piece":
@@ -265,3 +278,17 @@ class King(Piece):
     def moved_to(self, position: tuple[int, int]) -> "Piece":
         return King(uid=self.uid, is_white=self.is_white,
                     position=position, had_first_move=True)
+
+
+PIECES_CLASSES = {
+    0: Pawn,
+    1: Knight,
+    2: Bishop,
+    3: Rook,
+    4: Queen,
+    5: King
+}
+
+PIECES_NUMBERS = dict()
+for num, cl in PIECES_CLASSES.items():
+    PIECES_NUMBERS[cl] = num

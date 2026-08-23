@@ -1,6 +1,5 @@
 from pydantic import BaseModel
-from domain.pieces import Piece
-from domain.board_initialization import PIECES_CLASSES, PIECES_NUMBERS
+from domain.pieces import Piece, PIECES_CLASSES, PIECES_NUMBERS
 
 class PieceDTO(BaseModel):
     uid: str

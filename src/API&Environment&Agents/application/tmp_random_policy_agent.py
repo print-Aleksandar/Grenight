@@ -1,9 +1,8 @@
 import random
-from domain.pieces import Knight, Bishop, Queen, Rook
+from domain.pieces import Knight, Bishop, Queen, Rook, PIECES_NUMBERS
 from domain.requests import AgentMoveRequest, MoveRequest
 from domain.responses import MoveResponse
 from application.game_service import gather_valid_moves_player, make_move
-from domain.board_initialization import PIECES_NUMBERS
 
 
 def play_random_valid_move(request: AgentMoveRequest) -> MoveResponse:
