@@ -9,12 +9,14 @@ from domain.configs import (
     EPSILON_START,
     EPSILON_END,
     EPSILON_DECAY_STEPS,
-    CHECKPOINT_DIR,
     CHECKPOINT_EVERY_EPISODES,
     LOG_EVERY_EPISODES,
+    CHECKPOINT_DIR,
+    AGENT_STEP_START
 )
 
 os.makedirs(CHECKPOINT_DIR, exist_ok=True)
+print(f"will save checkpoints in: {CHECKPOINT_DIR}")
 
 env = GrenightEnvironment()
 
@@ -57,10 +59,10 @@ episode = 0
 episode_lengths = []
 losses = []
 recent_outcomes = Counter()
-agent_step = 0
+agent_step = AGENT_STEP_START
 
 try:
-    for episode in range(1, 25_000 + 1):
+    for episode in range(1, 50_000 + 1):
 
         state = env.reset()
         done = False

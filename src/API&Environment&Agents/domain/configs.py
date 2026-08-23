@@ -12,4 +12,5 @@ EPSILON_END = 0.05
 EPSILON_DECAY_STEPS = 300_000
 CHECKPOINT_EVERY_EPISODES = 2500
 LOG_EVERY_EPISODES = 500
-CHECKPOINT_DIR = "/content/drive/MyDrive/grenight/dqn_vs_random/checkpoints"
+AGENT_STEP_START = 0
+CHECKPOINT_DIR = "/kaggle/working/checkpoints"
