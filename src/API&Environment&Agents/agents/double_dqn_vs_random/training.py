@@ -35,7 +35,10 @@ print(f"policy_net device: {next(agent.policy_net.parameters()).device}")
 
 AGENT_IS_WHITE = True
 
-CHECKPOINT_PATH = "ep15000.pt"
+CHECKPOINT_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "ep15000.pt"
+)
 
 checkpoint = torch.load(CHECKPOINT_PATH, map_location=device)
 
