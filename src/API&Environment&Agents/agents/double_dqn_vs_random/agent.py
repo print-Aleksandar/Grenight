@@ -1,68 +1,13 @@
 import random
 import numpy as np
-from collections import deque
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from agents.q_network import QNetwork
+from agents.replay_buffer import ReplayBuffer
 
 
-class Transition:
-    __slots__ = ["state", "action", "reward_white", "next_state", "done",
-                 "next_legal_mask", "next_is_white_turn"]
-
-    def __init__(self, state, action, reward_white, next_state, done,
-                 next_legal_mask, next_is_white_turn):
-        self.state = state
-        self.action = action
-        self.reward_white = reward_white
-        self.next_state = next_state
-        self.done = done
-        self.next_legal_mask = next_legal_mask
-        self.next_is_white_turn = next_is_white_turn
-
-
-class ReplayBuffer:
-
-    def __init__(self, capacity: int):
-        self.buffer = deque(maxlen=capacity)
-
-    def push(self, *args):
-        self.buffer.append(Transition(*args))
-
-    def sample(self, batch_size: int) -> list[Transition]:
-        return random.sample(self.buffer, batch_size)
-
-    def __len__(self):
-        return len(self.buffer)
-
-
-class QNetwork(nn.Module):
-
-    def __init__(self, num_planes: int, rows: int, columns: int, num_actions: int):
-        super().__init__()
-
-        self.conv = nn.Sequential(
-            nn.Conv2d(num_planes, 64, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.Conv2d(64, 64, kernel_size=3, padding=1),
-            nn.ReLU(),
-        )
-
-        flat_size = 64 * rows * columns
-
-        self.head = nn.Sequential(
-            nn.Flatten(),
-            nn.Linear(flat_size, 256),
-            nn.ReLU(),
-            nn.Linear(256, num_actions),
-        )
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.conv(x)
-        return self.head(x)
-
-
-class DQNAgent:
+class DoubleDQNAgent:
 
     def __init__(self, num_planes, rows, columns, num_actions, device="cpu",
                  lr=1e-4, gamma=0.99, buffer_capacity=100_000,

@@ -3,7 +3,7 @@ import numpy as np
 import torch
 from collections import Counter
 from environment.grenight_environment import GrenightEnvironment
-from agents.dqn_vs_random.dqn_vs_random_agent import DQNAgent
+from agents.double_dqn_vs_random.agent import DoubleDQNAgent
 from domain.configs import (
     MAX_STEPS_PER_EPISODE,
     EPSILON_START,
@@ -12,7 +12,7 @@ from domain.configs import (
     CHECKPOINT_EVERY_EPISODES,
     LOG_EVERY_EPISODES,
     CHECKPOINT_DIR,
-    AGENT_STEP_START
+    # AGENT_STEP_START
 )
 
 os.makedirs(CHECKPOINT_DIR, exist_ok=True)
@@ -23,7 +23,7 @@ env = GrenightEnvironment()
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"using device: {device}")
 
-agent = DQNAgent(
+agent = DoubleDQNAgent(
     num_planes=env.state_encoder.NUM_PLANES,
     rows=5,
     columns=4,
@@ -35,7 +35,16 @@ print(f"policy_net device: {next(agent.policy_net.parameters()).device}")
 
 AGENT_IS_WHITE = True
 
-global_step = 0
+CHECKPOINT_PATH = "ep15000.pt"
+
+checkpoint = torch.load(CHECKPOINT_PATH, map_location=device)
+
+agent.policy_net.load_state_dict(checkpoint["policy_state_dict"])
+agent.target_net.load_state_dict(checkpoint["target_state_dict"])
+agent.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+
+global_step = checkpoint["global_step"]
+# agent_step = checkpoint.get("agent_step")
 
 
 def epsilon_at(step):
@@ -55,14 +64,15 @@ def save_checkpoint(episode: int, tag: str = ""):
     print(f"[checkpoint] saved: {path}")
 
 
-episode = 0
+# agent_step = AGENT_STEP_START
 episode_lengths = []
 losses = []
 recent_outcomes = Counter()
-agent_step = AGENT_STEP_START
+
+epsilon = EPSILON_END # TODO: remove when training from start
 
 try:
-    for episode in range(1, 50_000 + 1):
+    for episode in range(15_001, 50_000 + 1):
 
         state = env.reset()
         done = False
@@ -75,7 +85,7 @@ try:
             is_agent_turn = (acting_player_is_white == AGENT_IS_WHITE)
 
             if is_agent_turn:
-                epsilon = epsilon_at(agent_step)
+                # epsilon = epsilon_at(agent_step)
 
                 action = agent.select_action(
                     state,
@@ -83,7 +93,8 @@ try:
                     acting_player_is_white,
                     epsilon
                 )
-                agent_step += 1
+
+                # agent_step += 1
 
             else:
                 action = env.sample()
@@ -166,7 +177,7 @@ try:
                 f"random_win={random_win_pct:5.1f}% "
                 f"draw={draw_pct:5.1f}% "
                 f"truncated={truncated_pct:5.1f}% "
-                f"outcomes(last500)={dict(recent_outcomes)}"
+                f"outcomes(last{LOG_EVERY_EPISODES})={dict(recent_outcomes)}"
             )
 
             recent_outcomes.clear()

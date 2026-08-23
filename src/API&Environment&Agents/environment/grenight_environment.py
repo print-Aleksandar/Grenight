@@ -200,6 +200,10 @@ class GrenightEnvironment:
                 self.is_draw_by_rule = True
                 self.draw_reason = "threefold_repetition"
 
+        else:
+            if response.is_game_finished and response.is_draw:
+                self.draw_reason = "stalemate"
+
         reward = self.calculate_reward(
             response=response,
             acting_player_is_white=acting_player_is_white,
@@ -231,7 +235,9 @@ class GrenightEnvironment:
 
         if any(t in (self.PAWN, self.ROOK, self.QUEEN) for t in piece_types):
             return False
+        return True
 
+        """
         minors = [p for p in self.pieces if PIECES_NUMBERS[type(p)] in (self.KNIGHT, self.BISHOP)]
 
         if len(minors) == 0:
@@ -243,8 +249,10 @@ class GrenightEnvironment:
         if len(minors) == 2 and all(PIECES_NUMBERS[type(p)] == self.BISHOP for p in minors):
             square_colors = {(p.position[0] + p.position[1]) % 2 for p in minors}
             return len(square_colors) == 1
-
+        
         return False
+        """
+
 
     def calculate_reward(self, response, acting_player_is_white: bool) -> float:
 
