@@ -4,7 +4,7 @@ from domain.configs import ROWS, COLUMNS
 class ActionEncoder:
 
     NUM_SQUARES = ROWS * COLUMNS
-    NUM_PROMOTION_ACTIONS = ((COLUMNS - 2) * 12 + 8 + 8) * 2
+    NUM_PROMOTION_ACTIONS = ((COLUMNS - 2) * 6 + 4 + 4) * 2
     NUM_ACTIONS = NUM_SQUARES * NUM_SQUARES + NUM_PROMOTION_ACTIONS
 
     @staticmethod
@@ -49,21 +49,21 @@ class ActionEncoder:
         from_col = from_position[1]
         dir_offset = to_position[1] - from_position[1]
 
-        base_offset = 0 if current_player_is_white else ((COLUMNS - 2) * 12 + 8 + 8)
+        base_offset = 0 if current_player_is_white else ((COLUMNS - 2) * 6 + 4 + 4)
 
         if from_col == 0:
             dir_idx = 0 if dir_offset == 0 else 1
-            offset = dir_idx * 4 + (promote_to - 1)
+            offset = dir_idx * 2 + (promote_to - 3)
 
         elif from_col == COLUMNS - 1:
-            offset = 8 + (COLUMNS - 2) * 12
+            offset = 4 + (COLUMNS - 2) * 6
             dir_idx = 0 if dir_offset == -1 else 1
-            offset += dir_idx * 4 + (promote_to - 1)
+            offset += dir_idx * 2 + (promote_to - 3)
 
         else:
-            offset = 8 + (from_col - 1) * 12
+            offset = 4 + (from_col - 1) * 6
             dir_idx = dir_offset + 1
-            offset += dir_idx * 4 + (promote_to - 1)
+            offset += dir_idx * 2 + (promote_to - 3)
 
         return (self.NUM_SQUARES * self.NUM_SQUARES) + base_offset + offset
 
@@ -72,11 +72,11 @@ class ActionEncoder:
 
         offset = action - (self.NUM_SQUARES * self.NUM_SQUARES)
 
-        base_offset = 0 if current_player_is_white else ((COLUMNS - 2) * 12 + 8 + 8)
+        base_offset = 0 if current_player_is_white else ((COLUMNS - 2) * 6 + 4 + 4)
         offset -= base_offset
 
-        promote_to = (offset % 4) + 1
-        offset //= 4
+        promote_to = (offset % 2) + 3
+        offset //= 2
 
         if offset < 2:
             from_col = 0

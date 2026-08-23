@@ -11,8 +11,7 @@ from domain.configs import (
     EPSILON_DECAY_STEPS,
     CHECKPOINT_EVERY_EPISODES,
     LOG_EVERY_EPISODES,
-    CHECKPOINT_DIR,
-    # AGENT_STEP_START
+    CHECKPOINT_DIR
 )
 
 os.makedirs(CHECKPOINT_DIR, exist_ok=True)
@@ -35,19 +34,8 @@ print(f"policy_net device: {next(agent.policy_net.parameters()).device}")
 
 AGENT_IS_WHITE = True
 
-CHECKPOINT_PATH = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
-    "ep15000.pt"
-)
-
-checkpoint = torch.load(CHECKPOINT_PATH, map_location=device)
-
-agent.policy_net.load_state_dict(checkpoint["policy_state_dict"])
-agent.target_net.load_state_dict(checkpoint["target_state_dict"])
-agent.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
-
-global_step = checkpoint["global_step"]
-# agent_step = checkpoint.get("agent_step")
+agent_step = 0
+global_step = 0
 
 
 def epsilon_at(step):
@@ -63,19 +51,19 @@ def save_checkpoint(episode: int, tag: str = ""):
         "policy_state_dict": agent.policy_net.state_dict(),
         "target_state_dict": agent.target_net.state_dict(),
         "optimizer_state_dict": agent.optimizer.state_dict(),
+        "agent_step": agent_step,
     }, path)
     print(f"[checkpoint] saved: {path}")
 
 
-# agent_step = AGENT_STEP_START
 episode_lengths = []
 losses = []
 recent_outcomes = Counter()
 
-epsilon = EPSILON_END # TODO: remove when training from start
+# epsilon = EPSILON_END # TODO: remove when training from start
 
 try:
-    for episode in range(15_001, 50_000 + 1):
+    for episode in range(1, 50_000 + 1):
 
         state = env.reset()
         done = False
@@ -88,7 +76,7 @@ try:
             is_agent_turn = (acting_player_is_white == AGENT_IS_WHITE)
 
             if is_agent_turn:
-                # epsilon = epsilon_at(agent_step)
+                epsilon = epsilon_at(agent_step)
 
                 action = agent.select_action(
                     state,
@@ -97,7 +85,7 @@ try:
                     epsilon
                 )
 
-                # agent_step += 1
+                agent_step += 1
 
             else:
                 action = env.sample()

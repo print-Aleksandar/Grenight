@@ -252,7 +252,7 @@ class FinishingPromotionMove(Move):
         pieces = [piece for piece in self.current_pieces if self.uid != piece.uid]
         cls = PIECES_CLASSES.get(self.promote_to, None)
 
-        if cls is not None and cls in [Knight, Bishop, Rook, Queen]:
+        if cls is not None and cls in [Rook, Queen]:
             promoted_piece = cls(uid=self.uid, is_white=self.is_white,
                                  position=self.position, had_first_move=piece.had_first_move)
         else:
