@@ -153,9 +153,9 @@ def filter_initial_moves(pieces: list[Piece],
 
           else:
                initial_moves = uids_with_valid_attacks[piece.uid]
-               initial_moves = [pos for pos in initial_moves if not
-                                board_getter.is_color_king_on_position(not piece.is_white, pos)]
 
+          initial_moves = [pos for pos in initial_moves if not
+          board_getter.is_color_king_on_position(not piece.is_white, pos)]
           uids_with_initial_moves[piece.uid] = initial_moves
 
      return uids_with_initial_moves
