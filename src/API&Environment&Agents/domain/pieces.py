@@ -11,7 +11,6 @@ class Piece(ABC):
                  can_be_captured: bool,
                  is_moving_sequence: bool,
                  do_attacking_position_requires_enemy_on_it: bool,
-                 can_be_on_attacked_position: bool,
                  moving_positions: list[tuple[int, int]],
                  attacking_positions: list[tuple[int, int]]) -> None:
 
@@ -23,7 +22,6 @@ class Piece(ABC):
         self.can_be_captured = can_be_captured
         self.is_moving_sequence = is_moving_sequence
         self.do_attacking_position_requires_enemy_on_it = do_attacking_position_requires_enemy_on_it
-        self.can_be_on_attacked_position = can_be_on_attacked_position
         self.moving_positions = moving_positions
         self.attacking_positions = attacking_positions
 
@@ -129,7 +127,6 @@ class Pawn(Piece):
                          can_be_captured=True,
                          is_moving_sequence=True,
                          do_attacking_position_requires_enemy_on_it=True,
-                         can_be_on_attacked_position=True,
                          moving_positions=moving_positions,
                          attacking_positions=attacking_positions)
 
@@ -157,7 +154,6 @@ class Knight(Piece):
                          can_be_captured=True,
                          is_moving_sequence=False,
                          do_attacking_position_requires_enemy_on_it=False,
-                         can_be_on_attacked_position=True,
                          moving_positions=positions,
                          attacking_positions=positions)
 
@@ -186,7 +182,6 @@ class Bishop(Piece):
                          can_be_captured=True,
                          is_moving_sequence=True,
                          do_attacking_position_requires_enemy_on_it=False,
-                         can_be_on_attacked_position=True,
                          moving_positions=positions,
                          attacking_positions=positions)
 
@@ -215,7 +210,6 @@ class Rook(Piece):
                          can_be_captured=True,
                          is_moving_sequence=True,
                          do_attacking_position_requires_enemy_on_it=False,
-                         can_be_on_attacked_position=True,
                          moving_positions=positions,
                          attacking_positions=positions)
 
@@ -244,7 +238,6 @@ class Queen(Piece):
                          can_be_captured=True,
                          is_moving_sequence=True,
                          do_attacking_position_requires_enemy_on_it=False,
-                         can_be_on_attacked_position=True,
                          moving_positions=positions,
                          attacking_positions=positions)
 
@@ -271,7 +264,6 @@ class King(Piece):
                          can_be_captured=False,
                          is_moving_sequence=False,
                          do_attacking_position_requires_enemy_on_it=False,
-                         can_be_on_attacked_position=False,
                          moving_positions=positions,
                          attacking_positions=positions)
 

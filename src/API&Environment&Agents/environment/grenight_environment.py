@@ -30,6 +30,9 @@ class GrenightEnvironment:
         self.is_draw_by_rule = False
         self.draw_reason: str | None = None
 
+        self._legal_actions_cache: list[int] | None = None
+        self._legal_actions_set_cache: set[int] | None = None
+
     def reset(self) -> np.ndarray:
 
         self.pieces = create_initial_board()
@@ -40,6 +43,7 @@ class GrenightEnvironment:
         self.current_repetition_count = 0
         self.is_draw_by_rule = False
         self.draw_reason = None
+        self._invalidate_legal_actions_cache()
 
         return self.get_state()
 
@@ -54,7 +58,14 @@ class GrenightEnvironment:
             repetition_limit=3,
         )
 
+    def _invalidate_legal_actions_cache(self) -> None:
+        self._legal_actions_cache = None
+        self._legal_actions_set_cache = None
+
     def legal_actions(self) -> list[int]:
+
+        if self._legal_actions_cache is not None:
+            return self._legal_actions_cache
 
         if self.done:
             return []
@@ -67,10 +78,11 @@ class GrenightEnvironment:
         )
 
         uid_to_positions = gather_valid_moves_player(request)
+        uid_to_piece = {piece.uid: piece for piece in self.pieces}
         actions = []
 
         for uid, positions in uid_to_positions.items():
-            piece = get_piece_by_uid(self.pieces, uid)
+            piece = uid_to_piece.get(uid)
             if piece is None:
                 continue
 
@@ -95,6 +107,8 @@ class GrenightEnvironment:
                     )
                     actions.append(action)
 
+        self._legal_actions_cache = actions
+        self._legal_actions_set_cache = set(actions)
         return actions
 
     def action_mask(self) -> np.ndarray:
@@ -111,8 +125,8 @@ class GrenightEnvironment:
 
         self.steps_without_pawn_move_or_capture += 1
 
-        legal_acts = self.legal_actions()
-        if action not in legal_acts:
+        self.legal_actions()
+        if action not in self._legal_actions_set_cache:
             raise ValueError(f"Illegal action {action}")
 
         acting_player_is_white = self.is_white_on_turn
@@ -178,6 +192,7 @@ class GrenightEnvironment:
         self.done = response.is_game_finished
         self.is_draw_by_rule = False
         self.draw_reason = None
+        self._invalidate_legal_actions_cache()
 
         if not self.done:
 
@@ -236,23 +251,6 @@ class GrenightEnvironment:
         if any(t in (self.PAWN, self.ROOK, self.QUEEN) for t in piece_types):
             return False
         return True
-
-        """
-        minors = [p for p in self.pieces if PIECES_NUMBERS[type(p)] in (self.KNIGHT, self.BISHOP)]
-
-        if len(minors) == 0:
-            return True
-
-        if len(minors) == 1:
-            return True
-
-        if len(minors) == 2 and all(PIECES_NUMBERS[type(p)] == self.BISHOP for p in minors):
-            square_colors = {(p.position[0] + p.position[1]) % 2 for p in minors}
-            return len(square_colors) == 1
-        
-        return False
-        """
-
 
     def calculate_reward(self, response, acting_player_is_white: bool) -> float:
 

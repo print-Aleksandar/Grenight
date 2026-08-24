@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
-from domain.pieces import Piece, Knight, Bishop, Rook, Queen, PIECES_CLASSES
-from domain.exceptions import NonExistentPiecePromotionException, NonExistentValidMoveException
-from application.board_getter import BoardGetter, all_per_move_getter, get_piece_by_uid, get_piece_by_position
-from application.filters import filter_valid_attacks
+from domain.pieces import Piece, Rook, Queen, PIECES_CLASSES, Pawn, Bishop, Knight
+from domain.configs import ROWS, COLUMNS
+from domain.exceptions import (NonExistentPiecePromotionException,
+                               NonExistentValidMoveException,
+                               TryingToTakeEnemyKingException)
+from application.board_getter import BoardGetter, all_per_move_getter, get_piece_by_position
 
 
 class Move(ABC):
@@ -11,7 +13,8 @@ class Move(ABC):
                  position: tuple[int, int],
                  current_free_positions: list[tuple[int, int]],
                  is_current_move_promotion: bool,
-                 promote_to: int | None) -> None:
+                 promote_to: int | None,
+                 current_uid_index: dict[str, Piece] | None = None) -> None:
 
         self.current_pieces = current_pieces
         self.uid = uid
@@ -19,6 +22,8 @@ class Move(ABC):
         self.current_free_positions = current_free_positions
         self.is_current_move_promotion = is_current_move_promotion
         self.promote_to = promote_to
+        self.current_uid_index = current_uid_index if current_uid_index is not None \
+            else {p.uid: p for p in current_pieces}
         self.is_white = self.is_piece_white()
 
         # MAKING AND AFTER MOVE ATTRIBUTES:
@@ -28,11 +33,6 @@ class Move(ABC):
         if self.supports:
             dummy = all_per_move_getter(self.new_pieces)
             self.new_board_getter = BoardGetter(dummy)
-            self.new_uids_with_valid_attacks = filter_valid_attacks(self.new_board_getter)
-            self.new_white_attacks = self.gather_new_white_attacks()
-            self.new_black_attacks = self.gather_new_black_attacks()
-            self.new_enemy_attacks = self.gather_new_enemy_attacks()
-            self.new_ally_attacks = self.gather_new_ally_attacks()
 
             self.new_white_pieces = self.gather_new_white_pieces()
             self.new_black_pieces = self.gather_new_black_pieces()
@@ -42,27 +42,6 @@ class Move(ABC):
         self.is_move_valid = self.is_ally_king_safe() if self.supports else False
         self.is_enemy_in_check = self.is_enemy_king_in_check() if self.supports and self.is_move_valid else None
 
-    def gather_new_white_attacks(self) -> list[tuple[int, int]]:
-        dummy = []
-        [dummy.extend(valid_attacks) for uid, valid_attacks
-         in self.new_uids_with_valid_attacks.items()
-         if get_piece_by_uid(self.new_pieces, uid).is_white]
-        dummy = list(set(dummy))
-        return dummy
-
-    def gather_new_black_attacks(self) -> list[tuple[int, int]]:
-        dummy = []
-        [dummy.extend(valid_attacks) for uid, valid_attacks
-         in self.new_uids_with_valid_attacks.items()
-         if not get_piece_by_uid(self.new_pieces, uid).is_white]
-        dummy = list(set(dummy))
-        return dummy
-
-    def gather_new_enemy_attacks(self) -> list[tuple[int, int]]:
-        return self.gather_new_black_attacks() if self.is_white else self.gather_new_white_attacks()
-
-    def gather_new_ally_attacks(self) -> list[tuple[int, int]]:
-        return self.gather_new_white_attacks() if self.is_white else self.gather_new_black_attacks()
 
     def gather_new_white_pieces(self) -> list[Piece]:
         return [piece for piece in self.new_pieces if piece.is_white]
@@ -77,20 +56,146 @@ class Move(ABC):
         return self.gather_new_black_pieces() if self.is_white else self.gather_new_white_pieces()
 
     def is_piece_white(self) -> bool:
-        return get_piece_by_uid(self.current_pieces, self.uid).is_white
+        return self.current_uid_index[self.uid].is_white
 
     def is_ally_king_safe(self) -> bool:
-        for ally_piece in self.new_ally_pieces:
-            if not ally_piece.can_be_on_attacked_position and \
-                ally_piece.position in self.new_enemy_attacks:
-                    return False
-        return True
+        return not self.is_king_in_check(self.is_white)
 
     def is_enemy_king_in_check(self) -> bool:
-        for enemy_piece in self.new_enemy_pieces:
-            if not enemy_piece.can_be_on_attacked_position and \
-                enemy_piece.position in self.new_ally_attacks:
+        return self.is_king_in_check(not self.is_white)
+
+    def is_king_in_check(self, is_for_white: bool) -> bool:
+        king = self.new_board_getter.get_king(is_for_white)
+        y, x = king.position
+
+        # CHECK FOR DIRECTIONAL ATTACKS:
+        for i in range(y + 1, ROWS):
+            pos = (i, x)
+            piece = self.new_board_getter.get_piece_by_position(pos)
+
+            if piece is None:
+                continue
+
+            if piece.is_white == is_for_white:
+                break
+
+            if piece.is_white != is_for_white and type(piece) in [Rook, Queen]:
                 return True
+
+        for i in range(y - 1, -1, -1):
+            pos = (i, x)
+            piece = self.new_board_getter.get_piece_by_position(pos)
+
+            if piece is None:
+                continue
+
+            if piece.is_white == is_for_white:
+                break
+
+            if piece.is_white != is_for_white and type(piece) in [Rook, Queen]:
+                return True
+
+        for i in range(x + 1, COLUMNS):
+            pos = (y, i)
+            piece = self.new_board_getter.get_piece_by_position(pos)
+
+            if piece is None:
+                continue
+
+            if piece.is_white == is_for_white:
+                break
+
+            if piece.is_white != is_for_white and type(piece) in [Rook, Queen]:
+                return True
+
+        for i in range(x - 1, -1, - 1):
+            pos = (y, i)
+            piece = self.new_board_getter.get_piece_by_position(pos)
+
+            if piece is None:
+                continue
+
+            if piece.is_white == is_for_white:
+                break
+
+            if piece.is_white != is_for_white and type(piece) in [Rook, Queen]:
+                return True
+
+        # CHECK FOR PAWN ATTACKS:
+        sign = 1 if self.is_white else - 1
+        piece = self.new_board_getter.get_piece_by_position((y + sign, x - 1))
+        if piece is not None and piece.is_white != is_for_white and type(piece) in [Pawn]:
+            return True
+
+        piece = self.new_board_getter.get_piece_by_position((y + sign, x + 1))
+        if piece is not None and piece.is_white != is_for_white and type(piece) in [Pawn]:
+            return True
+
+        # CHECK FOR DIAGONAL ATTACKS:
+        for i in range(1, min(ROWS - y, COLUMNS - x)):
+            pos = (y + i, x + i)
+            piece = self.new_board_getter.get_piece_by_position(pos)
+
+            if piece is None:
+                continue
+
+            if piece.is_white == is_for_white:
+                break
+
+            if piece.is_white != is_for_white and type(piece) in [Bishop, Queen]:
+                return True
+
+        for i in range(1, min(ROWS - y, x + 1)):
+            pos = (y + i, x - i)
+            piece = self.new_board_getter.get_piece_by_position(pos)
+
+            if piece is None:
+                continue
+
+            if piece.is_white == is_for_white:
+                break
+
+            if type(piece) in [Bishop, Queen]:
+                return True
+
+        for i in range(1, min(y + 1, COLUMNS - x)):
+            pos = (y - i, x + i)
+            piece = self.new_board_getter.get_piece_by_position(pos)
+
+            if piece is None:
+                continue
+
+            if piece.is_white == is_for_white:
+                break
+
+            if type(piece) in [Bishop, Queen]:
+                return True
+
+        for i in range(1, min(y + 1, x + 1)):
+            pos = (y - i, x - i)
+            piece = self.new_board_getter.get_piece_by_position(pos)
+
+            if piece is None:
+                continue
+
+            if piece.is_white == is_for_white:
+                break
+
+            if type(piece) in [Bishop, Queen]:
+                return True
+
+        # CHECK FOR KNIGHT ATTACKS
+        dyx = [(2, 1), (1, 2), (2, -1), (1, -2), (-2, 1), (-1, 2), (-2, -1), (-1, -2)]
+        positions = [(y + dy, x + dx) for (dy, dx) in dyx]
+        for pos in positions:
+            piece = self.new_board_getter.get_piece_by_position(pos)
+
+            if piece is None:
+                continue
+
+            if piece.is_white != is_for_white and type(piece) in [Knight]:
+                return True
+
         return False
 
     @abstractmethod
@@ -108,7 +213,8 @@ class MoveRegistry:
                  position: tuple[int, int],
                  current_free_positions: list[tuple[int, int]],
                  is_current_move_promotion: bool,
-                 promote_to: int | None) -> None:
+                 promote_to: int | None,
+                 current_uid_index: dict[str, Piece] | None = None) -> None:
 
         self.current_pieces = current_pieces
         self.uid = uid
@@ -116,6 +222,8 @@ class MoveRegistry:
         self.current_free_positions = current_free_positions
         self.is_current_move_promotion = is_current_move_promotion
         self.promote_to = promote_to
+        self.current_uid_index = current_uid_index if current_uid_index is not None \
+            else {p.uid: p for p in current_pieces}
 
         self.move = self.registry()
         self.is_next_move_promotion = self.is_next_promotable()
@@ -124,15 +232,18 @@ class MoveRegistry:
 
         free_position_move = FreePositionMove(self.current_pieces, self.uid,
                                               self.position, self.current_free_positions,
-                                              self.is_current_move_promotion, self.promote_to)
+                                              self.is_current_move_promotion, self.promote_to,
+                                              self.current_uid_index)
 
         enemy_position_move = EnemyPositionMove(self.current_pieces, self.uid,
                                                 self.position, self.current_free_positions,
-                                                self.is_current_move_promotion, self.promote_to)
+                                                self.is_current_move_promotion, self.promote_to,
+                                                self.current_uid_index)
 
         finishing_promotion_move = FinishingPromotionMove(self.current_pieces, self.uid,
                                                           self.position, self.current_free_positions,
-                                                          self.is_current_move_promotion, self.promote_to)
+                                                          self.is_current_move_promotion, self.promote_to,
+                                                          self.current_uid_index)
 
         if self.is_current_move_promotion:
             if finishing_promotion_move.supports:
@@ -161,16 +272,18 @@ class FreePositionMove(Move):
                  position: tuple[int, int],
                  current_free_positions: list[tuple[int, int]],
                  is_current_move_promotion: bool,
-                 promote_to: int | None) -> None:
+                 promote_to: int | None,
+                 current_uid_index: dict[str, Piece] | None = None) -> None:
 
         super().__init__(current_pieces, uid, position,
-                         current_free_positions, is_current_move_promotion, promote_to)
+                         current_free_positions, is_current_move_promotion, promote_to,
+                         current_uid_index)
 
     def new_state(self) -> list[Piece] | None:
         if not self.supports:
             return None
 
-        moved_piece = get_piece_by_uid(self.current_pieces, self.uid)
+        moved_piece = self.current_uid_index[self.uid]
         new_piece = moved_piece.moved_to(self.position)
         return [new_piece if p.uid == self.uid else p for p in self.current_pieces]
 
@@ -183,23 +296,27 @@ class EnemyPositionMove(Move):
                  position: tuple[int, int],
                  current_free_positions: list[tuple[int, int]],
                  is_current_move_promotion: bool,
-                 promote_to: int | None) -> None:
+                 promote_to: int | None,
+                 current_uid_index: dict[str, Piece] | None = None) -> None:
 
         super().__init__(current_pieces, uid, position,
-                         current_free_positions, is_current_move_promotion, promote_to)
+                         current_free_positions, is_current_move_promotion, promote_to,
+                         current_uid_index)
 
     def new_state(self) -> list[Piece] | None:
         if not self.supports:
             return None
 
-        moved_piece = get_piece_by_uid(self.current_pieces, self.uid)
+        moved_piece = self.current_uid_index[self.uid]
         attacked_piece = get_piece_by_position(self.current_pieces, self.position)
+        if not attacked_piece.can_be_captured:
+            raise TryingToTakeEnemyKingException()
         new_piece = moved_piece.moved_to(self.position)
         return [new_piece if p.uid == self.uid else p
                 for p in self.current_pieces if p.uid != attacked_piece.uid]
 
     def func_supports(self) -> bool:
-        piece = get_piece_by_uid(self.current_pieces, self.uid)
+        piece = self.current_uid_index[self.uid]
         attacked_piece = get_piece_by_position(self.current_pieces, self.position)
         if attacked_piece is None:
             return False
@@ -213,16 +330,18 @@ class PromotionAddition(Move):
                  position: tuple[int, int],
                  current_free_positions: list[tuple[int, int]],
                  is_current_move_promotion: bool,
-                 promote_to: int | None) -> None:
+                 promote_to: int | None,
+                 current_uid_index: dict[str, Piece] | None = None) -> None:
 
         super().__init__(current_pieces, uid, position,
-                         current_free_positions, is_current_move_promotion, promote_to)
+                         current_free_positions, is_current_move_promotion, promote_to,
+                         current_uid_index)
 
     def new_state(self) -> list[Piece] | None:
         return self.current_pieces
 
     def func_supports(self) -> bool:
-        piece = get_piece_by_uid(self.current_pieces, self.uid)
+        piece = self.current_uid_index[self.uid]
         return piece.can_implement_pawn_moves and piece.is_current_move_pawn_promotion \
                     and self.promote_to is None
 
@@ -233,13 +352,15 @@ class FinishingPromotionMove(Move):
                  position: tuple[int, int],
                  current_free_positions: list[tuple[int, int]],
                  is_current_move_promotion: bool,
-                 promote_to: int | None) -> None:
+                 promote_to: int | None,
+                 current_uid_index: dict[str, Piece] | None = None) -> None:
 
         super().__init__(current_pieces, uid, position,
-                         current_free_positions, is_current_move_promotion, promote_to)
+                         current_free_positions, is_current_move_promotion, promote_to,
+                         current_uid_index)
 
     def func_supports(self) -> bool:
-        piece = get_piece_by_uid(self.current_pieces, self.uid)
+        piece = self.current_uid_index[self.uid]
         return self.is_current_move_promotion \
             and piece.can_implement_pawn_moves and piece.is_current_move_pawn_promotion \
             and piece.position == self.position
@@ -248,7 +369,7 @@ class FinishingPromotionMove(Move):
         if not self.supports:
             return None
 
-        piece = get_piece_by_uid(self.current_pieces, self.uid)
+        piece = self.current_uid_index[self.uid]
         pieces = [piece for piece in self.current_pieces if self.uid != piece.uid]
         cls = PIECES_CLASSES.get(self.promote_to, None)
 

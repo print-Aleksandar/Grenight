@@ -3,7 +3,7 @@ import numpy as np
 import torch
 from collections import Counter
 from environment.grenight_environment import GrenightEnvironment
-from agents.double_dqn_vs_random.agent import DoubleDQNAgent
+from agents.double_dqn_vs_random_agent import DoubleDQNAgent
 from domain.configs import (
     MAX_STEPS_PER_EPISODE,
     EPSILON_START,
@@ -37,6 +37,21 @@ AGENT_IS_WHITE = True
 agent_step = 0
 global_step = 0
 
+"""
+CHECKPOINT_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "ep15000.pt"
+)
+checkpoint = torch.load(CHECKPOINT_PATH, map_location=device)
+
+agent.policy_net.load_state_dict(checkpoint["policy_state_dict"])
+agent.target_net.load_state_dict(checkpoint["target_state_dict"])
+agent.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+
+global_step = checkpoint["global_step"]
+agent_step = checkpoint["agent_step"] 
+"""
+
 
 def epsilon_at(step):
     frac = min(step / EPSILON_DECAY_STEPS, 1.0)
@@ -44,7 +59,7 @@ def epsilon_at(step):
 
 
 def save_checkpoint(episode: int, tag: str = ""):
-    path = os.path.join(CHECKPOINT_DIR, f"dqn_vs_random_ep{episode}{tag}.pt")
+    path = os.path.join(CHECKPOINT_DIR, f"double_dqn_vs_random_ep{episode}{tag}.pt")
     torch.save({
         "episode": episode,
         "global_step": global_step,
@@ -60,7 +75,6 @@ episode_lengths = []
 losses = []
 recent_outcomes = Counter()
 
-# epsilon = EPSILON_END # TODO: remove when training from start
 
 try:
     for episode in range(1, 50_000 + 1):
@@ -161,6 +175,7 @@ try:
             print(
                 f"ep={episode:>7} "
                 f"step={global_step:>8} "
+                f"agent_step={agent_step:>8} "
                 f"eps={epsilon:.3f} "
                 f"avg_len={avg_len:>6.1f} "
                 f"avg_loss={avg_loss:>8.4f} "

@@ -10,6 +10,10 @@ class NonExistentValidMoveException(GrenightException):
     pass
 
 
+class TryingToTakeEnemyKingException(GrenightException):
+    pass
+
+
 class PiecePinnedException(GrenightException):
     pass
 

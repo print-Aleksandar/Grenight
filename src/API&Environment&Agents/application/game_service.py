@@ -22,7 +22,8 @@ def is_player_having_any_valid_moves(pieces: list[Piece],
                                          move,
                                          board_getter.free_positions,
                                          is_current_move_promotion=False,
-                                         promote_to=None)
+                                         promote_to=None,
+                                         current_uid_index=board_getter.uid_index)
             if move_registry.move.is_move_valid:
                 return True
 
@@ -68,7 +69,7 @@ def make_move(request: MoveRequest) -> MoveResponse:
 
     move_registry = MoveRegistry(request.pieces, request.uid, request.position,
                                  current_board_getter.free_positions, request.is_current_move_promotion,
-                                 request.promote_to)
+                                 request.promote_to, current_uid_index=current_board_getter.uid_index)
 
     if not move_registry.move.is_move_valid:
         raise PiecePinnedException()
@@ -109,7 +110,8 @@ def gather_valid_moves_piece(request: ValidMovesPieceRequest) -> ValidMovesPiece
                                                                position,
                                                                board_getter.free_positions,
                                                                False,
-                                                               promote_to=None)
+                                                               promote_to=None,
+                                                               current_uid_index=board_getter.uid_index)
                                                     for position in uids_with_initial_moves[request.uid]]
 
     valid_moves_registries_for_requested_piece = [move_registry for move_registry
@@ -133,7 +135,7 @@ def gather_valid_moves_player(request: AgentMoveRequest) -> dict[str, list[tuple
 
     uids_with_valid_moves = dict()
     for uid, initial_moves in uids_with_initial_moves.items():
-        if get_piece_by_uid(request.pieces, uid).is_white != request.is_for_white:
+        if board_getter.get_piece_by_uid(uid).is_white != request.is_for_white:
             continue
 
         pre_valid_moves = [MoveRegistry(request.pieces,
@@ -141,7 +143,8 @@ def gather_valid_moves_player(request: AgentMoveRequest) -> dict[str, list[tuple
                                         position,
                                         board_getter.free_positions,
                                         False,
-                                        promote_to=None)
+                                        promote_to=None,
+                                        current_uid_index=board_getter.uid_index)
                        for position in initial_moves]
 
         valid_moves = [move_registry.move.position for move_registry in pre_valid_moves
