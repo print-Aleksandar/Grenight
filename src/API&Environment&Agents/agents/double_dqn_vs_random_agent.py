@@ -107,6 +107,7 @@ class DoubleDQNAgent:
             )
 
             target = rewards + (1.0 - dones) * self.gamma * next_q_value
+            target = target.clamp(-1.5, 1.5)
 
         loss = self.loss_fn(q_values, target)
 
