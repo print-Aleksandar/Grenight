@@ -35,6 +35,7 @@ class Agent:
 
         self.last_mean_q = 0.0
         self.last_max_q = 0.0
+        self.last_min_q = 0.0
 
     def select_action(self, state: np.ndarray, legal_mask: np.ndarray, epsilon: float) -> int:
 
@@ -102,5 +103,6 @@ class Agent:
         if self.train_steps % LOG_EVERY:
             self.last_max_q = q_values.detach().max().item()
             self.last_mean_q = q_values.detach().mean().item()
+            self.last_min_q = q_values.detach().min().item()
 
         return loss.item()
