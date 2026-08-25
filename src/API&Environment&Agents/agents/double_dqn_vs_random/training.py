@@ -1,3 +1,4 @@
+import time
 import os
 import numpy as np
 import torch
@@ -66,6 +67,7 @@ def save_checkpoint(ep: int):
 losses = []
 recent_outcomes = Counter()
 
+start_time = time.time()
 try:
     for episode in range(1, TRAIN_EPISODES + 1):
 
@@ -147,6 +149,8 @@ try:
                 100.0 * recent_outcomes.get("truncated", 0) / total_episodes
                 if total_episodes > 0 else 0.0
             )
+
+            print(64 / time.time() - start_time)
 
             print(
                 f"ep={episode:>7} "
