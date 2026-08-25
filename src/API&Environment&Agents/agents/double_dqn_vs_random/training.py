@@ -150,7 +150,7 @@ try:
                 if total_episodes > 0 else 0.0
             )
 
-            print(128 / time.time() - start_time)
+            print(128 / (time.time() - start_time))
 
             print(
                 f"ep={episode:>7} "
