@@ -12,33 +12,19 @@ class Agent:
 
     def __init__(self, num_planes, rows, columns, num_actions, device="cpu",
                  lr=1e-4, gamma=0.99, buffer_capacity=100_000,
-                 batch_size=512, target_sync_every=1000,
-                 use_multi_gpu=True):
-
-        if torch.cuda.is_available() and "cuda" in str(device):
-            self.device = torch.device("cuda:0")
-            self.is_cuda = True
-        else:
-            self.device = torch.device("cpu")
-            self.is_cuda = False
+                 batch_size=1024, target_sync_every=1000):
 
         self.device = torch.device(device)
         self.num_actions = num_actions
         self.gamma = gamma
         self.batch_size = batch_size
         self.target_sync_every = target_sync_every
-        self.use_multi_gpu = use_multi_gpu
 
         raw_policy_net = Network(num_planes, rows, columns, num_actions)
         raw_target_net = Network(num_planes, rows, columns, num_actions)
-
-        if self.is_cuda and self.use_multi_gpu and torch.cuda.device_count() > 1:
-            print(f"using {torch.cuda.device_count()} gpus")
-            self.policy_net = nn.DataParallel(raw_policy_net).to(self.device)
-            self.target_net = nn.DataParallel(raw_target_net).to(self.device)
-        else:
-            self.policy_net = raw_policy_net.to(self.device)
-            self.target_net = raw_target_net.to(self.device)
+        
+        self.policy_net = raw_policy_net.to(self.device)
+        self.target_net = raw_target_net.to(self.device)
 
         self.target_net.load_state_dict(self.policy_net.state_dict())
 
