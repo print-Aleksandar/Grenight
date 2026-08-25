@@ -12,7 +12,7 @@ class Agent:
 
     def __init__(self, num_planes, rows, columns, num_actions, device="cpu",
                  lr=1e-4, gamma=0.99, buffer_capacity=100_000,
-                 batch_size=64, target_sync_every=1000):
+                 batch_size=256, target_sync_every=1000):
 
         self.device = torch.device(device)
         self.num_actions = num_actions
