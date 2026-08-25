@@ -3,7 +3,7 @@ import numpy as np
 import torch
 from collections import Counter
 from environment.grenight_environment import GrenightEnvironment
-from agents.dueling_double_dqn_vs_random.agent import Agent
+from agents.double_dqn_vs_random.agent import Agent
 from domain.configs import (
     MAX_STEPS_PER_EPISODE,
     TRAIN_EPISODES,
@@ -152,6 +152,8 @@ try:
                 f"ep={episode:>7} "
                 f"eps={epsilon:.3f} "
                 f"avg_loss={avg_loss:>8.4f} "
+                f"max_q={agent.last_max_q:>8.4f} "
+                f"avg_q={agent.last_mean_q:>8.4f} "
                 f"agent_win={agent_win_pct:5.1f}% "
                 f"random_win={random_win_pct:5.1f}% "
                 f"draw={draw_pct:5.1f}% "
