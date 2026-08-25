@@ -23,6 +23,13 @@ class Network(nn.Module):
             nn.Linear(256, num_actions),
         )
 
+        self._init_weights()
+
+    def _init_weights(self) -> None:
+        last_layer = self.head[-1]
+        nn.init.uniform_(last_layer.weight, -3e-3, 3e-3)
+        nn.init.zeros_(last_layer.bias)
+
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.conv(x)
-        return self.head(x)
+        return torch.tanh(self.head(x))

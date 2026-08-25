@@ -67,7 +67,6 @@ def save_checkpoint(ep: int):
 losses = []
 recent_outcomes = Counter()
 
-start_time = time.time()
 try:
     for episode in range(1, TRAIN_EPISODES + 1):
 
@@ -103,8 +102,6 @@ try:
             loss = agent.train_step()
             if loss is not None:
                 losses.append(loss)
-
-        print(episode)
 
         if not done:
             recent_outcomes["truncated"] += 1
@@ -149,8 +146,6 @@ try:
                 100.0 * recent_outcomes.get("truncated", 0) / total_episodes
                 if total_episodes > 0 else 0.0
             )
-
-            print(256 / (time.time() - start_time))
 
             print(
                 f"ep={episode:>7} "
