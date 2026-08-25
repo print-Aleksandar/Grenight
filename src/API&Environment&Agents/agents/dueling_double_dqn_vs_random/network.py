@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 
-class QNetwork(nn.Module):
+class Network(nn.Module):
 
     def __init__(self, num_planes: int, rows: int, columns: int, num_actions: int):
         super().__init__()
