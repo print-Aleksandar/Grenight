@@ -87,7 +87,7 @@ try:
             if not done and move_count < MAX_STEPS_PER_EPISODE:
                 black_action = env.sample()
                 next_state, black_reward, done, info = env.step(black_action)
-                white_reward -= black_reward
+                white_reward = -1 if black_reward == 1 else black_reward
                 move_count += 1
 
             if not done:
@@ -106,11 +106,11 @@ try:
         if not done:
             recent_outcomes["truncated"] += 1
 
-        elif white_reward == 0.0:
+        elif white_reward in (-0.2, -0.5):
             recent_outcomes["draw"] += 1
 
         else:
-            is_winner_white = white_reward > 0
+            is_winner_white = white_reward == 1
             recent_outcomes["agent_win" if is_winner_white else "random_win"] += 1
 
         if episode % CHECKPOINT_EVERY_EPISODES == 0:
