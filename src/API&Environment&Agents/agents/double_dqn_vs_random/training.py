@@ -1,4 +1,3 @@
-import time
 import os
 import numpy as np
 import torch
@@ -119,11 +118,28 @@ try:
         if episode % LOG_EVERY == 0:
             avg_loss = np.mean(losses[-5000:]) if losses else float("nan")
 
+            was_last_game_truncated = False
+            was_last_game_draw = False
+            was_last_game_win_for_white = False
+
+            if not done:
+                was_last_game_truncated = True
+
+            elif white_reward == 0.0:
+                was_last_game_draw = True
+
+            else:
+                is_winner_white = white_reward > 0
+                was_last_game_win_for_white = is_winner_white
+
+            agent.set_legal_q_stats(white_old_state, legal_mask)
+
             completed = (
                     recent_outcomes.get("agent_win", 0)
                     + recent_outcomes.get("random_win", 0)
                     + recent_outcomes.get("draw", 0)
             )
+
 
             total_episodes = completed + recent_outcomes.get("truncated", 0)
 
@@ -147,18 +163,27 @@ try:
                 if total_episodes > 0 else 0.0
             )
 
+            print(f"EPISODE {episode} LOGS:")
+
+            print(
+                f"last_agent_reward: {white_reward} "
+                f"was_last_game_truncated: {was_last_game_truncated} "
+                f"was_last_game_draw: {was_last_game_draw} "
+                f"was_last_game_win_for_white: {was_last_game_win_for_white} "
+                f"avg_legal_q_of_last_white_move={agent.last_mean_legal_q:>8.4f} "
+                f"max_legal_q_of_last_white_move={agent.last_max_legal_q:>8.4f} "
+                f"min_legal_q_of_last_white_move={agent.last_min_legal_q:>8.4f} "
+            )
+
             print(
                 f"ep={episode:>7} "
                 f"eps={epsilon:.3f} "
                 f"avg_loss={avg_loss:>8.4f} "
-                f"avg_q={agent.last_mean_q:>8.4f} "
-                f"max_q={agent.last_max_q:>8.4f} "
-                f"min_q={agent.last_min_q:>8.4f} "
                 f"agent_win={agent_win_pct:5.1f}% "
                 f"random_win={random_win_pct:5.1f}% "
                 f"draw={draw_pct:5.1f}% "
                 f"truncated={truncated_pct:5.1f}% "
-                f"outcomes(last{LOG_EVERY})={dict(recent_outcomes)}"
+                f"outcomes(last{LOG_EVERY})={dict(recent_outcomes)}\n"
             )
 
             recent_outcomes.clear()

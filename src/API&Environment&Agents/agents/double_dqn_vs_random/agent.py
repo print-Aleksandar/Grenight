@@ -5,7 +5,6 @@ import torch.nn as nn
 import torch.optim as optim
 from agents.double_dqn_vs_random.network import Network
 from agents.double_dqn_vs_random.replay_buffer import ReplayBuffer
-from domain.configs import LOG_EVERY
 
 
 class Agent:
@@ -33,9 +32,9 @@ class Agent:
         self.replay_buffer = ReplayBuffer(buffer_capacity)
         self.train_steps = 0
 
-        self.last_mean_q = 0.0
-        self.last_max_q = 0.0
-        self.last_min_q = 0.0
+        self.last_mean_legal_q = 0.0
+        self.last_max_legal_q = 0.0
+        self.last_min_legal_q = 0.0
 
     def select_action(self, state: np.ndarray, legal_mask: np.ndarray, epsilon: float) -> int:
 
@@ -58,6 +57,31 @@ class Agent:
     def store(self, state, action, reward_white, next_state, done, next_legal_mask):
 
         self.replay_buffer.push(state, action, reward_white, next_state, done, next_legal_mask)
+
+    def set_legal_q_stats(self, state, legal_mask) -> None:
+        legal_indices = np.flatnonzero(legal_mask)
+
+        if len(legal_indices) == 0:
+            return None
+
+        with torch.no_grad():
+            state_t = torch.from_numpy(state).unsqueeze(0).to(self.device)
+            q_values = self.policy_net(state_t).squeeze(0)
+
+            indices = torch.tensor(legal_indices, dtype=torch.long, device=self.device)
+            legal_q = q_values[indices]
+
+            mean_q, max_q, min_q = (
+                legal_q.mean().item(),
+                legal_q.max().item(),
+                legal_q.min().item()
+            )
+
+            self.last_mean_legal_q = mean_q
+            self.last_max_legal_q = max_q
+            self.last_min_legal_q = min_q
+
+        return None
 
     def train_step(self) -> float | None:
         if len(self.replay_buffer) < self.batch_size:
@@ -87,22 +111,18 @@ class Agent:
             next_q_value = torch.where(dones.bool(), torch.zeros_like(next_q_value), next_q_value)
 
             target = rewards + (1.0 - dones) * self.gamma * next_q_value
+            target = torch.clamp(target, -1.0, 1.0)
 
         loss = self.loss_fn(q_values, target)
 
         self.optimizer.zero_grad()
         loss.backward()
-        torch.nn.utils.clip_grad_norm_(self.policy_net.parameters(), max_norm=10.0)
+        torch.nn.utils.clip_grad_norm_(self.policy_net.parameters(), max_norm=1.0)
         self.optimizer.step()
 
         self.train_steps += 1
 
         if self.train_steps % self.target_sync_every == 0:
             self.target_net.load_state_dict(self.policy_net.state_dict())
-
-        if self.train_steps % LOG_EVERY:
-            self.last_max_q = q_values.detach().max().item()
-            self.last_mean_q = q_values.detach().mean().item()
-            self.last_min_q = q_values.detach().min().item()
 
         return loss.item()
