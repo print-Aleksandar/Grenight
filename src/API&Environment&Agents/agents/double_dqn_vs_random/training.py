@@ -164,9 +164,8 @@ try:
                 if total_episodes > 0 else 0.0
             )
 
-            print(f"EPISODE {episode} LOGS:")
-
             print(
+                f"[episode {episode} logs]: "
                 f"last_agent_reward: {white_reward} "
                 f"was_last_game_truncated: {was_last_game_truncated} "
                 f"was_last_game_draw: {was_last_game_draw} "
@@ -174,9 +173,6 @@ try:
                 f"avg_legal_q_of_last_white_move={agent.last_mean_legal_q:>8.4f} "
                 f"max_legal_q_of_last_white_move={agent.last_max_legal_q:>8.4f} "
                 f"min_legal_q_of_last_white_move={agent.last_min_legal_q:>8.4f} "
-            )
-
-            print(
                 f"ep={episode:>7} "
                 f"eps={epsilon:.3f} "
                 f"avg_loss={avg_loss:>8.4f} "

@@ -257,8 +257,11 @@ class GrenightEnvironment:
         if not self.done:
             return 0.0
 
-        if self.is_draw_by_rule or response.is_draw:
-            return 0.0
+        if self.is_draw_by_rule:
+            return -0.5
+
+        if response.is_draw:
+            return -0.2
 
         if response.is_white_winner == acting_player_is_white:
             return 1.0
