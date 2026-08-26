@@ -14,7 +14,10 @@ class Network(nn.Module):
             nn.ReLU(),
             nn.Conv2d(128, 128, kernel_size=3, padding=1),
             nn.GroupNorm(num_groups, 128),
-            nn.ReLU()
+            nn.ReLU(),
+            nn.Conv2d(128, 128, kernel_size=3, padding=1),
+            nn.GroupNorm(num_groups, 128),
+            nn.ReLU(),
         )
 
         flat_size = 128 * rows * columns
