@@ -46,10 +46,11 @@ agent.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
 """
 
 
-def epsilon_at_exponential(ep: int) -> float:
+def epsilon_at_linear(ep: int) -> float:
     if ep >= EPSILON_DECAY_EPISODES:
         return EPSILON_END
-    return EPSILON_START * ((EPSILON_END / EPSILON_START) ** (ep / EPSILON_DECAY_EPISODES))
+
+    return EPSILON_START + ((EPSILON_END - EPSILON_START) * (ep / EPSILON_DECAY_EPISODES))
 
 
 def save_checkpoint(ep: int):
@@ -77,7 +78,7 @@ try:
 
             white_old_state = state
             legal_mask = env.action_mask()
-            epsilon = epsilon_at_exponential(episode)
+            epsilon = epsilon_at_linear(episode)
 
             white_action = agent.select_action(white_old_state, legal_mask, epsilon)
             next_state, white_reward, done, info = env.step(white_action)
