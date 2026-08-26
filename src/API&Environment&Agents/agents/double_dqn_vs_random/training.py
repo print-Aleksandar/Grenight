@@ -126,11 +126,11 @@ try:
             if not done:
                 was_last_game_truncated = True
 
-            elif white_reward == 0.0:
+            elif white_reward in (-0.2, -0.5):
                 was_last_game_draw = True
 
             else:
-                is_winner_white = white_reward > 0
+                is_winner_white = white_reward == 1
                 was_last_game_win_for_white = is_winner_white
 
             agent.set_legal_q_stats(white_old_state, legal_mask)

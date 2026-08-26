@@ -10,7 +10,7 @@ from agents.double_dqn_vs_random.replay_buffer import ReplayBuffer
 class Agent:
 
     def __init__(self, num_planes, rows, columns, num_actions, device="cpu",
-                 lr=5e-5, gamma=0.97, buffer_capacity=100_000,
+                 lr=1e-4, gamma=0.97, buffer_capacity=100_000,
                  batch_size=256, target_sync_every=500):
 
         self.device = torch.device(device)
