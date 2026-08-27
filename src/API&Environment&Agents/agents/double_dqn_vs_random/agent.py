@@ -10,7 +10,7 @@ from agents.double_dqn_vs_random.replay_buffer import ReplayBuffer
 class Agent:
 
     def __init__(self, num_planes, rows, columns, num_actions, device="cpu",
-                 lr=5e-5, gamma=0.99, buffer_capacity=100_000,
+                 lr=5e-5, gamma=0.0, buffer_capacity=100_000,
                  batch_size=512, replay_warmup=5_000, target_sync_every=10_000):
 
         self.device = torch.device(device)
@@ -151,7 +151,9 @@ class Agent:
         if self.train_steps % self.target_sync_every == 0:
             self.target_net.load_state_dict(self.policy_net.state_dict())
 
-        return loss.item()
+        loss = loss.item()
+        print(loss)
+        return loss
 
     def calculate_td_loss(self, state, action, reward,
                           next_state, done, next_legal_mask,
