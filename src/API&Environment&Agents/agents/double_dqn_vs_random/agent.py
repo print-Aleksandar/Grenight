@@ -3,14 +3,14 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from agents.double_dqn_vs_random.small_net import Network
+from agents.double_dqn_vs_random.smaller_network import Network
 from agents.double_dqn_vs_random.replay_buffer import ReplayBuffer
 
 
 class Agent:
 
     def __init__(self, num_planes, rows, columns, num_actions, device="cpu",
-                 lr=5e-5, gamma=0.5, buffer_capacity=100_000,
+                 lr=5e-5, gamma=0.99, buffer_capacity=100_000,
                  batch_size=128, replay_warmup=5_000, target_sync_every=10_000):
 
         self.device = torch.device(device)
@@ -19,6 +19,8 @@ class Agent:
         self.batch_size = batch_size
         self.target_sync_every = target_sync_every
         self.replay_warmup = replay_warmup
+
+        self.gamma_sq = self.gamma ** 2
 
         raw_policy_net = Network(num_planes, rows, columns, num_actions)
         raw_target_net = Network(num_planes, rows, columns, num_actions)
@@ -131,7 +133,7 @@ class Agent:
 
                 next_q_value[non_terminal] = next_q_target.gather(1,next_actions.unsqueeze(1)).squeeze(1)
 
-            target = rewards + self.gamma * next_q_value
+            target = rewards + self.gamma_sq * next_q_value
 
         loss = self.loss_fn(q_values, target)
 
