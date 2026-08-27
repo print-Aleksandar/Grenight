@@ -3,7 +3,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from agents.double_dqn_vs_random.network import Network
+from agents.double_dqn_vs_random.small_net import Network
 from agents.double_dqn_vs_random.replay_buffer import ReplayBuffer
 
 
