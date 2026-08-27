@@ -42,7 +42,9 @@ CHECKPOINT_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
     "epXXXXX.pt"
 )
-checkpoint = torch.load(CHECKPOINT_PATH, map_location=device, weights_only=False)
+
+"""
+checkpoint = torch.load("checkpoints/ep3019.pt", map_location=device, weights_only=False)
 
 episode_start = checkpoint["episode"] + 1
 agent.policy_net.load_state_dict(checkpoint["policy_state_dict"])
@@ -52,7 +54,7 @@ agent.replay_buffer = checkpoint["replay_buffer"]
 agent.train_steps = checkpoint["train_steps"]
 agent_step = checkpoint["agent_step"]
 global_step = checkpoint["global_step"]
-"""
+
 
 def epsilon_at_linear(step: int) -> float:
 
