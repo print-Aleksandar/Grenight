@@ -137,36 +137,45 @@ def process_stats(outcomes: Counter,
         if total_episodes > 0 else 0.0
     )
 
-    last = LOG_EVERY_EPISODE if is_training_stats else EVALUATE_GAMES
-    process = "training" if is_training_stats else "evaluation"
+    n = LOG_EVERY_EPISODE if is_training_stats else EVALUATE_GAMES
+    label = "training" if is_training_stats else "evaluation"
 
-    print(f"\n{process} stats:")
+    print()
+
+    if is_training_stats:
+        print(f"{label} statistics — last {n:,} episodes")
+    else:
+        print(f"{label} statistics — another new {n:,} games")
+
 
     print(
-        "outcomes:"
-        f"agent_win={agent_win_pct:5.1f}% "
-        f"random_win={random_win_pct:5.1f}% "
-        f"draw={draw_pct:5.1f}% "
-        f"truncated={truncated_pct:5.1f}% "
-        f"outcomes(last{last})={dict(outcomes)}"
+        f"  outcomes    "
+        f"agent {agent_win_pct:5.1f}%   "
+        f"random {random_win_pct:5.1f}%   "
+        f"draw {draw_pct:5.1f}%   "
+        f"truncated {truncated_pct:5.1f}%"
     )
 
+    print(f"  distribution {dict(outcomes)}")
+
     print(
-        "agent:"
-        f"avg_loss={avg_loss:>8.8f} "
-        f"avg_q={np.mean(q_averages):>8.4f} "
-        f"avg_max_q={np.mean(q_maxs):>8.4f} "
-        f"avg_min_q={np.mean(q_mins):>8.4f}"
+        f"  agent       "
+        f"loss {avg_loss:10.8f}   "
+        f"Q avg {np.mean(q_averages):8.4f}   "
+        f"Q max {np.mean(q_maxs):8.4f}   "
+        f"Q min {np.mean(q_mins):8.4f}"
     )
 
     if not is_training_stats:
         print(
-            "additional_diagnostics:"
-            f"target_averages={np.mean(td_target_averages):>8.4f} "
-            f"target_maxs={np.mean(td_target_maxs):>8.4f} "
-            f"target_mins={np.mean(td_target_mins):>8.4f} "
-            f"td_abs_averages={np.mean(td_abs_averages):>8.4f} "
-            f"td_abs_maxs={np.mean(td_abs_maxs):>8.4f}\n"
+            f"  diagnostics "
+            f"target avg {np.mean(td_target_averages):8.4f}   "
+            f"target max {np.mean(td_target_maxs):8.4f}   "
+            f"target min {np.mean(td_target_mins):8.4f}"
         )
-    else:
-        print()
+
+        print(
+            f"              "
+            f"|TD| avg {np.mean(td_abs_averages):8.4f}   "
+            f"|TD| max {np.mean(td_abs_maxs):8.4f}"
+        )

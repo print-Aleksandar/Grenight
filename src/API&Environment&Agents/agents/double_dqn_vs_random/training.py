@@ -141,24 +141,35 @@ try:
             save_checkpoint(episode)
 
         if episode % LOG_EVERY_EPISODE == 0:
-            print(f"[episode {episode} logs]: "
-                  f"epsilon: {epsilon:>8.4f} "
-                  f"agent_step {agent_step:>8} "
-                  f"global_step {global_step:>8} "
+            print()
+            print("─" * 72)
+            print(f"  EPISODE {episode:,}")
+            print()
+
+            print(
+                f"  ε (epsilon)     : {epsilon:>8.4f}\n"
+                f"  agent steps     : {agent_step:>8,}\n"
+                f"  global steps    : {global_step:>8,}"
             )
 
-            print(f"last loss: {losses[-1]:>8.4f} ")
+            print()
 
-            process_stats(recent_outcomes, losses, q_averages, q_maxs, q_mins, True)
+            process_stats(recent_outcomes, losses, q_averages, q_maxs, q_mins,True)
 
+            print()
+
+            print("  Running evaluation...")
             evaluate_agent(env, agent)
 
-            print(f"[episode {episode} logs]: end")
+            print("─" * 72)
+
+            print()
 
             recent_outcomes.clear()
             q_averages = []
             q_maxs = []
             q_mins = []
+
 
 except KeyboardInterrupt:
     print("\n[interrupted] saving checkpoint before exit...")
