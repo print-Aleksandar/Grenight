@@ -1,7 +1,8 @@
 import os
-import numpy as np
 import torch
 from collections import Counter
+
+from agents.double_dqn_vs_random.evaluation import process_stats, evaluate_agent
 from environment.grenight_environment import GrenightEnvironment
 from agents.double_dqn_vs_random.agent import Agent
 from domain.configs import (
@@ -9,10 +10,10 @@ from domain.configs import (
     TRAIN_EPISODES,
     EPSILON_START,
     EPSILON_END,
-    EPSILON_DECAY_EPISODES,
+    EPSILON_DECAY_STEPS,
     CHECKPOINT_EVERY_EPISODES,
-    LOG_EVERY,
-    CHECKPOINT_DIR
+    LOG_EVERY_EPISODE,
+    CHECKPOINT_DIR, LOG_Q_EVERY_STEPS
 )
 
 os.makedirs(CHECKPOINT_DIR, exist_ok=True)
@@ -21,7 +22,6 @@ print(f"will save checkpoints in: {CHECKPOINT_DIR}")
 env = GrenightEnvironment()
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
-print(f"using device: {device}")
 
 agent = Agent(
     num_planes=env.state_encoder.NUM_PLANES,
@@ -33,24 +33,31 @@ agent = Agent(
 
 print(f"policy_net device: {next(agent.policy_net.parameters()).device}")
 
+agent_step = 0
+global_step = 0
+episode_start = 1
+
 """
 CHECKPOINT_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
     "epXXXXX.pt"
 )
-checkpoint = torch.load(CHECKPOINT_PATH, map_location=device)
+checkpoint = torch.load(CHECKPOINT_PATH, map_location=device, weights_only=False)
 
+episode_start = checkpoint["episode"] + 1
 agent.policy_net.load_state_dict(checkpoint["policy_state_dict"])
 agent.target_net.load_state_dict(checkpoint["target_state_dict"])
 agent.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+agent.replay_buffer = checkpoint["replay_buffer"]
+agent.train_steps = checkpoint["train_steps"]
+agent_step = checkpoint["agent_step"]
+global_step = checkpoint["global_step"]
 """
 
+def epsilon_at_linear(step: int) -> float:
 
-def epsilon_at_linear(ep: int) -> float:
-    if ep >= EPSILON_DECAY_EPISODES:
-        return EPSILON_END
-
-    return EPSILON_START + ((EPSILON_END - EPSILON_START) * (ep / EPSILON_DECAY_EPISODES))
+    return max(EPSILON_END,
+               EPSILON_START - (EPSILON_START - EPSILON_END) * step / EPSILON_DECAY_STEPS)
 
 
 def save_checkpoint(ep: int):
@@ -59,16 +66,23 @@ def save_checkpoint(ep: int):
         "episode": ep,
         "policy_state_dict": agent.policy_net.state_dict(),
         "target_state_dict": agent.target_net.state_dict(),
-        "optimizer_state_dict": agent.optimizer.state_dict()
+        "optimizer_state_dict": agent.optimizer.state_dict(),
+        "replay_buffer": agent.replay_buffer,
+        "train_steps": agent.train_steps,
+        "agent_step": agent_step,
+        "global_step": global_step,
     }, path)
     print(f"[checkpoint] saved: {path}")
 
 
 losses = []
 recent_outcomes = Counter()
+q_averages = []
+q_maxs = []
+q_mins = []
 
 try:
-    for episode in range(1, TRAIN_EPISODES + 1):
+    for episode in range(episode_start, TRAIN_EPISODES + 1):
 
         state = env.reset()
         done = False
@@ -77,27 +91,36 @@ try:
         while not done and move_count < MAX_STEPS_PER_EPISODE:
 
             white_old_state = state
-            legal_mask = env.action_mask()
-            epsilon = epsilon_at_linear(episode)
+            old_legal_mask = env.action_mask()
+            epsilon = epsilon_at_linear(agent_step)
 
-            white_action = agent.select_action(white_old_state, legal_mask, epsilon)
-            next_state, white_reward, done, info = env.step(white_action)
+            white_action = agent.select_action(white_old_state, old_legal_mask, epsilon)
+            next_white_state, white_reward, done, info = env.step(white_action)
+
+            agent_step += 1
+            global_step += 1
             move_count += 1
+
+            if agent_step % LOG_Q_EVERY_STEPS == 0:
+                agent.set_legal_q_stats(white_old_state, old_legal_mask)
+
+                q_averages.append(agent.last_mean_legal_q)
+                q_mins.append(agent.last_min_legal_q)
+                q_maxs.append(agent.last_max_legal_q)
 
             if not done and move_count < MAX_STEPS_PER_EPISODE:
                 black_action = env.sample()
-                next_state, black_reward, done, info = env.step(black_action)
-                white_reward = -1 if black_reward == 1 else black_reward
+                next_white_state, black_reward, done, info = env.step(black_action)
+                white_reward = -black_reward
+
+                global_step += 1
                 move_count += 1
 
-            if not done:
-                next_legal_mask_white = env.action_mask()
-            else:
-                next_legal_mask_white = legal_mask
+            next_legal_mask_white = env.action_mask()
 
-            agent.store(white_old_state, white_action, white_reward, next_state, done, next_legal_mask_white)
+            agent.store(white_old_state, white_action, white_reward, next_white_state, done, next_legal_mask_white)
 
-            state = next_state
+            state = next_white_state
 
             loss = agent.train_step()
             if loss is not None:
@@ -106,7 +129,7 @@ try:
         if not done:
             recent_outcomes["truncated"] += 1
 
-        elif white_reward in (-0.2, -0.5):
+        elif white_reward == 0.0:
             recent_outcomes["draw"] += 1
 
         else:
@@ -116,74 +139,23 @@ try:
         if episode % CHECKPOINT_EVERY_EPISODES == 0:
             save_checkpoint(episode)
 
-        if episode % LOG_EVERY == 0:
-            avg_loss = np.mean(losses[-5000:]) if losses else float("nan")
-
-            was_last_game_truncated = False
-            was_last_game_draw = False
-            was_last_game_win_for_white = False
-
-            if not done:
-                was_last_game_truncated = True
-
-            elif white_reward in (-0.2, -0.5):
-                was_last_game_draw = True
-
-            else:
-                is_winner_white = white_reward == 1
-                was_last_game_win_for_white = is_winner_white
-
-            agent.set_legal_q_stats(white_old_state, legal_mask)
-
-            completed = (
-                    recent_outcomes.get("agent_win", 0)
-                    + recent_outcomes.get("random_win", 0)
-                    + recent_outcomes.get("draw", 0)
+        if episode % LOG_EVERY_EPISODE == 0:
+            print(f"[episode {episode} logs]: "
+                  f"epsilon: {epsilon:>8.4f} "
+                  f"agent_step {agent_step:>8} "
+                  f"global_step {global_step:>8} "
             )
 
+            process_stats(recent_outcomes, losses, q_averages, q_maxs, q_mins, True)
 
-            total_episodes = completed + recent_outcomes.get("truncated", 0)
+            evaluate_agent(env, agent)
 
-            agent_win_pct = (
-                100.0 * recent_outcomes.get("agent_win", 0) / completed
-                if completed > 0 else 0.0
-            )
-
-            random_win_pct = (
-                100.0 * recent_outcomes.get("random_win", 0) / completed
-                if completed > 0 else 0.0
-            )
-
-            draw_pct = (
-                100.0 * recent_outcomes.get("draw", 0) / completed
-                if completed > 0 else 0.0
-            )
-
-            truncated_pct = (
-                100.0 * recent_outcomes.get("truncated", 0) / total_episodes
-                if total_episodes > 0 else 0.0
-            )
-
-            print(
-                f"[episode {episode} logs]: "
-                f"last_agent_reward: {white_reward} "
-                f"was_last_game_truncated: {was_last_game_truncated} "
-                f"was_last_game_draw: {was_last_game_draw} "
-                f"was_last_game_win_for_white: {was_last_game_win_for_white} "
-                f"avg_legal_q_of_last_white_move={agent.last_mean_legal_q:>8.4f} "
-                f"max_legal_q_of_last_white_move={agent.last_max_legal_q:>8.4f} "
-                f"min_legal_q_of_last_white_move={agent.last_min_legal_q:>8.4f} "
-                f"ep={episode:>7} "
-                f"eps={epsilon:.3f} "
-                f"avg_loss={avg_loss:>8.4f} "
-                f"agent_win={agent_win_pct:5.1f}% "
-                f"random_win={random_win_pct:5.1f}% "
-                f"draw={draw_pct:5.1f}% "
-                f"truncated={truncated_pct:5.1f}% "
-                f"outcomes(last{LOG_EVERY})={dict(recent_outcomes)}\n"
-            )
+            print(f"[episode {episode} logs]: end")
 
             recent_outcomes.clear()
+            q_averages = []
+            q_maxs = []
+            q_mins = []
 
 except KeyboardInterrupt:
     print("\n[interrupted] saving checkpoint before exit...")

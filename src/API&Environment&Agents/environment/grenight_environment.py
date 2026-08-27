@@ -1,5 +1,5 @@
 import numpy as np
-from domain.configs import MAX_ALLOWED_STEPS_WITHOUT_PAWN_MOVE_OR_CAPTURING
+from domain.configs import MAX_STEPS_WITHOUT_PROGRESS
 from domain.pieces import Piece, PIECES_NUMBERS
 from domain.requests import MoveRequest, AgentMoveRequest
 from domain.exceptions import GrenightException
@@ -53,7 +53,7 @@ class GrenightEnvironment:
             pieces=self.pieces,
             current_player_is_white=self.is_white_on_turn,
             steps_without_progress=self.steps_without_pawn_move_or_capture,
-            max_steps_without_progress=MAX_ALLOWED_STEPS_WITHOUT_PAWN_MOVE_OR_CAPTURING,
+            max_steps_without_progress=MAX_STEPS_WITHOUT_PROGRESS,
             repetition_count=self.current_repetition_count,
             repetition_limit=3,
         )
@@ -113,6 +113,9 @@ class GrenightEnvironment:
 
     def action_mask(self) -> np.ndarray:
         mask = np.zeros(self.action_encoder.NUM_ACTIONS, dtype=bool)
+        if self.done:
+            return mask
+
         actions = self.legal_actions()
         if actions:
             mask[actions] = True
@@ -200,7 +203,7 @@ class GrenightEnvironment:
             self.current_repetition_count = self.position_counts.get(key, 0) + 1
             self.position_counts[key] = self.current_repetition_count
 
-            if self.steps_without_pawn_move_or_capture >= MAX_ALLOWED_STEPS_WITHOUT_PAWN_MOVE_OR_CAPTURING:
+            if self.steps_without_pawn_move_or_capture >= MAX_STEPS_WITHOUT_PROGRESS:
                 self.done = True
                 self.is_draw_by_rule = True
                 self.draw_reason = "max_steps_without_progress"
