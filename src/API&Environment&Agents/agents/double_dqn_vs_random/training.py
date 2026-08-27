@@ -146,6 +146,8 @@ try:
                   f"global_step {global_step:>8} "
             )
 
+            print(f"last loss: {losses[-1]:>8.4f} ")
+
             process_stats(recent_outcomes, losses, q_averages, q_maxs, q_mins, True)
 
             evaluate_agent(env, agent)

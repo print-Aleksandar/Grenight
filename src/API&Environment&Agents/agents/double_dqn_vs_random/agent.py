@@ -151,9 +151,7 @@ class Agent:
         if self.train_steps % self.target_sync_every == 0:
             self.target_net.load_state_dict(self.policy_net.state_dict())
 
-        loss = loss.item()
-        print(loss)
-        return loss
+        return loss.item()
 
     def calculate_td_loss(self, state, action, reward,
                           next_state, done, next_legal_mask,
