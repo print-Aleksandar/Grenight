@@ -5,7 +5,7 @@ from domain.requests import MoveRequest, AgentMoveRequest
 from domain.exceptions import GrenightException
 from domain.board_initialization import create_initial_board
 from application.game_service import make_move, gather_valid_moves_player
-from application.board_getter import get_piece_by_position, get_piece_by_uid
+from application.board_getter import get_piece_by_position
 from environment.action_encoder import ActionEncoder
 from environment.piece_plane_encoder import PiecePlaneEncoder
 
@@ -45,7 +45,13 @@ class GrenightEnvironment:
         self.draw_reason = None
         self._invalidate_legal_actions_cache()
 
+        key = self.position_key()
+        self.current_repetition_count = self.position_counts.get(key, 0) + 1
+        self.position_counts[key] = self.current_repetition_count
+
         return self.get_state()
+
+    # TODO: ADDITIONAL RESET FUNCTION, LOAD EXISTING BOARD INSTEAD OF NEW
 
     def get_state(self) -> np.ndarray:
 

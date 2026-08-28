@@ -1,7 +1,6 @@
 import os
 import torch
 from collections import Counter
-
 from agents.double_dqn_vs_random.evaluation import process_stats, evaluate_agent
 from environment.grenight_environment import GrenightEnvironment
 from agents.double_dqn_vs_random.agent import Agent
@@ -38,12 +37,7 @@ global_step = 0
 episode_start = 1
 
 """
-CHECKPOINT_PATH = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
-    "epXXXXX.pt"
-)
-
-checkpoint = torch.load("checkpoints/ep3019.pt", map_location=device, weights_only=False)
+checkpoint = torch.load(f"../double_dqn_vs_random/checkpoints/v2/ep30000.pt", map_location=device, weights_only=False)
 
 episode_start = checkpoint["episode"] + 1
 agent.policy_net.load_state_dict(checkpoint["policy_state_dict"])
@@ -55,7 +49,7 @@ agent_step = checkpoint["agent_step"]
 global_step = checkpoint["global_step"]
 """
 
-def epsilon_at_linear(step: int) -> float:
+def epsilon_at(step: int) -> float:
 
     return max(EPSILON_END,
                EPSILON_START - (EPSILON_START - EPSILON_END) * step / EPSILON_DECAY_STEPS)
@@ -93,7 +87,7 @@ try:
 
             white_old_state = state
             old_legal_mask = env.action_mask()
-            epsilon = epsilon_at_linear(agent_step)
+            epsilon = epsilon_at(agent_step)
 
             white_action = agent.select_action(white_old_state, old_legal_mask, epsilon)
             next_white_state, white_reward, done, info = env.step(white_action)

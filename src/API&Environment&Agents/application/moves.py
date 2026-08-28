@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from domain.pieces import Piece, Rook, Queen, PIECES_CLASSES, Pawn, Bishop, Knight
+from domain.pieces import Piece, Rook, Queen, PIECES_CLASSES, Bishop, Knight, King
 from domain.configs import ROWS, COLUMNS
 from domain.exceptions import (NonExistentPiecePromotionException,
                                NonExistentValidMoveException,
@@ -79,8 +79,16 @@ class Move(ABC):
             if piece.is_white == is_for_white:
                 break
 
-            if piece.is_white != is_for_white and type(piece) in [Rook, Queen]:
-                return True
+            if piece.is_white != is_for_white:
+                if pos in piece.attacking_positions:
+                    continue
+
+                if type(piece) in [Rook, Queen]:
+                    return True
+                else:
+                    break
+
+            return True
 
         for i in range(y - 1, -1, -1):
             pos = (i, x)
@@ -92,8 +100,16 @@ class Move(ABC):
             if piece.is_white == is_for_white:
                 break
 
-            if piece.is_white != is_for_white and type(piece) in [Rook, Queen]:
-                return True
+            if piece.is_white != is_for_white:
+                if pos in piece.attacking_positions:
+                    continue
+
+                if type(piece) in [Rook, Queen]:
+                    return True
+                else:
+                    break
+
+            return True
 
         for i in range(x + 1, COLUMNS):
             pos = (y, i)
@@ -105,8 +121,16 @@ class Move(ABC):
             if piece.is_white == is_for_white:
                 break
 
-            if piece.is_white != is_for_white and type(piece) in [Rook, Queen]:
-                return True
+            if piece.is_white != is_for_white:
+                if pos in piece.attacking_positions:
+                    continue
+
+                if type(piece) in [Rook, Queen]:
+                    return True
+                else:
+                    break
+
+            return True
 
         for i in range(x - 1, -1, - 1):
             pos = (y, i)
@@ -118,17 +142,19 @@ class Move(ABC):
             if piece.is_white == is_for_white:
                 break
 
-            if piece.is_white != is_for_white and type(piece) in [Rook, Queen]:
-                return True
+            if piece.is_white != is_for_white:
+                if pos in piece.attacking_positions:
+                    continue
 
-        # CHECK FOR PAWN ATTACKS:
-        sign = 1 if self.is_white else - 1
-        piece = self.new_board_getter.get_piece_by_position((y + sign, x - 1))
-        if piece is not None and piece.is_white != is_for_white and type(piece) in [Pawn]:
+                if type(piece) in [Rook, Queen]:
+                    return True
+                else:
+                    break
+
             return True
 
-        piece = self.new_board_getter.get_piece_by_position((y + sign, x + 1))
-        if piece is not None and piece.is_white != is_for_white and type(piece) in [Pawn]:
+        # CHECK FOR PAWN ATTACKS:
+        if self.new_board_getter.is_pos_attacked_by_color_pawn(not king.is_white, king.position):
             return True
 
         # CHECK FOR DIAGONAL ATTACKS:
@@ -142,8 +168,16 @@ class Move(ABC):
             if piece.is_white == is_for_white:
                 break
 
-            if piece.is_white != is_for_white and type(piece) in [Bishop, Queen]:
-                return True
+            if piece.is_white != is_for_white:
+                if pos in piece.attacking_positions:
+                    continue
+
+                if type(piece) in [Bishop, Queen]:
+                    return True
+                else:
+                    break
+
+            return True
 
         for i in range(1, min(ROWS - y, x + 1)):
             pos = (y + i, x - i)
@@ -155,8 +189,16 @@ class Move(ABC):
             if piece.is_white == is_for_white:
                 break
 
-            if type(piece) in [Bishop, Queen]:
-                return True
+            if piece.is_white != is_for_white:
+                if pos in piece.attacking_positions:
+                    continue
+
+                if type(piece) in [Bishop, Queen]:
+                    return True
+                else:
+                    break
+
+            return True
 
         for i in range(1, min(y + 1, COLUMNS - x)):
             pos = (y - i, x + i)
@@ -168,8 +210,16 @@ class Move(ABC):
             if piece.is_white == is_for_white:
                 break
 
-            if type(piece) in [Bishop, Queen]:
-                return True
+            if piece.is_white != is_for_white:
+                if pos in piece.attacking_positions:
+                    continue
+
+                if type(piece) in [Bishop, Queen]:
+                    return True
+                else:
+                    break
+
+            return True
 
         for i in range(1, min(y + 1, x + 1)):
             pos = (y - i, x - i)
@@ -181,8 +231,29 @@ class Move(ABC):
             if piece.is_white == is_for_white:
                 break
 
-            if type(piece) in [Bishop, Queen]:
+            if piece.is_white != is_for_white:
+                if pos in piece.attacking_positions:
+                    continue
+
+                if type(piece) in [Bishop, Queen]:
+                    return True
+                else:
+                    break
+
+            return True
+
+        # CHECK FOR KING ATTACKS
+        dyx = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, 1), (1, 1), (1, -1), (-1, -1)]
+        positions = [(y + dy, x + dx) for (dy, dx) in dyx]
+        for pos in positions:
+            piece = self.new_board_getter.get_piece_by_position(pos)
+
+            if piece is None:
+                continue
+
+            if piece.is_white != is_for_white and type(piece) in [King]:
                 return True
+
 
         # CHECK FOR KNIGHT ATTACKS
         dyx = [(2, 1), (1, 2), (2, -1), (1, -2), (-2, 1), (-1, 2), (-2, -1), (-1, -2)]

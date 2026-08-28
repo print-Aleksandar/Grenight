@@ -13,6 +13,7 @@ class BoardGetter:
         self.uid_index = getter_call[5]
         self.position_index = getter_call[6]
         self.king_color_index = getter_call[7]
+        self.pawns_color_attacks = getter_call[8]
 
     def get_piece_by_uid(self, uid: str) -> Piece | None:
         return self.uid_index.get(uid)
@@ -25,6 +26,9 @@ class BoardGetter:
 
     def is_color_king_on_position(self, color: bool, position: tuple[int, int]) -> bool:
         return self.get_king(color).position == position
+
+    def is_pos_attacked_by_color_pawn(self, color: bool, position: tuple[int, int]) -> bool:
+        return position in self.pawns_color_attacks.get(color)
 
 
 def all_per_move_getter(pieces: list[Piece]) -> list:
@@ -41,9 +45,22 @@ def all_per_move_getter(pieces: list[Piece]) -> list:
     position_index = {piece.position: piece for piece in pieces}
     king_color_index = {piece.is_white: piece for piece in pieces if not piece.can_be_captured}
 
+    white_att_list = list()
+    [white_att_list.extend(piece.attacking_positions) for piece in pieces if piece.is_white
+     and piece.can_implement_pawn_moves]
+    white_att_list = list(set(white_att_list))
+
+    black_att_list = list()
+    [black_att_list.extend(piece.attacking_positions) for piece in pieces if not piece.is_white
+     and piece.can_implement_pawn_moves]
+    black_att_list = list(set(black_att_list))
+
+    pawns_color_attacks = {True: white_att_list, False: black_att_list}
+
     return [white_pieces, black_pieces, white_positions,
             black_positions, free_positions,
-            uid_index, position_index, king_color_index]
+            uid_index, position_index, king_color_index,
+            pawns_color_attacks]
 
 
 def get_piece_by_uid(pieces: list[Piece],
