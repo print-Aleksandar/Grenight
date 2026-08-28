@@ -10,8 +10,9 @@ from agents.double_dqn_vs_random.replay_buffer import ReplayBuffer
 class Agent:
 
     def __init__(self, num_planes, rows, columns, num_actions, device="cpu",
-                 lr=5e-5, gamma=0.99, buffer_capacity=100_000,
-                 batch_size=512, replay_warmup=5_000, target_sync_every=10_000):
+                 lr=1e-5, gamma=0.99, buffer_capacity=100_000,
+                 batch_size=512, replay_warmup=5_000,
+                 target_sync_every=10_000, tau = 0.005):
 
         self.device = torch.device(device)
         self.num_actions = num_actions
@@ -19,6 +20,7 @@ class Agent:
         self.batch_size = batch_size
         self.target_sync_every = target_sync_every
         self.replay_warmup = replay_warmup
+        self.tau = tau
 
         self.gamma_sq = self.gamma ** 2
 
@@ -30,8 +32,8 @@ class Agent:
 
         self.target_net.load_state_dict(self.policy_net.state_dict())
 
-        self.optimizer = optim.Adam(self.policy_net.parameters(), lr=lr)
-        self.loss_fn = nn.SmoothL1Loss()
+        self.optimizer = optim.RMSprop(self.policy_net.parameters(), lr=lr, alpha=0.95, eps=1e-8)
+        self.loss_fn = nn.MSELoss()
         self.replay_buffer = ReplayBuffer(buffer_capacity)
         self.train_steps = 0
 
@@ -39,12 +41,8 @@ class Agent:
         self.last_max_legal_q = 0.0
         self.last_min_legal_q = 0.0
 
-        self.last_mean_td_target = 0.0
-        self.last_max_td_target = 0.0
-        self.last_min_td_target = 0.0
-
-        self.last_mean_td_abs = 0.0
-        self.last_max_td_abs = 0.0
+        self.last_td_target = 0.0
+        self.last_td_abs = 0.0
 
     def select_action(self, state: np.ndarray, legal_mask: np.ndarray, epsilon: float) -> int:
 
@@ -150,8 +148,9 @@ class Agent:
 
         self.train_steps += 1
 
-        if self.train_steps % self.target_sync_every == 0:
-            self.target_net.load_state_dict(self.policy_net.state_dict())
+        with torch.no_grad():
+            for p, tp in zip(self.policy_net.parameters(), self.target_net.parameters()):
+                tp.data.mul_(1 - self.tau).add_(self.tau * p.data)
 
         return loss.item()
 
@@ -202,11 +201,7 @@ class Agent:
         if collect_diagnostics:
             td_error = target - q
 
-            self.last_mean_td_target = target.mean().item()
-            self.last_max_td_target = target.max().item()
-            self.last_min_td_target = target.min().item()
-
-            self.last_mean_td_abs = td_error.abs().mean().item()
-            self.last_max_td_abs = td_error.abs().max().item()
+            self.last_td_target = target.mean().item()
+            self.last_td_abs = td_error.abs().mean().item()
 
         return loss.item()

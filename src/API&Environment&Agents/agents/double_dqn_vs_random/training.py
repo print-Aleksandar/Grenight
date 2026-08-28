@@ -102,6 +102,12 @@ try:
             global_step += 1
             move_count += 1
 
+            loss = None
+            if global_step % 4 == 0:
+                loss = agent.train_step()
+            if loss is not None:
+                losses.append(loss)
+
             if agent_step % LOG_Q_EVERY_STEPS == 0:
                 agent.set_legal_q_stats(white_old_state, old_legal_mask)
 
@@ -117,15 +123,17 @@ try:
                 global_step += 1
                 move_count += 1
 
+                loss = None
+                if global_step % 4 == 0:
+                    loss = agent.train_step()
+                if loss is not None:
+                    losses.append(loss)
+
             next_legal_mask_white = env.action_mask()
 
             agent.store(white_old_state, white_action, white_reward, next_white_state, done, next_legal_mask_white)
 
             state = next_white_state
-
-            loss = agent.train_step()
-            if loss is not None:
-                losses.append(loss)
 
         if not done:
             recent_outcomes["truncated"] += 1

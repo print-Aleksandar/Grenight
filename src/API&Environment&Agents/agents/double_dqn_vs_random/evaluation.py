@@ -16,12 +16,8 @@ def evaluate_agent(env: GrenightEnvironment, agent: Agent) -> None:
     q_maxs = []
     q_mins = []
 
-    td_target_averages = []
-    td_target_maxs = []
-    td_target_mins = []
-
-    td_abs_averages = []
-    td_abs_maxs = []
+    td_target_values = []
+    td_abs_values = []
 
     for _ in range(EVALUATE_GAMES):
         state = env.reset()
@@ -68,12 +64,8 @@ def evaluate_agent(env: GrenightEnvironment, agent: Agent) -> None:
             eval_losses.append(loss)
 
             if current_agent_step % log_q_every == 0:
-                td_target_averages.append(agent.last_mean_td_target)
-                td_target_maxs.append(agent.last_max_td_target)
-                td_target_mins.append(agent.last_min_td_target)
-
-                td_abs_averages.append(agent.last_mean_td_abs)
-                td_abs_maxs.append(agent.last_max_td_abs)
+                td_target_values.append(agent.last_td_target)
+                td_abs_values.append(agent.last_td_abs)
 
             state = next_white_state
 
@@ -87,8 +79,8 @@ def evaluate_agent(env: GrenightEnvironment, agent: Agent) -> None:
             is_winner_white = white_reward == 1
             recent_outcomes["agent_win" if is_winner_white else "random_win"] += 1
 
-    process_stats(recent_outcomes, eval_losses, q_averages, q_maxs, q_mins, False,
-                  td_target_averages, td_target_maxs, td_target_mins, td_abs_averages, td_abs_maxs)
+    process_stats(recent_outcomes, eval_losses, q_averages, q_maxs, q_mins,
+                  False, td_target_values, td_abs_values)
 
 
 def process_stats(outcomes: Counter,
@@ -97,11 +89,8 @@ def process_stats(outcomes: Counter,
                   q_maxs: list[float],
                   q_mins: list[float],
                   is_training_stats: bool,
-                  td_target_averages: list[float] | None=None,
-                  td_target_maxs: list[float] | None=None,
-                  td_target_mins: list[float] | None=None,
-                  td_abs_averages: list[float]| None=None,
-                  td_abs_maxs: list[float] | None=None) -> None:
+                  td_target_values: list[float] | None=None,
+                  td_abs_values: list[float] | None=None) -> None:
 
 
     if is_training_stats:
@@ -169,13 +158,13 @@ def process_stats(outcomes: Counter,
     if not is_training_stats:
         print(
             f"  diagnostics "
-            f"target avg {np.mean(td_target_averages):8.4f}   "
-            f"target max {np.mean(td_target_maxs):8.4f}   "
-            f"target min {np.mean(td_target_mins):8.4f}"
+            f"target avg {np.mean(td_target_values):8.4f}   "
+            f"target max {np.max(td_target_values):8.4f}   "
+            f"target min {np.min(td_target_values):8.4f}"
         )
 
         print(
             f"              "
-            f"|TD| avg {np.mean(td_abs_averages):8.4f}   "
-            f"|TD| max {np.mean(td_abs_maxs):8.4f}"
+            f"|TD| avg {np.mean(td_abs_values):8.4f}   "
+            f"|TD| max {np.max(td_abs_values):8.4f}"
         )
