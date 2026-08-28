@@ -3,7 +3,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from agents.double_dqn_vs_random.bigger_network import Network
+from agents.double_dqn_vs_random.smaller_network import Network
 from agents.double_dqn_vs_random.replay_buffer import ReplayBuffer
 
 
@@ -11,14 +11,12 @@ class Agent:
 
     def __init__(self, num_planes, rows, columns, num_actions, device="cpu",
                  lr=1e-5, gamma=0.99, buffer_capacity=100_000,
-                 batch_size=512, replay_warmup=5_000,
-                 target_sync_every=10_000, tau = 0.005):
+                 batch_size=128, replay_warmup=5_000, tau = 0.005):
 
         self.device = torch.device(device)
         self.num_actions = num_actions
         self.gamma = gamma
         self.batch_size = batch_size
-        self.target_sync_every = target_sync_every
         self.replay_warmup = replay_warmup
         self.tau = tau
 
