@@ -211,9 +211,9 @@ def process_stats(outcomes: Counter,
         f"Q min {np.mean(q_mins):8.4f}"
     )
 
-    print(f"  draw reasons {dict(draw_reasons)}")
-
     if not is_training_stats:
+        print(f"  draw reasons {dict(draw_reasons)}")
+
         print(
             f"  diagnostics "
             f"target avg {np.mean(td_target_values):8.4f}   "
