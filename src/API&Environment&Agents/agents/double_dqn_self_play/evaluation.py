@@ -151,12 +151,12 @@ def process_stats(outcomes: Counter,
 
     total_episodes = completed + outcomes.get("truncated", 0)
 
-    agent_win_pct = (
+    win_pct = (
         100.0 * outcomes.get("white_win", 0) / completed
         if completed > 0 else 0.0
     )
 
-    random_win_pct = (
+    black_pct = (
         100.0 * outcomes.get("black_win", 0) / completed
         if completed > 0 else 0.0
     )
@@ -175,12 +175,11 @@ def process_stats(outcomes: Counter,
     label = "training" if is_training_stats else "evaluation"
 
     if is_agent_playing_for_white and is_agent_playing_for_black:
-        label += " on self play"
+        label += " self play"
+    elif is_agent_playing_for_white:
+        label += " (agent=white vs random)"
     else:
-        if is_agent_playing_for_white:
-            label += " on black agent random opponent"
-        else:
-            label += " on white agent random opponent"
+        label += " (agent=black vs random)"
 
     print()
 
@@ -192,8 +191,8 @@ def process_stats(outcomes: Counter,
 
     print(
         f"  outcomes    "
-        f"agent {agent_win_pct:5.1f}%   "
-        f"random {random_win_pct:5.1f}%   "
+        f"agent {win_pct:5.1f}%   "
+        f"random {black_pct:5.1f}%   "
         f"draw {draw_pct:5.1f}%   "
         f"truncated {truncated_pct:5.1f}%"
     )
