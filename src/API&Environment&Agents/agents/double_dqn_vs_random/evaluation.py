@@ -1,7 +1,7 @@
 from collections import Counter
 import numpy as np
 from domain.configs import MAX_STEPS_PER_EPISODE, LOG_EVERY_EPISODE, EVALUATE_GAMES
-from environment.grenight_environment import GrenightEnvironment
+from environment.absolute_perspective_version.grenight_environment import GrenightEnvironment
 from agents.double_dqn_vs_random.agent import Agent
 
 

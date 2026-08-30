@@ -46,6 +46,10 @@ class Piece(ABC):
                 or (not self.is_white and self.position[0] == 0))
 
     @abstractmethod
+    def update_after_flipping(self) -> None:
+        pass
+
+    @abstractmethod
     def moved_to(self, position: tuple[int, int]) -> "Piece":
         pass
 
@@ -130,6 +134,25 @@ class Pawn(Piece):
                          moving_positions=moving_positions,
                          attacking_positions=attacking_positions)
 
+    def update_after_flipping(self) -> None:
+        y, x = self.position
+
+        forward_factor = 1 if self.is_white else -1
+        self.moving_positions = filter_positions_within_board(make_sequence(
+            position=self.position,
+            directional=True,
+            diagonal=False,
+            forward_only=True,
+            forward_factor=forward_factor,
+            max_rows_forward=1))
+
+        self.attacking_positions = filter_positions_within_board(
+            [(y + (1 * forward_factor), x + 1), (y + (1 * forward_factor), x - 1)]
+        )
+
+        self.is_next_move_pawn_promotion = self.is_pawn_on_pre_last_rank()
+        self.is_current_move_pawn_promotion = self.is_pawn_on_last_rank()
+
     def moved_to(self, position: tuple[int, int]) -> "Piece":
         return Pawn(uid=self.uid, is_white=self.is_white,
                     position=position, had_first_move=True)
@@ -156,6 +179,15 @@ class Knight(Piece):
                          do_attacking_position_requires_enemy_on_it=False,
                          moving_positions=positions,
                          attacking_positions=positions)
+
+    def update_after_flipping(self) -> None:
+        y, x = self.position
+
+        dyx = [(2, 1), (1, 2), (2, -1), (1, -2), (-2, 1), (-1, 2), (-2, -1), (-1, -2)]
+        positions = filter_positions_within_board([(y + dy, x + dx) for (dy, dx) in dyx])
+
+        self.attacking_positions = positions
+        self.moving_positions = positions
 
     def moved_to(self, position: tuple[int, int]) -> "Piece":
         return Knight(uid=self.uid, is_white=self.is_white,
@@ -185,6 +217,17 @@ class Bishop(Piece):
                          moving_positions=positions,
                          attacking_positions=positions)
 
+    def update_after_flipping(self) -> None:
+        positions = filter_positions_within_board(make_sequence(
+            position=self.position,
+            directional=False,
+            diagonal=True,
+            forward_only=False
+        ))
+
+        self.attacking_positions = positions
+        self.moving_positions = positions
+
     def moved_to(self, position: tuple[int, int]) -> "Piece":
         return Bishop(uid=self.uid, is_white=self.is_white,
                       position=position, had_first_move=True)
@@ -212,6 +255,17 @@ class Rook(Piece):
                          do_attacking_position_requires_enemy_on_it=False,
                          moving_positions=positions,
                          attacking_positions=positions)
+
+    def update_after_flipping(self) -> None:
+        positions = filter_positions_within_board(make_sequence(
+            position=self.position,
+            directional=True,
+            diagonal=False,
+            forward_only=False
+        ))
+
+        self.attacking_positions = positions
+        self.moving_positions = positions
 
     def moved_to(self, position: tuple[int, int]) -> "Piece":
         return Rook(uid=self.uid, is_white=self.is_white,
@@ -241,6 +295,17 @@ class Queen(Piece):
                          moving_positions=positions,
                          attacking_positions=positions)
 
+    def update_after_flipping(self) -> None:
+        positions = filter_positions_within_board(make_sequence(
+            position=self.position,
+            directional=True,
+            diagonal=True,
+            forward_only=False
+        ))
+
+        self.attacking_positions = positions
+        self.moving_positions = positions
+
     def moved_to(self, position: tuple[int, int]) -> "Piece":
         return Queen(uid=self.uid, is_white=self.is_white,
                      position=position, had_first_move=True)
@@ -266,6 +331,15 @@ class King(Piece):
                          do_attacking_position_requires_enemy_on_it=False,
                          moving_positions=positions,
                          attacking_positions=positions)
+
+    def update_after_flipping(self) -> None:
+        y, x = self.position
+
+        dyx = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, 1), (1, 1), (1, -1), (-1, -1)]
+        positions = filter_positions_within_board([(y + dy, x + dx) for (dy, dx) in dyx])
+
+        self.attacking_positions = positions
+        self.moving_positions = positions
 
     def moved_to(self, position: tuple[int, int]) -> "Piece":
         return King(uid=self.uid, is_white=self.is_white,
