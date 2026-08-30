@@ -24,6 +24,7 @@ def evaluate_agent(env: GrenightEnvironment,
     eval_losses = []
 
     recent_outcomes = Counter()
+    draw_reasons = Counter()
     q_averages = []
     q_maxs = []
     q_mins = []
@@ -35,6 +36,7 @@ def evaluate_agent(env: GrenightEnvironment,
         state = env.reset()
         done = False
         move_count = 0
+        info = {}
 
         while not done and move_count < MAX_STEPS_PER_EPISODE:
             if env.is_white_on_turn:
@@ -42,7 +44,7 @@ def evaluate_agent(env: GrenightEnvironment,
                     legal_mask = env.action_mask()
                     action = agent.select_action(state, legal_mask, 0)
 
-                    new_state, reward, done, _ = env.step(action)
+                    new_state, reward, done, info = env.step(action)
                     current_global_step += 1
 
                     if current_global_step % log_q_every == 0:
@@ -52,7 +54,7 @@ def evaluate_agent(env: GrenightEnvironment,
                         q_mins.append(agent.last_min_legal_q)
                         q_maxs.append(agent.last_max_legal_q)
 
-                    next_legal_mask_white = env.action_mask()
+                    next_legal_mask = env.action_mask()
 
                     loss = agent.calculate_td_loss(
                         state,
@@ -60,7 +62,7 @@ def evaluate_agent(env: GrenightEnvironment,
                         reward,
                         new_state,
                         done,
-                        next_legal_mask_white,
+                        next_legal_mask,
                         current_global_step % log_q_every == 0
                     )
 
@@ -77,7 +79,7 @@ def evaluate_agent(env: GrenightEnvironment,
                     legal_mask = env.action_mask()
                     action = agent.select_action(state, legal_mask, 0)
 
-                    new_state, reward, done, _ = env.step(action)
+                    new_state, reward, done, info = env.step(action)
                     current_global_step += 1
 
                     if current_global_step % log_q_every == 0:
@@ -87,15 +89,15 @@ def evaluate_agent(env: GrenightEnvironment,
                         q_mins.append(agent.last_min_legal_q)
                         q_maxs.append(agent.last_max_legal_q)
 
-                    next_legal_mask_white = env.action_mask()
+                    next_legal_mask = env.action_mask()
 
                     loss = agent.calculate_td_loss(
                         state,
                         action,
-                        reward,
+                        -reward,
                         new_state,
                         done,
-                        next_legal_mask_white,
+                        next_legal_mask,
                         current_global_step % log_q_every == 0
                     )
 
@@ -116,6 +118,7 @@ def evaluate_agent(env: GrenightEnvironment,
 
         elif reward == 0.0:
             recent_outcomes["draw"] += 1
+            draw_reasons[info.get("draw_reason")] += 1
 
         else:
             is_winner_white = reward == 1
@@ -123,7 +126,7 @@ def evaluate_agent(env: GrenightEnvironment,
 
     process_stats(recent_outcomes, eval_losses, q_averages, q_maxs, q_mins,False,
                   is_agent_playing_for_white, is_agent_playing_for_black,
-                  td_target_values, td_abs_values)
+                  td_target_values, td_abs_values, draw_reasons)
 
 
 def process_stats(outcomes: Counter,
@@ -135,7 +138,8 @@ def process_stats(outcomes: Counter,
                   is_agent_playing_for_white: bool,
                   is_agent_playing_for_black: bool,
                   td_target_values: list[float] | None=None,
-                  td_abs_values: list[float] | None=None) -> None:
+                  td_abs_values: list[float] | None=None,
+                  draw_reasons: Counter | None=None) -> None:
 
 
     if is_training_stats:
@@ -191,8 +195,8 @@ def process_stats(outcomes: Counter,
 
     print(
         f"  outcomes    "
-        f"agent {win_pct:5.1f}%   "
-        f"random {black_pct:5.1f}%   "
+        f"white {win_pct:5.1f}%   "
+        f"black {black_pct:5.1f}%   "
         f"draw {draw_pct:5.1f}%   "
         f"truncated {truncated_pct:5.1f}%"
     )
@@ -206,6 +210,8 @@ def process_stats(outcomes: Counter,
         f"Q max {np.mean(q_maxs):8.4f}   "
         f"Q min {np.mean(q_mins):8.4f}"
     )
+
+    print(f"  draw reasons {dict(draw_reasons)}")
 
     if not is_training_stats:
         print(
