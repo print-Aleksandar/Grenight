@@ -144,6 +144,7 @@ class Agent:
             max_norm=5.0
         )
 
+        self.optimizer.step()
         self.scheduler.step()
 
         self.train_steps += 1
