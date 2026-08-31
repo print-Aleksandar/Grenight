@@ -6,8 +6,8 @@ from domain.exceptions import GrenightException
 from domain.board_initialization import create_initial_board
 from application.game_service import make_move, gather_valid_moves_player
 from application.board_getter import get_piece_by_position
-from environment.action_encoder import ActionEncoder
-from environment.piece_plane_encoder import PiecePlaneEncoder
+from environment.absolute_perspective_version.action_encoder import ActionEncoder
+from environment.absolute_perspective_version.piece_plane_encoder import PiecePlaneEncoder
 
 
 class GrenightEnvironment:
@@ -52,6 +52,22 @@ class GrenightEnvironment:
         return self.get_state()
 
     # TODO: ADDITIONAL RESET FUNCTION, LOAD EXISTING BOARD INSTEAD OF NEW
+    def load(self, pieces: list[Piece],
+             is_white_on_turn: bool,
+             steps_without_pawn_move_or_capture: int,
+             position_counts: dict,
+             current_repetition_count: int | None=0) -> np.ndarray:
+
+        self.pieces = pieces
+        self.is_white_on_turn = is_white_on_turn
+        self.done = False
+        self.steps_without_pawn_move_or_capture = steps_without_pawn_move_or_capture
+        self.position_counts = position_counts
+        self.is_draw_by_rule = False
+        self.draw_reason = None
+        self._invalidate_legal_actions_cache()
+
+
 
     def get_state(self) -> np.ndarray:
 

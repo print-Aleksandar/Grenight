@@ -2,7 +2,7 @@ from collections import Counter
 import numpy as np
 from domain.configs import MAX_STEPS_PER_EPISODE, LOG_EVERY_EPISODE, EVALUATE_GAMES
 from environment.canonical_version.grenight_environment import GrenightEnvironment
-from agents.double_dqn_self_play.agent import Agent
+from agents.dueling_double_dqn_self_play.agent import Agent
 
 
 def evaluate_agent_by_all_combos(env: GrenightEnvironment, agent: Agent) -> None:

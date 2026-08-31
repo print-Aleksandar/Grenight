@@ -1,9 +1,9 @@
 import os
 import torch
 from collections import Counter
-from agents.double_dqn_self_play.evaluation import process_stats, evaluate_agent_by_all_combos
+from agents.dueling_double_dqn_self_play.evaluation import process_stats, evaluate_agent_by_all_combos
 from environment.canonical_version.grenight_environment import GrenightEnvironment
-from agents.double_dqn_self_play.agent import Agent
+from agents.dueling_double_dqn_self_play.agent import Agent
 from domain.configs import (
     MAX_STEPS_PER_EPISODE,
     TRAIN_EPISODES,
