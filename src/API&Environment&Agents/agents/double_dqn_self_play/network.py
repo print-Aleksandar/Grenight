@@ -16,7 +16,7 @@ class Network(nn.Module):
             nn.ReLU()
         )
 
-        flat_size = 64 * rows * columns
+        flat_size = 128 * rows * columns
 
         self.head = nn.Sequential(
             nn.Flatten(),
