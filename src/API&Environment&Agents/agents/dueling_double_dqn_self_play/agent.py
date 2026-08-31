@@ -10,8 +10,8 @@ from agents.dueling_double_dqn_self_play.replay_buffer import ReplayBuffer
 class Agent:
 
     def __init__(self, num_planes, rows, columns, num_actions, device="cpu",
-                 lr=1e-4, gamma=0.99, buffer_capacity=100_000,
-                 batch_size=256, replay_warmup=5_000, tau=0.01):
+                 lr=1e-5, gamma=0.99, buffer_capacity=100_000,
+                 batch_size=256, replay_warmup=5_000, tau=0.0033):
 
         self.device = torch.device(device)
         self.num_actions = num_actions
@@ -28,7 +28,7 @@ class Agent:
 
         self.target_net.load_state_dict(self.policy_net.state_dict())
 
-        self.optimizer = optim.RMSprop(self.policy_net.parameters(), lr=lr, alpha=0.95, eps=1e-7)
+        self.optimizer = optim.RMSprop(self.policy_net.parameters(), lr=lr, alpha=0.95, eps=1e-8)
         self.loss_fn = nn.MSELoss()
         self.replay_buffer = ReplayBuffer(buffer_capacity)
         self.train_steps = 0
@@ -154,7 +154,7 @@ class Agent:
 
         torch.nn.utils.clip_grad_norm_(
             self.policy_net.parameters(),
-            max_norm=1.0
+            max_norm=5.0
         )
 
         self.optimizer.step()

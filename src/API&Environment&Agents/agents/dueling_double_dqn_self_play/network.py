@@ -9,15 +9,19 @@ class Network(nn.Module):
 
         self.conv = nn.Sequential(
             nn.Conv2d(num_planes, 128, kernel_size=3, padding=1),
+            nn.BatchNorm2d(128),
             nn.ReLU(),
 
             nn.Conv2d(128, 128, kernel_size=3, padding=1),
+            nn.BatchNorm2d(128),
             nn.ReLU(),
 
             nn.Conv2d(128, 128, kernel_size=3, padding=1),
+            nn.BatchNorm2d(128),
             nn.ReLU(),
 
             nn.Conv2d(128, 64, kernel_size=3, padding=1),
+            nn.BatchNorm2d(64),
             nn.ReLU(),
         )
 
@@ -27,7 +31,8 @@ class Network(nn.Module):
             nn.Flatten(),
             nn.Linear(flat_size, 256),
             nn.ReLU(),
-            nn.Linear(256, 1)
+            nn.Linear(256, 1),
+            nn.Tanh()
         )
 
         self.advantage_stream = nn.Sequential(
