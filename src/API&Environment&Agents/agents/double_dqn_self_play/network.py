@@ -8,10 +8,11 @@ class Network(nn.Module):
         super().__init__()
 
         self.conv = nn.Sequential(
-            nn.Conv2d(num_planes, 64, kernel_size=3, padding=1),
+            nn.Conv2d(num_planes, 128, kernel_size=3, padding=1),
             nn.ReLU(),
-
-            nn.Conv2d(64, 64, kernel_size=3, padding=1),
+            nn.Conv2d(128, 128, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(128, 128, kernel_size=3, padding=1),
             nn.ReLU()
         )
 
@@ -19,9 +20,11 @@ class Network(nn.Module):
 
         self.head = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(flat_size, 256),
+            nn.Linear(flat_size, 1024),
             nn.ReLU(),
-            nn.Linear(256, num_actions)
+            nn.Linear(1024, 1024),
+            nn.ReLU(),
+            nn.Linear(1204, num_actions)
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:

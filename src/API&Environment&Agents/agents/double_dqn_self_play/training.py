@@ -89,7 +89,7 @@ try:
             action = agent.select_action(state, legal_mask, epsilon)
             new_state, reward, done, _ = env.step(action)
 
-            if not who_is_on_turn:
+            if not who_is_on_turn and reward == -1.0:
                 reward = -reward
 
             agent.store(state, action, reward, new_state, done, legal_mask)
@@ -114,7 +114,7 @@ try:
         if not done:
             recent_outcomes["truncated"] += 1
 
-        elif reward == 0.0:
+        elif reward == -0.05 or reward == -0.33:
             recent_outcomes["draw"] += 1
 
         else:

@@ -3,6 +3,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from torch.optim.lr_scheduler import CosineAnnealingLR
 from agents.double_dqn_self_play.network import Network
 from agents.double_dqn_self_play.replay_buffer import ReplayBuffer
 
@@ -10,8 +11,8 @@ from agents.double_dqn_self_play.replay_buffer import ReplayBuffer
 class Agent:
 
     def __init__(self, num_planes, rows, columns, num_actions, device="cpu",
-                 lr=1e-5, gamma=0.99, buffer_capacity=100_000,
-                 batch_size=256, replay_warmup=5_000, tau=0.0033):
+                 lr=5e-6, gamma=0.99, buffer_capacity=100_000,
+                 batch_size=256, replay_warmup=5_000, tau=0.001):
 
         self.device = torch.device(device)
         self.num_actions = num_actions
@@ -29,6 +30,7 @@ class Agent:
         self.target_net.load_state_dict(self.policy_net.state_dict())
 
         self.optimizer = optim.RMSprop(self.policy_net.parameters(), lr=lr, alpha=0.95, eps=1e-8)
+        self.scheduler = CosineAnnealingLR(self.optimizer, T_max=25000)
         self.loss_fn = nn.MSELoss()
         self.replay_buffer = ReplayBuffer(buffer_capacity)
         self.train_steps = 0
@@ -142,13 +144,14 @@ class Agent:
             max_norm=5.0
         )
 
-        self.optimizer.step()
+        self.scheduler.step()
 
         self.train_steps += 1
 
-        with torch.no_grad():
-            for p, tp in zip(self.policy_net.parameters(), self.target_net.parameters()):
-                tp.data.mul_(1 - self.tau).add_(self.tau * p.data)
+        if self.train_steps % 10 == 0:
+            with torch.no_grad():
+                for p, tp in zip(self.policy_net.parameters(), self.target_net.parameters()):
+                    tp.data.mul_(1 - self.tau).add_(self.tau * p.data)
 
         return loss.item()
 

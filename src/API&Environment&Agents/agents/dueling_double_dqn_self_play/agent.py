@@ -144,6 +144,7 @@ class Agent:
 
                 next_q_value[non_terminal] = next_q_target.gather(1, next_actions.unsqueeze(1)).squeeze(1)
 
+            print(q_values)
             target = rewards - self.gamma * next_q_value
 
         loss = self.loss_fn(q_values, target)
