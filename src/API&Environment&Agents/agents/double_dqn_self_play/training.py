@@ -36,7 +36,7 @@ print(f"policy_net device: {next(current_agent.policy_net.parameters()).device}"
 global_step = 0
 episode_start = 1
 
-checkpoint = torch.load(f"/kaggle/input/datasets/mojavoda/grenight-ddqn-self-play/60000ep.pt", map_location=device, weights_only=False)
+checkpoint = torch.load("/kaggle/input/grenight-ddqn-self-play/60000ep.pt", map_location=device, weights_only=False)
 episode_start = checkpoint["episode"] + 1
 current_agent.policy_net.load_state_dict(checkpoint["policy_state_dict"])
 current_agent.target_net.load_state_dict(checkpoint["target_state_dict"])
@@ -149,7 +149,7 @@ agent_45k = Agent(
     device=device
 )
 
-checkpoint = torch.load(f"/kaggle/input/datasets/mojavoda/grenight-ddqn-self-play/45000ep.pt", map_location=device, weights_only=False)
+checkpoint = torch.load("/kaggle/input/grenight-ddqn-self-play/45000ep.pt", map_location=device, weights_only=False)
 agent_45k.policy_net.load_state_dict(checkpoint["policy_state_dict"])
 agent_45k.target_net.load_state_dict(checkpoint["target_state_dict"])
 agent_45k.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
@@ -164,7 +164,7 @@ agent_50k = Agent(
     device=device
 )
 
-checkpoint = torch.load(f"/kaggle/input/datasets/mojavoda/grenight-ddqn-self-play/50000ep.pt", map_location=device, weights_only=False)
+checkpoint = torch.load("/kaggle/input/grenight-ddqn-self-play/50000ep.pt", map_location=device, weights_only=False)
 agent_50k.policy_net.load_state_dict(checkpoint["policy_state_dict"])
 agent_50k.target_net.load_state_dict(checkpoint["target_state_dict"])
 agent_50k.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
@@ -179,7 +179,7 @@ agent_55k = Agent(
     device=device
 )
 
-checkpoint = torch.load(f"/kaggle/input/datasets/mojavoda/grenight-ddqn-self-play/55000ep.pt", map_location=device, weights_only=False)
+checkpoint = torch.load("/kaggle/input/grenight-ddqn-self-play/55000ep.pt", map_location=device, weights_only=False)
 agent_55k.policy_net.load_state_dict(checkpoint["policy_state_dict"])
 agent_55k.target_net.load_state_dict(checkpoint["target_state_dict"])
 agent_55k.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
