@@ -9,11 +9,7 @@ def evaluate_agent_by_all_combos(env: GrenightEnvironment,
                                  agent: Agent) -> None:
 
     evaluate_agent(env, agent, True, False)
-    evaluate_agent(env, agent, True, False)
-    evaluate_agent(env, agent, True, False)
 
-    evaluate_agent(env, agent, False, True)
-    evaluate_agent(env, agent, False, True)
     evaluate_agent(env, agent, False, True)
 
 
