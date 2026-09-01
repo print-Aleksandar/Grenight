@@ -1,4 +1,5 @@
 import os
+import random
 import torch
 from collections import Counter
 from agents.double_dqn_self_play.evaluation import process_stats, evaluate_agent_by_all_combos
@@ -22,7 +23,7 @@ env = GrenightEnvironment()
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-agent = Agent(
+current_agent = Agent(
     num_planes=env.state_encoder.NUM_PLANES,
     rows=5,
     columns=4,
@@ -30,22 +31,160 @@ agent = Agent(
     device=device
 )
 
-print(f"policy_net device: {next(agent.policy_net.parameters()).device}")
+print(f"policy_net device: {next(current_agent.policy_net.parameters()).device}")
 
 global_step = 0
 episode_start = 1
 
-"""
-checkpoint = torch.load(f"/content/Grenight/src/API&Environment&Agents/agents/double_dqn_self_play/checkpoints/ep25000.pt", map_location=device, weights_only=False)
-
+checkpoint = torch.load(f"/kaggle/input/datasets/mojavoda/grenight-ddqn-self-play/60000ep.pt", map_location=device, weights_only=False)
 episode_start = checkpoint["episode"] + 1
-agent.policy_net.load_state_dict(checkpoint["policy_state_dict"])
-agent.target_net.load_state_dict(checkpoint["target_state_dict"])
-agent.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
-agent.replay_buffer = checkpoint["replay_buffer"]
-agent.train_steps = checkpoint["train_steps"]
+current_agent.policy_net.load_state_dict(checkpoint["policy_state_dict"])
+current_agent.target_net.load_state_dict(checkpoint["target_state_dict"])
+current_agent.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+current_agent.replay_buffer = checkpoint["replay_buffer"]
+current_agent.train_steps = checkpoint["train_steps"]
 global_step = checkpoint["global_step"]
+
 """
+agent_10k = Agent(
+    num_planes=env.state_encoder.NUM_PLANES,
+    rows=5,
+    columns=4,
+    num_actions=env.action_encoder.NUM_ACTIONS,
+    device=device
+)
+
+checkpoint = torch.load(f"/content/Grenight/src/API&Environment&Agents/agents/double_dqn_self_play/checkpoints/ep10000.pt", map_location=device, weights_only=False)
+agent_10k.policy_net.load_state_dict(checkpoint["policy_state_dict"])
+agent_10k.target_net.load_state_dict(checkpoint["target_state_dict"])
+agent_10k.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+agent_10k.replay_buffer = checkpoint["replay_buffer"]
+agent_10k.train_steps = checkpoint["train_steps"]
+
+agent_15k = Agent(
+    num_planes=env.state_encoder.NUM_PLANES,
+    rows=5,
+    columns=4,
+    num_actions=env.action_encoder.NUM_ACTIONS,
+    device=device
+)
+
+checkpoint = torch.load(f"/content/Grenight/src/API&Environment&Agents/agents/double_dqn_self_play/checkpoints/ep15000.pt", map_location=device, weights_only=False)
+agent_15k.policy_net.load_state_dict(checkpoint["policy_state_dict"])
+agent_15k.target_net.load_state_dict(checkpoint["target_state_dict"])
+agent_15k.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+agent_15k.replay_buffer = checkpoint["replay_buffer"]
+agent_15k.train_steps = checkpoint["train_steps"]
+
+agent_20k = Agent(
+    num_planes=env.state_encoder.NUM_PLANES,
+    rows=5,
+    columns=4,
+    num_actions=env.action_encoder.NUM_ACTIONS,
+    device=device
+)
+
+checkpoint = torch.load(f"/content/Grenight/src/API&Environment&Agents/agents/double_dqn_self_play/checkpoints/ep20000.pt", map_location=device, weights_only=False)
+agent_20k.policy_net.load_state_dict(checkpoint["policy_state_dict"])
+agent_20k.target_net.load_state_dict(checkpoint["target_state_dict"])
+agent_20k.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+agent_20k.replay_buffer = checkpoint["replay_buffer"]
+agent_20k.train_steps = checkpoint["train_steps"]
+
+FOR 25_000-40_000 EPISODE TRAINING WERE USED 10, 15 AND 20K CHECKPOINTS
+
+agent_25k = Agent(
+    num_planes=env.state_encoder.NUM_PLANES,
+    rows=5,
+    columns=4,
+    num_actions=env.action_encoder.NUM_ACTIONS,
+    device=device
+)
+
+checkpoint = torch.load(f"/content/Grenight/src/API&Environment&Agents/agents/double_dqn_self_play/checkpoints/ep25000.pt", map_location=device, weights_only=False)
+agent_25k.policy_net.load_state_dict(checkpoint["policy_state_dict"])
+agent_25k.target_net.load_state_dict(checkpoint["target_state_dict"])
+agent_25k.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+agent_25k.replay_buffer = checkpoint["replay_buffer"]
+agent_25k.train_steps = checkpoint["train_steps"]
+
+agent_30k = Agent(
+    num_planes=env.state_encoder.NUM_PLANES,
+    rows=5,
+    columns=4,
+    num_actions=env.action_encoder.NUM_ACTIONS,
+    device=device
+)
+
+checkpoint = torch.load(f"/content/Grenight/src/API&Environment&Agents/agents/double_dqn_self_play/checkpoints/ep30000.pt", map_location=device, weights_only=False)
+agent_30k.policy_net.load_state_dict(checkpoint["policy_state_dict"])
+agent_30k.target_net.load_state_dict(checkpoint["target_state_dict"])
+agent_30k.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+agent_30k.replay_buffer = checkpoint["replay_buffer"]
+agent_30k.train_steps = checkpoint["train_steps"]
+
+agent_35k = Agent(
+    num_planes=env.state_encoder.NUM_PLANES,
+    rows=5,
+    columns=4,
+    num_actions=env.action_encoder.NUM_ACTIONS,
+    device=device
+)
+
+checkpoint = torch.load(f"/content/Grenight/src/API&Environment&Agents/agents/double_dqn_self_play/checkpoints/ep35000.pt", map_location=device, weights_only=False)
+agent_35k.policy_net.load_state_dict(checkpoint["policy_state_dict"])
+agent_35k.target_net.load_state_dict(checkpoint["target_state_dict"])
+agent_35k.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+agent_35k.replay_buffer = checkpoint["replay_buffer"]
+agent_35k.train_steps = checkpoint["train_steps"]
+
+FRO 40_000-60_000 EPISODE TRAINING WERE USED 25, 30 AND 35K CHECKPOINTS
+"""
+
+agent_45k = Agent(
+    num_planes=env.state_encoder.NUM_PLANES,
+    rows=5,
+    columns=4,
+    num_actions=env.action_encoder.NUM_ACTIONS,
+    device=device
+)
+
+checkpoint = torch.load(f"/kaggle/input/datasets/mojavoda/grenight-ddqn-self-play/45000ep.pt", map_location=device, weights_only=False)
+agent_45k.policy_net.load_state_dict(checkpoint["policy_state_dict"])
+agent_45k.target_net.load_state_dict(checkpoint["target_state_dict"])
+agent_45k.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+agent_45k.replay_buffer = checkpoint["replay_buffer"]
+agent_45k.train_steps = checkpoint["train_steps"]
+
+agent_50k = Agent(
+    num_planes=env.state_encoder.NUM_PLANES,
+    rows=5,
+    columns=4,
+    num_actions=env.action_encoder.NUM_ACTIONS,
+    device=device
+)
+
+checkpoint = torch.load(f"/kaggle/input/datasets/mojavoda/grenight-ddqn-self-play/50000ep.pt", map_location=device, weights_only=False)
+agent_50k.policy_net.load_state_dict(checkpoint["policy_state_dict"])
+agent_50k.target_net.load_state_dict(checkpoint["target_state_dict"])
+agent_50k.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+agent_50k.replay_buffer = checkpoint["replay_buffer"]
+agent_50k.train_steps = checkpoint["train_steps"]
+
+agent_55k = Agent(
+    num_planes=env.state_encoder.NUM_PLANES,
+    rows=5,
+    columns=4,
+    num_actions=env.action_encoder.NUM_ACTIONS,
+    device=device
+)
+
+checkpoint = torch.load(f"/kaggle/input/datasets/mojavoda/grenight-ddqn-self-play/55000ep.pt", map_location=device, weights_only=False)
+agent_55k.policy_net.load_state_dict(checkpoint["policy_state_dict"])
+agent_55k.target_net.load_state_dict(checkpoint["target_state_dict"])
+agent_55k.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+agent_55k.replay_buffer = checkpoint["replay_buffer"]
+agent_55k.train_steps = checkpoint["train_steps"]
 
 
 def epsilon_at(step: int) -> float:
@@ -58,11 +197,11 @@ def save_checkpoint(ep: int):
     path = os.path.join(CHECKPOINT_DIR, f"ep{ep}.pt")
     torch.save({
         "episode": ep,
-        "policy_state_dict": agent.policy_net.state_dict(),
-        "target_state_dict": agent.target_net.state_dict(),
-        "optimizer_state_dict": agent.optimizer.state_dict(),
-        "replay_buffer": agent.replay_buffer,
-        "train_steps": agent.train_steps,
+        "policy_state_dict": current_agent.policy_net.state_dict(),
+        "target_state_dict": current_agent.target_net.state_dict(),
+        "optimizer_state_dict": current_agent.optimizer.state_dict(),
+        "replay_buffer": current_agent.replay_buffer,
+        "train_steps": current_agent.train_steps,
         "global_step": global_step,
     }, path)
     print(f"[checkpoint] saved: {path}")
@@ -86,27 +225,37 @@ try:
             legal_mask = env.action_mask()
             who_is_on_turn = env.is_white_on_turn
 
-            action = agent.select_action(state, legal_mask, epsilon)
+            if random.random() < 0.7:
+                choice = random.choice([45, 50, 55])
+                if choice == 45:
+                    action = agent_45k.select_action(state, legal_mask, 0.0)
+                elif choice == 50:
+                    action = agent_50k.select_action(state, legal_mask, 0.0)
+                else:
+                    action = agent_55k.select_action(state, legal_mask, 0.0)
+            else:
+                action = current_agent.select_action(state, legal_mask, epsilon)
+
             new_state, reward, done, _ = env.step(action)
 
             if not who_is_on_turn and reward == -1.0:
                 reward = -reward
 
-            agent.store(state, action, reward, new_state, done, legal_mask)
+            current_agent.store(state, action, reward, new_state, done, legal_mask)
             global_step += 1
 
             loss = None
             if global_step % 4 == 0:
-                loss = agent.train_step()
+                loss = current_agent.train_step()
             if loss is not None:
                 losses.append(loss)
 
             if global_step % LOG_Q_EVERY_STEPS == 0:
-                agent.set_legal_q_stats(state, legal_mask)
+                current_agent.set_legal_q_stats(state, legal_mask)
 
-                q_averages.append(agent.last_mean_legal_q)
-                q_mins.append(agent.last_min_legal_q)
-                q_maxs.append(agent.last_max_legal_q)
+                q_averages.append(current_agent.last_mean_legal_q)
+                q_mins.append(current_agent.last_min_legal_q)
+                q_maxs.append(current_agent.last_max_legal_q)
 
             state = new_state
             move_count += 1
@@ -150,7 +299,7 @@ try:
             print()
 
             print("  Running evaluation...")
-            evaluate_agent_by_all_combos(env, agent)
+            evaluate_agent_by_all_combos(env, current_agent)
 
             print("─" * 72)
 

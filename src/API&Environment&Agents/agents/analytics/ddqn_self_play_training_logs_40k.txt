@@ -1,0 +1,454 @@
+will save checkpoints in: /content/drive/MyDrive/Grenight/checkpoints
+policy_net device: cuda:0
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 26,000
+
+  ε (epsilon)     :   0.5000
+  global steps    : 1,029,096
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  34.1%   black  37.0%   draw  28.9%   truncated   0.0%
+  distribution {'white_win': 341, 'black_win': 370, 'draw': 289}
+  agent       loss 0.01270225   Q avg  -0.0625   Q max   0.0243   Q min  -0.2108
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  51.0%   black  11.5%   draw  37.5%   truncated   0.0%
+  distribution {'white_win': 102, 'black_win': 23, 'draw': 75}
+  agent       loss 0.03580580   Q avg  -0.0223   Q max   0.0974   Q min  -0.1630
+  diagnostics target avg   0.0221   target max   1.0000   target min  -1.2131
+              |TD| avg   0.1245   |TD| max   1.3253
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white  10.5%   black  50.5%   draw  39.0%   truncated   0.0%
+  distribution {'white_win': 21, 'black_win': 101, 'draw': 78}
+  agent       loss 0.03668302   Q avg  -0.0266   Q max   0.0923   Q min  -0.1730
+  diagnostics target avg   0.0226   target max   1.0000   target min  -0.9585
+              |TD| avg   0.1123   |TD| max   1.1658
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 27,000
+
+  ε (epsilon)     :   0.5000
+  global steps    : 1,065,558
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  33.1%   black  37.2%   draw  29.7%   truncated   0.0%
+  distribution {'draw': 297, 'black_win': 372, 'white_win': 331}
+  agent       loss 0.01329578   Q avg  -0.0422   Q max   0.0337   Q min  -0.1348
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  48.5%   black  13.5%   draw  38.0%   truncated   0.0%
+  distribution {'black_win': 27, 'white_win': 97, 'draw': 76}
+  agent       loss 0.03432602   Q avg  -0.0182   Q max   0.0919   Q min  -0.1459
+  diagnostics target avg   0.0333   target max   1.0000   target min  -0.7721
+              |TD| avg   0.1135   |TD| max   0.9752
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white  12.5%   black  49.0%   draw  38.5%   truncated   0.0%
+  distribution {'black_win': 98, 'draw': 77, 'white_win': 25}
+  agent       loss 0.03753473   Q avg  -0.0246   Q max   0.0839   Q min  -0.1635
+  diagnostics target avg   0.0176   target max   1.0000   target min  -1.0862
+              |TD| avg   0.1128   |TD| max   1.1266
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 28,000
+
+  ε (epsilon)     :   0.5000
+  global steps    : 1,102,720
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  33.4%   black  35.2%   draw  31.4%   truncated   0.0%
+  distribution {'white_win': 334, 'black_win': 352, 'draw': 314}
+  agent       loss 0.01260580   Q avg  -0.0290   Q max   0.0925   Q min  -0.1502
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  45.5%   black  18.0%   draw  36.5%   truncated   0.0%
+  distribution {'draw': 73, 'white_win': 91, 'black_win': 36}
+  agent       loss 0.04091446   Q avg  -0.0095   Q max   0.1026   Q min  -0.1299
+  diagnostics target avg   0.0120   target max   1.0000   target min  -1.0373
+              |TD| avg   0.1252   |TD| max   1.1279
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white  16.0%   black  49.5%   draw  34.5%   truncated   0.0%
+  distribution {'draw': 69, 'black_win': 99, 'white_win': 32}
+  agent       loss 0.03767707   Q avg  -0.0270   Q max   0.0775   Q min  -0.1525
+  diagnostics target avg  -0.0021   target max   1.0000   target min  -1.3068
+              |TD| avg   0.1272   |TD| max   1.3542
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 29,000
+
+  ε (epsilon)     :   0.5000
+  global steps    : 1,139,394
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  33.8%   black  35.4%   draw  30.8%   truncated   0.0%
+  distribution {'draw': 308, 'black_win': 354, 'white_win': 338}
+  agent       loss 0.01194405   Q avg  -0.0710   Q max   0.0242   Q min  -0.1972
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  49.0%   black  10.0%   draw  41.0%   truncated   0.0%
+  distribution {'white_win': 98, 'draw': 82, 'black_win': 20}
+  agent       loss 0.04337676   Q avg   0.0052   Q max   0.1136   Q min  -0.1160
+  diagnostics target avg   0.0094   target max   1.0000   target min  -1.5318
+              |TD| avg   0.1414   |TD| max   1.7675
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white  16.5%   black  44.5%   draw  39.0%   truncated   0.0%
+  distribution {'draw': 78, 'white_win': 33, 'black_win': 89}
+  agent       loss 0.04256959   Q avg  -0.0094   Q max   0.0982   Q min  -0.1308
+  diagnostics target avg  -0.0065   target max   1.0000   target min  -1.0740
+              |TD| avg   0.1314   |TD| max   1.5544
+────────────────────────────────────────────────────────────────────────
+
+[checkpoint] saved: /content/drive/MyDrive/Grenight/checkpoints/ep30000.pt
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 30,000
+
+  ε (epsilon)     :   0.5000
+  global steps    : 1,175,722
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  33.4%   black  37.5%   draw  29.1%   truncated   0.0%
+  distribution {'draw': 291, 'white_win': 334, 'black_win': 375}
+  agent       loss 0.01192779   Q avg   0.0000   Q max   0.0795   Q min  -0.0835
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  40.0%   black  16.5%   draw  43.5%   truncated   0.0%
+  distribution {'draw': 87, 'white_win': 80, 'black_win': 33}
+  agent       loss 0.04674926   Q avg  -0.0029   Q max   0.1220   Q min  -0.1458
+  diagnostics target avg   0.0255   target max   1.0000   target min  -1.2097
+              |TD| avg   0.1391   |TD| max   1.3128
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white  13.5%   black  50.5%   draw  36.0%   truncated   0.0%
+  distribution {'black_win': 101, 'white_win': 27, 'draw': 72}
+  agent       loss 0.04723941   Q avg  -0.0052   Q max   0.1166   Q min  -0.1418
+  diagnostics target avg   0.0066   target max   1.0000   target min  -1.1063
+              |TD| avg   0.1430   |TD| max   1.0698
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 31,000
+
+  ε (epsilon)     :   0.5000
+  global steps    : 1,210,598
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  31.9%   black  37.6%   draw  30.5%   truncated   0.0%
+  distribution {'black_win': 376, 'draw': 305, 'white_win': 319}
+  agent       loss 0.01173489   Q avg  -0.0675   Q max   0.0374   Q min  -0.1979
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  38.5%   black  23.5%   draw  38.0%   truncated   0.0%
+  distribution {'black_win': 47, 'white_win': 77, 'draw': 76}
+  agent       loss 0.05759217   Q avg   0.0245   Q max   0.1541   Q min  -0.1221
+  diagnostics target avg   0.0233   target max   1.0000   target min  -1.4583
+              |TD| avg   0.1654   |TD| max   1.5342
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white  13.0%   black  45.5%   draw  41.5%   truncated   0.0%
+  distribution {'black_win': 91, 'draw': 83, 'white_win': 26}
+  agent       loss 0.04471310   Q avg  -0.0053   Q max   0.1175   Q min  -0.1494
+  diagnostics target avg   0.0194   target max   1.0000   target min  -1.0355
+              |TD| avg   0.1327   |TD| max   1.4396
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 32,000
+
+  ε (epsilon)     :   0.5000
+  global steps    : 1,246,164
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  34.3%   black  36.9%   draw  28.8%   truncated   0.0%
+  distribution {'white_win': 343, 'black_win': 369, 'draw': 288}
+  agent       loss 0.01188444   Q avg  -0.0506   Q max   0.0926   Q min  -0.1863
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  43.5%   black  22.0%   draw  34.5%   truncated   0.0%
+  distribution {'black_win': 44, 'white_win': 87, 'draw': 69}
+  agent       loss 0.05247475   Q avg  -0.0149   Q max   0.1065   Q min  -0.1730
+  diagnostics target avg   0.0044   target max   1.0000   target min  -0.8583
+              |TD| avg   0.1385   |TD| max   0.9603
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white  15.0%   black  47.0%   draw  38.0%   truncated   0.0%
+  distribution {'draw': 76, 'black_win': 94, 'white_win': 30}
+  agent       loss 0.04480409   Q avg  -0.0392   Q max   0.0863   Q min  -0.1970
+  diagnostics target avg   0.0022   target max   1.0000   target min  -1.0537
+              |TD| avg   0.1291   |TD| max   1.1760
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 33,000
+
+  ε (epsilon)     :   0.5000
+  global steps    : 1,280,651
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  32.2%   black  40.2%   draw  27.6%   truncated   0.0%
+  distribution {'draw': 276, 'black_win': 402, 'white_win': 322}
+  agent       loss 0.01148853   Q avg  -0.0389   Q max   0.0427   Q min  -0.1428
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  54.0%   black  10.5%   draw  35.5%   truncated   0.0%
+  distribution {'white_win': 108, 'black_win': 21, 'draw': 71}
+  agent       loss 0.05296866   Q avg   0.0100   Q max   0.1345   Q min  -0.1298
+  diagnostics target avg   0.0346   target max   1.0000   target min  -1.5575
+              |TD| avg   0.1449   |TD| max   2.0095
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white  13.5%   black  48.5%   draw  38.0%   truncated   0.0%
+  distribution {'draw': 76, 'black_win': 97, 'white_win': 27}
+  agent       loss 0.04832045   Q avg   0.0011   Q max   0.1293   Q min  -0.1483
+  diagnostics target avg   0.0478   target max   1.0000   target min  -1.1513
+              |TD| avg   0.1261   |TD| max   1.4716
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 34,000
+
+  ε (epsilon)     :   0.5000
+  global steps    : 1,317,582
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  32.9%   black  37.2%   draw  29.9%   truncated   0.0%
+  distribution {'white_win': 329, 'draw': 299, 'black_win': 372}
+  agent       loss 0.01148758   Q avg  -0.1020   Q max   0.0179   Q min  -0.2598
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  51.0%   black  13.0%   draw  36.0%   truncated   0.0%
+  distribution {'white_win': 102, 'black_win': 26, 'draw': 72}
+  agent       loss 0.05152596   Q avg  -0.0028   Q max   0.1322   Q min  -0.1645
+  diagnostics target avg   0.0405   target max   1.0000   target min  -1.0896
+              |TD| avg   0.1291   |TD| max   1.3920
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white  15.0%   black  52.0%   draw  33.0%   truncated   0.0%
+  distribution {'black_win': 104, 'draw': 66, 'white_win': 30}
+  agent       loss 0.05407733   Q avg  -0.0053   Q max   0.1236   Q min  -0.1575
+  diagnostics target avg   0.0142   target max   1.0000   target min  -1.1928
+              |TD| avg   0.1456   |TD| max   1.3699
+────────────────────────────────────────────────────────────────────────
+
+[checkpoint] saved: /content/drive/MyDrive/Grenight/checkpoints/ep35000.pt
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 35,000
+
+  ε (epsilon)     :   0.5000
+  global steps    : 1,352,892
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  35.5%   black  34.8%   draw  29.7%   truncated   0.0%
+  distribution {'white_win': 355, 'draw': 297, 'black_win': 348}
+  agent       loss 0.01142205   Q avg  -0.1071   Q max   0.1045   Q min  -0.3286
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  44.2%   black  17.6%   draw  38.2%   truncated   0.5%
+  distribution {'white_win': 88, 'draw': 76, 'black_win': 35, 'truncated': 1}
+  agent       loss 0.05670648   Q avg  -0.0021   Q max   0.1317   Q min  -0.1553
+  diagnostics target avg   0.0138   target max   1.0000   target min  -1.2550
+              |TD| avg   0.1470   |TD| max   1.3811
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white  12.0%   black  56.0%   draw  32.0%   truncated   0.0%
+  distribution {'white_win': 24, 'black_win': 112, 'draw': 64}
+  agent       loss 0.06175847   Q avg  -0.0008   Q max   0.1373   Q min  -0.1610
+  diagnostics target avg   0.0407   target max   1.0000   target min  -0.9695
+              |TD| avg   0.1453   |TD| max   1.0447
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 36,000
+
+  ε (epsilon)     :   0.5000
+  global steps    : 1,388,024
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  33.4%   black  37.4%   draw  29.2%   truncated   0.0%
+  distribution {'black_win': 374, 'draw': 292, 'white_win': 334}
+  agent       loss 0.01116473   Q avg  -0.0778   Q max   0.0515   Q min  -0.2267
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  45.5%   black  13.5%   draw  41.0%   truncated   0.0%
+  distribution {'white_win': 91, 'draw': 82, 'black_win': 27}
+  agent       loss 0.04796242   Q avg  -0.0198   Q max   0.1158   Q min  -0.1723
+  diagnostics target avg   0.0254   target max   1.0000   target min  -1.0052
+              |TD| avg   0.1568   |TD| max   1.1028
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white  13.5%   black  52.0%   draw  34.5%   truncated   0.0%
+  distribution {'black_win': 104, 'draw': 69, 'white_win': 27}
+  agent       loss 0.05205707   Q avg  -0.0341   Q max   0.1085   Q min  -0.1905
+  diagnostics target avg   0.0217   target max   1.0000   target min  -1.3551
+              |TD| avg   0.1397   |TD| max   2.3024
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 37,000
+
+  ε (epsilon)     :   0.5000
+  global steps    : 1,424,229
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  32.4%   black  37.4%   draw  30.2%   truncated   0.0%
+  distribution {'black_win': 374, 'white_win': 324, 'draw': 302}
+  agent       loss 0.01090679   Q avg  -0.0492   Q max   0.0695   Q min  -0.1823
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  48.5%   black  13.0%   draw  38.5%   truncated   0.0%
+  distribution {'white_win': 97, 'draw': 77, 'black_win': 26}
+  agent       loss 0.05686335   Q avg  -0.0092   Q max   0.1308   Q min  -0.1710
+  diagnostics target avg   0.0220   target max   1.0000   target min  -0.9895
+              |TD| avg   0.1517   |TD| max   1.1285
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white  16.0%   black  51.5%   draw  32.5%   truncated   0.0%
+  distribution {'black_win': 103, 'white_win': 32, 'draw': 65}
+  agent       loss 0.06278901   Q avg  -0.0187   Q max   0.1254   Q min  -0.1764
+  diagnostics target avg   0.0114   target max   1.0000   target min  -0.9781
+              |TD| avg   0.1491   |TD| max   1.1460
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 38,000
+
+  ε (epsilon)     :   0.5000
+  global steps    : 1,459,777
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  29.9%   black  39.2%   draw  30.9%   truncated   0.0%
+  distribution {'draw': 309, 'white_win': 299, 'black_win': 392}
+  agent       loss 0.01087569   Q avg  -0.0315   Q max   0.0805   Q min  -0.1898
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  46.0%   black  16.5%   draw  37.5%   truncated   0.0%
+  distribution {'draw': 75, 'white_win': 92, 'black_win': 33}
+  agent       loss 0.05227518   Q avg  -0.0072   Q max   0.1383   Q min  -0.1722
+  diagnostics target avg   0.0221   target max   1.0000   target min  -1.5900
+              |TD| avg   0.1593   |TD| max   1.8615
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white  11.5%   black  54.0%   draw  34.5%   truncated   0.0%
+  distribution {'draw': 69, 'black_win': 108, 'white_win': 23}
+  agent       loss 0.06185821   Q avg  -0.0055   Q max   0.1388   Q min  -0.1608
+  diagnostics target avg   0.0440   target max   1.0000   target min  -1.2459
+              |TD| avg   0.1368   |TD| max   1.3440
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 39,000
+
+  ε (epsilon)     :   0.5000
+  global steps    : 1,495,188
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  31.3%   black  39.6%   draw  29.1%   truncated   0.0%
+  distribution {'white_win': 313, 'black_win': 396, 'draw': 291}
+  agent       loss 0.01052771   Q avg  -0.1303   Q max  -0.0111   Q min  -0.2958
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  47.5%   black  15.0%   draw  37.5%   truncated   0.0%
+  distribution {'draw': 75, 'white_win': 95, 'black_win': 30}
+  agent       loss 0.06533189   Q avg  -0.0006   Q max   0.1347   Q min  -0.1470
+  diagnostics target avg   0.0201   target max   1.0000   target min  -1.5053
+              |TD| avg   0.1550   |TD| max   1.7194
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white  12.5%   black  55.5%   draw  32.0%   truncated   0.0%
+  distribution {'black_win': 111, 'draw': 64, 'white_win': 25}
+  agent       loss 0.06268824   Q avg  -0.0147   Q max   0.1238   Q min  -0.1654
+  diagnostics target avg   0.0193   target max   1.0000   target min  -1.1964
+              |TD| avg   0.1393   |TD| max   1.2548
+────────────────────────────────────────────────────────────────────────
+
+[checkpoint] saved: /content/drive/MyDrive/Grenight/checkpoints/ep40000.pt
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 40,000
+
+  ε (epsilon)     :   0.5000
+  global steps    : 1,530,281
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  33.4%   black  40.4%   draw  26.2%   truncated   0.0%
+  distribution {'black_win': 404, 'draw': 262, 'white_win': 334}
+  agent       loss 0.01036225   Q avg  -0.0669   Q max   0.0770   Q min  -0.2200
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  48.0%   black  15.0%   draw  37.0%   truncated   0.0%
+  distribution {'draw': 74, 'white_win': 96, 'black_win': 30}
+  agent       loss 0.06360789   Q avg  -0.0072   Q max   0.1315   Q min  -0.1683
+  diagnostics target avg   0.0388   target max   1.0000   target min  -1.2256
+              |TD| avg   0.1365   |TD| max   1.2876
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   9.0%   black  60.0%   draw  31.0%   truncated   0.0%
+  distribution {'black_win': 120, 'draw': 62, 'white_win': 18}
+  agent       loss 0.05633993   Q avg  -0.0179   Q max   0.1361   Q min  -0.1799
+  diagnostics target avg   0.0331   target max   1.0000   target min  -1.5038
+              |TD| avg   0.1567   |TD| max   1.5872
+────────────────────────────────────────────────────────────────────────

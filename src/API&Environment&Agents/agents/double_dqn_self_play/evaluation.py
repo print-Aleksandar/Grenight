@@ -5,8 +5,15 @@ from environment.canonical_version.grenight_environment import GrenightEnvironme
 from agents.double_dqn_self_play.agent import Agent
 
 
-def evaluate_agent_by_all_combos(env: GrenightEnvironment, agent: Agent) -> None:
+def evaluate_agent_by_all_combos(env: GrenightEnvironment,
+                                 agent: Agent) -> None:
+
     evaluate_agent(env, agent, True, False)
+    evaluate_agent(env, agent, True, False)
+    evaluate_agent(env, agent, True, False)
+
+    evaluate_agent(env, agent, False, True)
+    evaluate_agent(env, agent, False, True)
     evaluate_agent(env, agent, False, True)
 
 
@@ -122,7 +129,7 @@ def evaluate_agent(env: GrenightEnvironment,
 
     process_stats(recent_outcomes, eval_losses, q_averages, q_maxs, q_mins,False,
                   is_agent_playing_for_white, is_agent_playing_for_black,
-                  td_target_values, td_abs_values)
+                  td_target_values, td_abs_values, agent_test_label)
 
 
 def process_stats(outcomes: Counter,
@@ -134,7 +141,8 @@ def process_stats(outcomes: Counter,
                   is_agent_playing_for_white: bool,
                   is_agent_playing_for_black: bool,
                   td_target_values: list[float] | None=None,
-                  td_abs_values: list[float] | None=None) -> None:
+                  td_abs_values: list[float] | None=None,
+                  agent_test_label: str | None=None) -> None:
 
 
     if is_training_stats:
@@ -175,10 +183,17 @@ def process_stats(outcomes: Counter,
 
     if is_agent_playing_for_white and is_agent_playing_for_black:
         label += " self play"
-    elif is_agent_playing_for_white:
-        label += " (agent=white vs random)"
     else:
-        label += " (agent=black vs random)"
+        if is_agent_playing_for_white:
+            if agent_test_label is None:
+                label += " (agent=white vs random)"
+            else:
+                label += f" (agent=white vs {agent_test_label} checkpoint)"
+        else:
+            if agent_test_label is None:
+                label += " (agent=black vs random)"
+            else:
+                label += f" (agent=black vs {agent_test_label} checkpoint)"
 
     print()
 
