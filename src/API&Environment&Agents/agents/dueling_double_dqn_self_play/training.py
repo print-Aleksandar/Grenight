@@ -1,4 +1,6 @@
 import os
+import random
+
 import torch
 from collections import Counter
 from agents.dueling_double_dqn_self_play.evaluation import process_stats, evaluate_agent_by_all_combos
@@ -29,6 +31,28 @@ current_agent = Agent(
     num_actions=env.action_encoder.NUM_ACTIONS,
     device=device
 )
+
+checkpoint = torch.load("/kaggle/input/datasets/mojavoda/grenight-ddqn-self-play/ep10000.pt", map_location=device, weights_only=False)
+checkpoint.policy_net.load_state_dict(checkpoint["policy_state_dict"])
+checkpoint.target_net.load_state_dict(checkpoint["target_state_dict"])
+checkpoint.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+checkpoint.replay_buffer = checkpoint["replay_buffer"]
+checkpoint.train_steps = checkpoint["train_steps"]
+
+agent_5k = Agent(
+    num_planes=env.state_encoder.NUM_PLANES,
+    rows=5,
+    columns=4,
+    num_actions=env.action_encoder.NUM_ACTIONS,
+    device=device
+)
+
+checkpoint = torch.load("/kaggle/input/datasets/mojavoda/grenight-ddqn-self-play/ep5000.pt", map_location=device, weights_only=False)
+checkpoint.policy_net.load_state_dict(checkpoint["policy_state_dict"])
+checkpoint.target_net.load_state_dict(checkpoint["target_state_dict"])
+checkpoint.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+checkpoint.replay_buffer = checkpoint["replay_buffer"]
+checkpoint.train_steps = checkpoint["train_steps"]
 
 print(f"policy_net device: {next(current_agent.policy_net.parameters()).device}")
 
@@ -75,7 +99,11 @@ try:
 
             who_is_on_turn = env.is_white_on_turn
 
-            action = current_agent.select_action(state, legal_mask, epsilon)
+            if random.random < 0.34:
+                action = agent_5k.select_action(state, legal_mask, 0.0)
+            else:
+                action = current_agent.select_action(state, legal_mask, epsilon)
+
             new_state, reward, done, _ = env.step(action)
 
             if not who_is_on_turn and reward == -1.0:
