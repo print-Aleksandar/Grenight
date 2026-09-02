@@ -33,11 +33,11 @@ current_agent = Agent(
 )
 
 checkpoint = torch.load("/kaggle/input/datasets/mojavoda/grenight-ddqn-self-play/ep10000.pt", map_location=device, weights_only=False)
-checkpoint.policy_net.load_state_dict(checkpoint["policy_state_dict"])
-checkpoint.target_net.load_state_dict(checkpoint["target_state_dict"])
-checkpoint.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
-checkpoint.replay_buffer = checkpoint["replay_buffer"]
-checkpoint.train_steps = checkpoint["train_steps"]
+current_agent.policy_net.load_state_dict(checkpoint["policy_state_dict"])
+current_agent.target_net.load_state_dict(checkpoint["target_state_dict"])
+current_agent.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+current_agent.replay_buffer = checkpoint["replay_buffer"]
+current_agent.train_steps = checkpoint["train_steps"]
 
 agent_5k = Agent(
     num_planes=env.state_encoder.NUM_PLANES,
@@ -48,11 +48,11 @@ agent_5k = Agent(
 )
 
 checkpoint = torch.load("/kaggle/input/datasets/mojavoda/grenight-ddqn-self-play/ep5000.pt", map_location=device, weights_only=False)
-checkpoint.policy_net.load_state_dict(checkpoint["policy_state_dict"])
-checkpoint.target_net.load_state_dict(checkpoint["target_state_dict"])
-checkpoint.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
-checkpoint.replay_buffer = checkpoint["replay_buffer"]
-checkpoint.train_steps = checkpoint["train_steps"]
+agent_5k.policy_net.load_state_dict(checkpoint["policy_state_dict"])
+agent_5k.target_net.load_state_dict(checkpoint["target_state_dict"])
+agent_5k.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+agent_5k.replay_buffer = checkpoint["replay_buffer"]
+agent_5k.train_steps = checkpoint["train_steps"]
 
 print(f"policy_net device: {next(current_agent.policy_net.parameters()).device}")
 
