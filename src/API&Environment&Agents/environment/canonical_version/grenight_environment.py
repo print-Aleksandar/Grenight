@@ -25,6 +25,9 @@ class GrenightEnvironment:
     PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING = 0, 1, 2, 3, 4, 5
 
     def __init__(self):
+
+        self.is_canonical = True
+
         self.state_encoder = PiecePlaneEncoder()
         self.action_encoder = ActionEncoder()
 
@@ -161,9 +164,6 @@ class GrenightEnvironment:
         if piece is None:
             raise ValueError(f"Illegal action {action}: no piece at {from_position}")
 
-        # if piece.is_white != acting_player_is_white:
-            # raise ValueError(f"Illegal action {action}: piece belongs to the other player")
-
         if piece.can_implement_pawn_moves:
             self.steps_without_pawn_move_or_capture = 0
 
@@ -202,7 +202,10 @@ class GrenightEnvironment:
             self.steps_without_pawn_move_or_capture = 0
 
         self.pieces = response.pieces
-        rotate_pieces_helper(self.pieces)
+
+        if not self.is_white_on_turn:
+            rotate_pieces_helper(self.pieces)
+
         self.is_white_on_turn = not self.is_white_on_turn
         self.done = response.is_game_finished
         self.is_draw_by_rule = False
@@ -214,6 +217,9 @@ class GrenightEnvironment:
             key = self.position_key()
             self.current_repetition_count = self.position_counts.get(key, 0) + 1
             self.position_counts[key] = self.current_repetition_count
+
+            if not self.is_white_on_turn:
+                rotate_pieces_helper(self.pieces)
 
             if self.steps_without_pawn_move_or_capture >= MAX_STEPS_WITHOUT_PROGRESS:
                 self.done = True
@@ -267,8 +273,7 @@ class GrenightEnvironment:
             return False
         return True
 
-    def calculate_reward(self, response, acting_player_is_white: bool) -> float:
-
+    def calculate_reward_legacy(self, response, acting_player_is_white: bool) -> float:
         if not self.done:
             return 0.0
 
@@ -276,6 +281,15 @@ class GrenightEnvironment:
             return -0.33
 
         if response.is_draw:
-            return -0.05
+            return -0.1
+
+        return 1.0 if acting_player_is_white else -1.0
+
+    def calculate_reward(self, response, acting_player_is_white: bool) -> float:
+        if not self.done:
+            return 0.0
+
+        if self.is_draw_by_rule or response.is_draw:
+            return 0.0
 
         return 1.0 if acting_player_is_white else -1.0

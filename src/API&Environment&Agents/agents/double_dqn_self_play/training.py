@@ -2,9 +2,9 @@ import os
 import random
 import torch
 from collections import Counter
-from agents.double_dqn_self_play.evaluation import process_stats, evaluate_agent_by_all_combos
+from agents.dueling_double_dqn_self_play.evaluation import process_stats, evaluate_agent_by_all_combos
 from environment.canonical_version.grenight_environment import GrenightEnvironment
-from agents.double_dqn_self_play.agent import Agent
+from agents.dueling_double_dqn_self_play.agent import Agent
 from domain.configs import (
     MAX_STEPS_PER_EPISODE,
     TRAIN_EPISODES,
@@ -54,7 +54,7 @@ agent_10k = Agent(
     device=device
 )
 
-checkpoint = torch.load(f"/content/Grenight/src/API&Environment&Agents/agents/double_dqn_self_play/checkpoints/ep10000.pt", map_location=device, weights_only=False)
+checkpoint = torch.load(f"/content/Grenight/src/API&Environment&Agents/agents/dueling_double_dqn_self_play/checkpoints/ep10000.pt", map_location=device, weights_only=False)
 agent_10k.policy_net.load_state_dict(checkpoint["policy_state_dict"])
 agent_10k.target_net.load_state_dict(checkpoint["target_state_dict"])
 agent_10k.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
@@ -69,7 +69,7 @@ agent_15k = Agent(
     device=device
 )
 
-checkpoint = torch.load(f"/content/Grenight/src/API&Environment&Agents/agents/double_dqn_self_play/checkpoints/ep15000.pt", map_location=device, weights_only=False)
+checkpoint = torch.load(f"/content/Grenight/src/API&Environment&Agents/agents/dueling_double_dqn_self_play/checkpoints/ep15000.pt", map_location=device, weights_only=False)
 agent_15k.policy_net.load_state_dict(checkpoint["policy_state_dict"])
 agent_15k.target_net.load_state_dict(checkpoint["target_state_dict"])
 agent_15k.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
@@ -84,7 +84,7 @@ agent_20k = Agent(
     device=device
 )
 
-checkpoint = torch.load(f"/content/Grenight/src/API&Environment&Agents/agents/double_dqn_self_play/checkpoints/ep20000.pt", map_location=device, weights_only=False)
+checkpoint = torch.load(f"/content/Grenight/src/API&Environment&Agents/agents/dueling_double_dqn_self_play/checkpoints/ep20000.pt", map_location=device, weights_only=False)
 agent_20k.policy_net.load_state_dict(checkpoint["policy_state_dict"])
 agent_20k.target_net.load_state_dict(checkpoint["target_state_dict"])
 agent_20k.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
@@ -101,7 +101,7 @@ agent_25k = Agent(
     device=device
 )
 
-checkpoint = torch.load(f"/content/Grenight/src/API&Environment&Agents/agents/double_dqn_self_play/checkpoints/ep25000.pt", map_location=device, weights_only=False)
+checkpoint = torch.load(f"/content/Grenight/src/API&Environment&Agents/agents/dueling_double_dqn_self_play/checkpoints/ep25000.pt", map_location=device, weights_only=False)
 agent_25k.policy_net.load_state_dict(checkpoint["policy_state_dict"])
 agent_25k.target_net.load_state_dict(checkpoint["target_state_dict"])
 agent_25k.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
@@ -116,7 +116,7 @@ agent_30k = Agent(
     device=device
 )
 
-checkpoint = torch.load(f"/content/Grenight/src/API&Environment&Agents/agents/double_dqn_self_play/checkpoints/ep30000.pt", map_location=device, weights_only=False)
+checkpoint = torch.load(f"/content/Grenight/src/API&Environment&Agents/agents/dueling_double_dqn_self_play/checkpoints/ep30000.pt", map_location=device, weights_only=False)
 agent_30k.policy_net.load_state_dict(checkpoint["policy_state_dict"])
 agent_30k.target_net.load_state_dict(checkpoint["target_state_dict"])
 agent_30k.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
@@ -131,7 +131,7 @@ agent_35k = Agent(
     device=device
 )
 
-checkpoint = torch.load(f"/content/Grenight/src/API&Environment&Agents/agents/double_dqn_self_play/checkpoints/ep35000.pt", map_location=device, weights_only=False)
+checkpoint = torch.load(f"/content/Grenight/src/API&Environment&Agents/agents/dueling_double_dqn_self_play/checkpoints/ep35000.pt", map_location=device, weights_only=False)
 agent_35k.policy_net.load_state_dict(checkpoint["policy_state_dict"])
 agent_35k.target_net.load_state_dict(checkpoint["target_state_dict"])
 agent_35k.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])

@@ -16,6 +16,8 @@ class GrenightEnvironment:
 
     def __init__(self):
 
+        self.is_canonical = False
+
         self.state_encoder = PiecePlaneEncoder()
         self.action_encoder = ActionEncoder()
 
@@ -63,6 +65,7 @@ class GrenightEnvironment:
         self.done = False
         self.steps_without_pawn_move_or_capture = steps_without_pawn_move_or_capture
         self.position_counts = position_counts
+        self.position_counts = current_repetition_count
         self.is_draw_by_rule = False
         self.draw_reason = None
         self._invalidate_legal_actions_cache()

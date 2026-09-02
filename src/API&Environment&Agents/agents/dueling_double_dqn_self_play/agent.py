@@ -3,23 +3,23 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-# NOTE: REMOVED SCHEDULER AFTER 25_000TH STEP: from torch.optim.lr_scheduler import CosineAnnealingLR
-from agents.double_dqn_self_play.network import Network
-from agents.double_dqn_self_play.replay_buffer import ReplayBuffer
+from agents.dueling_double_dqn_self_play.network import Network
+from agents.dueling_double_dqn_self_play.replay_buffer_per import ReplayBufferPER
 
 
 class Agent:
 
     def __init__(self, num_planes, rows, columns, num_actions, device="cpu",
-                 lr=5e-6, gamma=0.99, buffer_capacity=100_000,
-                 batch_size=256, replay_warmup=5_000, tau=0.001):
+                 lr=1e-4, gamma=0.99, buffer_capacity=100_000,
+                 batch_size=256, replay_warmup=10_000, sync_every_steps=5000,
+                 per_alpha=0.6, per_beta_start=0.4, per_beta_end=1.0):
 
         self.device = torch.device(device)
         self.num_actions = num_actions
         self.gamma = gamma
         self.batch_size = batch_size
         self.replay_warmup = replay_warmup
-        self.tau = tau
+        self.sync_every_steps = sync_every_steps
 
         raw_policy_net = Network(num_planes, rows, columns, num_actions)
         raw_target_net = Network(num_planes, rows, columns, num_actions)
@@ -29,10 +29,17 @@ class Agent:
 
         self.target_net.load_state_dict(self.policy_net.state_dict())
 
-        self.optimizer = optim.RMSprop(self.policy_net.parameters(), lr=lr, alpha=0.95, eps=1e-8)
-        # NOTE: REMOVED SCHEDULER AFTER 25_000TH STEP: self.scheduler = CosineAnnealingLR(self.optimizer, T_max=25000)
-        self.loss_fn = nn.MSELoss()
-        self.replay_buffer = ReplayBuffer(buffer_capacity)
+        self.optimizer = optim.Adam(self.policy_net.parameters(), lr=lr)
+        self.loss_fn = nn.HuberLoss(reduction='none')
+
+        self.replay_buffer = ReplayBufferPER(
+            buffer_capacity,
+            alpha=per_alpha,
+            beta_start=per_beta_start,
+            beta_end=per_beta_end,
+            beta_steps=1_000_000
+        )
+
         self.train_steps = 0
 
         self.last_mean_legal_q = 0.0
@@ -55,16 +62,15 @@ class Agent:
 
         with torch.no_grad():
             state_t = torch.from_numpy(state).unsqueeze(0).to(self.device)
-            q_values = self.policy_net(state_t).squeeze(0).cpu().numpy()
+            legal_mask_t = torch.from_numpy(legal_mask).unsqueeze(0).to(self.device)
 
-            masked_q = np.full(self.num_actions, -np.inf, dtype=np.float32)
-            masked_q[legal_indices] = q_values[legal_indices]
+            q_values = self.policy_net(state_t, legal_mask_t)
 
-            return int(np.argmax(masked_q))
+        return int(q_values.argmax(dim=1).item())
 
-    def store(self, state, action, reward, next_state, done, next_legal_mask):
+    def store(self, state, legal_mask, action, reward, next_state, done, next_legal_mask):
 
-        self.replay_buffer.push(state, action, reward, next_state, done, next_legal_mask)
+        self.replay_buffer.push(state, legal_mask, action, reward, next_state, done, next_legal_mask)
 
     def set_legal_q_stats(self, state, legal_mask) -> None:
         legal_indices = np.flatnonzero(legal_mask)
@@ -74,16 +80,21 @@ class Agent:
 
         with torch.no_grad():
             state_t = torch.from_numpy(state).unsqueeze(0).to(self.device)
-            q_values = self.policy_net(state_t).squeeze(0)
+            legal_mask_t = torch.from_numpy(legal_mask).unsqueeze(0).to(self.device)
 
-            indices = torch.tensor(legal_indices, dtype=torch.long, device=self.device)
+            q_values = self.policy_net(state_t,legal_mask_t).squeeze(0)
+
+            indices = torch.tensor(
+                legal_indices,
+                dtype=torch.long,
+                device=self.device
+            )
+
             legal_q = q_values[indices]
 
-            mean_q, max_q, min_q = (
-                legal_q.mean().item(),
-                legal_q.max().item(),
-                legal_q.min().item()
-            )
+            mean_q = legal_q.mean().item()
+            max_q = legal_q.max().item()
+            min_q = legal_q.min().item()
 
             self.last_mean_legal_q = mean_q
             self.last_max_legal_q = max_q
@@ -95,16 +106,18 @@ class Agent:
         if len(self.replay_buffer) < self.replay_warmup:
             return None
 
-        batch = self.replay_buffer.sample(self.batch_size)
+        batch, indices, weights = self.replay_buffer.sample(self.batch_size)
+        weights = torch.from_numpy(weights).to(self.device)
 
         states = torch.from_numpy(np.stack([t.state for t in batch])).to(self.device)
+        masks = torch.from_numpy(np.stack([t.legal_mask for t in batch])).to(self.device)
         actions = torch.tensor([t.action for t in batch], dtype=torch.long, device=self.device)
         rewards = torch.tensor([t.reward for t in batch], dtype=torch.float32, device=self.device)
         next_states = torch.from_numpy(np.stack([t.next_state for t in batch])).to(self.device)
         dones = torch.tensor([t.done for t in batch], dtype=torch.float32, device=self.device)
         next_masks = torch.from_numpy(np.stack([t.next_legal_mask for t in batch])).to(self.device)
 
-        q_values = self.policy_net(states).gather(1, actions.unsqueeze(1)).squeeze(1)
+        q_values = self.policy_net(states, masks).gather(1, actions.unsqueeze(1)).squeeze(1)
 
         with torch.no_grad():
             next_q_value = torch.zeros(
@@ -119,25 +132,23 @@ class Agent:
                 next_states_nt = next_states[non_terminal]
                 next_masks_nt = next_masks[non_terminal]
 
-                next_q_policy = self.policy_net(next_states_nt)
-                next_q_target = self.target_net(next_states_nt)
-
-                next_q_policy = next_q_policy.masked_fill(
-                    ~next_masks_nt.bool(),
-                    -float("inf")
-                )
+                next_q_policy = self.policy_net(next_states_nt, next_masks_nt)
 
                 next_actions = next_q_policy.argmax(dim=1)
+
+                next_q_target = self.target_net(next_states_nt, next_masks_nt)
 
                 next_q_value[non_terminal] = next_q_target.gather(1, next_actions.unsqueeze(1)).squeeze(1)
 
             target = rewards - self.gamma * next_q_value
 
-        loss = self.loss_fn(q_values, target)
+        td_errors = (target - q_values).cpu().detach().numpy()
+        losses = self.loss_fn(q_values, target)
+
+        weighted_loss = (weights * losses).mean()
 
         self.optimizer.zero_grad()
-
-        loss.backward()
+        weighted_loss.backward()
 
         torch.nn.utils.clip_grad_norm_(
             self.policy_net.parameters(),
@@ -145,29 +156,28 @@ class Agent:
         )
 
         self.optimizer.step()
-        # NOTE: REMOVED SCHEDULER AFTER 25_000TH STEP: self.scheduler.step()
-
         self.train_steps += 1
+
+        self.replay_buffer.update_priorities(indices, td_errors)
 
         """
         if self.train_steps % 10 == 0:
             with torch.no_grad():
                 for p, tp in zip(self.policy_net.parameters(), self.target_net.parameters()):
                     tp.data.mul_(1 - self.tau).add_(self.tau * p.data)
-
-        NOTE: CHANGED TO BULK UPDATE AFTER 25_000TH EPISODE
         """
 
-        if self.train_steps % 5_000 == 0:
+        if self.train_steps % self.sync_every_steps == 0:
             self.target_net.load_state_dict(self.policy_net.state_dict())
 
-        return loss.item()
+        return weighted_loss.item()
 
-    def calculate_td_loss(self, state, action, reward,
+    def calculate_td_loss(self, state, legal_mask, action, reward,
                           next_state, done, next_legal_mask,
                           collect_diagnostics=False) -> float:
 
         state_t = torch.from_numpy(state).unsqueeze(0).to(self.device)
+        legal_mask_t = torch.from_numpy(legal_mask).unsqueeze(0).to(self.device)
         action_t = torch.tensor([action], dtype=torch.long, device=self.device)
         reward_t = torch.tensor([reward], dtype=torch.float32, device=self.device)
         next_state_t = torch.from_numpy(next_state).unsqueeze(0).to(self.device)
@@ -175,9 +185,7 @@ class Agent:
         next_mask_t = torch.from_numpy(next_legal_mask).unsqueeze(0).to(self.device)
 
         with torch.no_grad():
-            q = self.policy_net(state_t).gather(
-                1, action_t.unsqueeze(1)
-            ).squeeze(1)
+            q = self.policy_net(state_t, legal_mask_t).gather(1, action_t.unsqueeze(1)).squeeze(1)
 
             next_q = torch.zeros(
                 1,
@@ -188,13 +196,8 @@ class Agent:
             non_terminal = ~done_t.bool()
 
             if non_terminal.any():
-                next_policy = self.policy_net(next_state_t)
-                next_target = self.target_net(next_state_t)
-
-                next_policy = next_policy.masked_fill(
-                    ~next_mask_t.bool(),
-                    -float("inf")
-                )
+                next_policy = self.policy_net(next_state_t, next_mask_t)
+                next_target = self.target_net(next_state_t, next_mask_t)
 
                 next_action = next_policy.argmax(dim=1)
 

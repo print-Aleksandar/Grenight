@@ -116,7 +116,7 @@ def evaluate_agent(env: GrenightEnvironment,
         if not done:
             recent_outcomes["truncated"] += 1
 
-        elif reward == -0.3 or reward == -0.1:
+        elif reward == 0.0:
             recent_outcomes["draw"] += 1
 
         else:
