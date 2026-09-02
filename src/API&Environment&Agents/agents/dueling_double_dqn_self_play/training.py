@@ -99,7 +99,7 @@ try:
 
             who_is_on_turn = env.is_white_on_turn
 
-            if random.random < 0.34:
+            if random.random() < 0.34:
                 action = agent_5k.select_action(state, legal_mask, 0.0)
             else:
                 action = current_agent.select_action(state, legal_mask, epsilon)
