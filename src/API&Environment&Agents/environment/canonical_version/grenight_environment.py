@@ -110,7 +110,7 @@ class GrenightEnvironment:
 
             for to_position in positions:
                 if is_pawn_about_to_promote:
-                    for promote_to in (3, 4): # TODO: put when scaling for knight and bishop: 1, 2, 3, 4, easy to forget place
+                    for promote_to in (1, 2): # TODO: put when scaling for knight and bishop: 1, 2, 3, 4, easy to forget place
                         action = self.action_encoder.encode_promotion(
                             from_position=piece.position,
                             to_position=to_position,
