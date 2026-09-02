@@ -3,10 +3,11 @@ from collections import deque
 
 
 class Transition:
-    __slots__ = ["state", "action", "reward", "next_state", "done", "next_legal_mask"]
+    __slots__ = ["state", "legal_mask", "action", "reward", "next_state", "done", "next_legal_mask"]
 
-    def __init__(self, state, action, reward, next_state, done, next_legal_mask):
+    def __init__(self, state, legal_mask, action, reward, next_state, done, next_legal_mask):
         self.state = state
+        self.legal_mask = legal_mask
         self.action = action
         self.reward = reward
         self.next_state = next_state

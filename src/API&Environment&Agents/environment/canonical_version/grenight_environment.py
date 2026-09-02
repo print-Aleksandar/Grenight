@@ -22,7 +22,7 @@ def rotate_pieces_helper(pieces: list[Piece]) -> None:
 
 class GrenightEnvironment:
 
-    PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING = 0, 1, 2, 3, 4, 5
+    PAWN, ROOK, QUEEN = 0, 1, 2
 
     def __init__(self):
 
@@ -238,6 +238,7 @@ class GrenightEnvironment:
 
         else:
             if response.is_game_finished and response.is_draw:
+                self.done = True
                 self.draw_reason = "stalemate"
 
         reward = self.calculate_reward(
@@ -272,18 +273,6 @@ class GrenightEnvironment:
         if any(t in (self.PAWN, self.ROOK, self.QUEEN) for t in piece_types):
             return False
         return True
-
-    def calculate_reward_legacy(self, response, acting_player_is_white: bool) -> float:
-        if not self.done:
-            return 0.0
-
-        if self.is_draw_by_rule:
-            return -0.33
-
-        if response.is_draw:
-            return -0.1
-
-        return 1.0 if acting_player_is_white else -1.0
 
     def calculate_reward(self, response, acting_player_is_white: bool) -> float:
         if not self.done:

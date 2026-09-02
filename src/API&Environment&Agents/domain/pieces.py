@@ -346,13 +346,14 @@ class King(Piece):
                     position=position, had_first_move=True)
 
 
+# TODO: CHANGE IN FRONTEND
 PIECES_CLASSES = {
     0: Pawn,
-    1: Knight,
-    2: Bishop,
-    3: Rook,
-    4: Queen,
-    5: King
+    4: Knight,
+    5: Bishop,
+    1: Rook,
+    2: Queen,
+    3: King
 }
 
 PIECES_NUMBERS = dict()

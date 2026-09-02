@@ -4,15 +4,14 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from agents.dueling_double_dqn_self_play.network import Network
-from agents.dueling_double_dqn_self_play.replay_buffer_per import ReplayBufferPER
+from agents.dueling_double_dqn_self_play.replay_buffer import ReplayBuffer
 
 
 class Agent:
 
     def __init__(self, num_planes, rows, columns, num_actions, device="cpu",
-                 lr=1e-4, gamma=0.99, buffer_capacity=100_000,
-                 batch_size=256, replay_warmup=10_000, sync_every_steps=5000,
-                 per_alpha=0.6, per_beta_start=0.4, per_beta_end=1.0):
+                 lr=1e-5, gamma=0.99, buffer_capacity=100_000,
+                 batch_size=256, replay_warmup=10_000, sync_every_steps=2000):
 
         self.device = torch.device(device)
         self.num_actions = num_actions
@@ -30,15 +29,9 @@ class Agent:
         self.target_net.load_state_dict(self.policy_net.state_dict())
 
         self.optimizer = optim.Adam(self.policy_net.parameters(), lr=lr)
-        self.loss_fn = nn.HuberLoss(reduction='none')
+        self.loss_fn = nn.HuberLoss(reduction='mean')
 
-        self.replay_buffer = ReplayBufferPER(
-            buffer_capacity,
-            alpha=per_alpha,
-            beta_start=per_beta_start,
-            beta_end=per_beta_end,
-            beta_steps=1_000_000
-        )
+        self.replay_buffer = ReplayBuffer(buffer_capacity)
 
         self.train_steps = 0
 
@@ -82,7 +75,7 @@ class Agent:
             state_t = torch.from_numpy(state).unsqueeze(0).to(self.device)
             legal_mask_t = torch.from_numpy(legal_mask).unsqueeze(0).to(self.device)
 
-            q_values = self.policy_net(state_t,legal_mask_t).squeeze(0)
+            q_values = self.policy_net(state_t, legal_mask_t).squeeze(0)
 
             indices = torch.tensor(
                 legal_indices,
@@ -106,8 +99,7 @@ class Agent:
         if len(self.replay_buffer) < self.replay_warmup:
             return None
 
-        batch, indices, weights = self.replay_buffer.sample(self.batch_size)
-        weights = torch.from_numpy(weights).to(self.device)
+        batch = self.replay_buffer.sample(self.batch_size)
 
         states = torch.from_numpy(np.stack([t.state for t in batch])).to(self.device)
         masks = torch.from_numpy(np.stack([t.legal_mask for t in batch])).to(self.device)
@@ -142,13 +134,11 @@ class Agent:
 
             target = rewards - self.gamma * next_q_value
 
-        td_errors = (target - q_values).cpu().detach().numpy()
-        losses = self.loss_fn(q_values, target)
-
-        weighted_loss = (weights * losses).mean()
+        loss = self.loss_fn(q_values, target)
 
         self.optimizer.zero_grad()
-        weighted_loss.backward()
+
+        loss.backward()
 
         torch.nn.utils.clip_grad_norm_(
             self.policy_net.parameters(),
@@ -156,9 +146,8 @@ class Agent:
         )
 
         self.optimizer.step()
-        self.train_steps += 1
 
-        self.replay_buffer.update_priorities(indices, td_errors)
+        self.train_steps += 1
 
         """
         if self.train_steps % 10 == 0:
@@ -170,7 +159,7 @@ class Agent:
         if self.train_steps % self.sync_every_steps == 0:
             self.target_net.load_state_dict(self.policy_net.state_dict())
 
-        return weighted_loss.item()
+        return loss.item()
 
     def calculate_td_loss(self, state, legal_mask, action, reward,
                           next_state, done, next_legal_mask,

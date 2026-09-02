@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-from functorch.dim import Tensor
 
 
 class Network(nn.Module):

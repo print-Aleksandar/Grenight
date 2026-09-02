@@ -5,13 +5,13 @@ from domain.configs import ROWS, COLUMNS
 
 class PiecePlaneEncoder:
 
-    NUM_PLANES = 17
+    NUM_PLANES = 13
 
+    WHITE_PIECES_PLANE = 8
+    BLACK_PIECES_PLANE = 9
+    NO_PROGRESS_PLANE = 10
+    REPETITION_PLANE = 11
     WHOSE_TURN_PLANE = 12
-    WHITE_PIECES_PLANE = 13
-    BLACK_PIECES_PLANE = 14
-    NO_PROGRESS_PLANE = 15
-    REPETITION_PLANE = 16
 
     WHITE_ON_TURN_VALUE = 1.0
     BLACK_ON_TURN_VALUE = 0.0
@@ -41,7 +41,7 @@ class PiecePlaneEncoder:
         for piece in pieces:
 
             base_plane = PIECES_NUMBERS[type(piece)]
-            plane = base_plane if piece.is_white else base_plane + 6
+            plane = base_plane if piece.is_white else base_plane + 4
             y, x = piece.position
             state[plane, y, x] = 1.0
 

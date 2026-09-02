@@ -12,7 +12,7 @@ from environment.absolute_perspective_version.piece_plane_encoder import PiecePl
 
 class GrenightEnvironment:
 
-    PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING = 0, 1, 2, 3, 4, 5
+    PAWN, ROOK, QUEEN = 0, 1, 2
 
     def __init__(self):
 
@@ -69,14 +69,12 @@ class GrenightEnvironment:
         self.is_draw_by_rule = False
         self.draw_reason = None
         self._invalidate_legal_actions_cache()
-
-
+    # TODO: NOT FINISHED
 
     def get_state(self) -> np.ndarray:
 
         return self.state_encoder.encode_planes(
             pieces=self.pieces,
-            current_player_is_white=self.is_white_on_turn,
             steps_without_progress=self.steps_without_pawn_move_or_capture,
             max_steps_without_progress=MAX_STEPS_WITHOUT_PROGRESS,
             repetition_count=self.current_repetition_count,

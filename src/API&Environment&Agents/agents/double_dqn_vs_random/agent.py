@@ -32,7 +32,9 @@ class Agent:
 
         self.optimizer = optim.RMSprop(self.policy_net.parameters(), lr=lr, alpha=0.95, eps=1e-8)
         self.loss_fn = nn.MSELoss()
+
         self.replay_buffer = ReplayBuffer(buffer_capacity)
+
         self.train_steps = 0
 
         self.last_mean_legal_q = 0.0
@@ -164,9 +166,7 @@ class Agent:
         next_mask_t = torch.from_numpy(next_legal_mask).unsqueeze(0).to(self.device)
 
         with torch.no_grad():
-            q = self.policy_net(state_t).gather(
-                1, action_t.unsqueeze(1)
-            ).squeeze(1)
+            q = self.policy_net(state_t).gather(1, action_t.unsqueeze(1)).squeeze(1)
 
             next_q = torch.zeros(
                 1,
