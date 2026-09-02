@@ -53,17 +53,17 @@ class ActionEncoder:
 
         if from_col == 0:
             dir_idx = 0 if dir_offset == 0 else 1
-            offset = dir_idx * 2 + (promote_to - 3)
+            offset = dir_idx * 2 + (promote_to - 1)
 
         elif from_col == COLUMNS - 1:
             offset = 4 + (COLUMNS - 2) * 6
             dir_idx = 0 if dir_offset == -1 else 1
-            offset += dir_idx * 2 + (promote_to - 3)
+            offset += dir_idx * 2 + (promote_to - 1)
 
         else:
             offset = 4 + (from_col - 1) * 6
             dir_idx = dir_offset + 1
-            offset += dir_idx * 2 + (promote_to - 3)
+            offset += dir_idx * 2 + (promote_to - 1)
 
         return (self.NUM_SQUARES * self.NUM_SQUARES) + base_offset + offset
 
@@ -75,7 +75,7 @@ class ActionEncoder:
         base_offset = 0 if current_player_is_white else ((COLUMNS - 2) * 6 + 4 + 4)
         offset -= base_offset
 
-        promote_to = (offset % 2) + 3
+        promote_to = (offset % 2) + 1
         offset //= 2
 
         if offset < 2:
