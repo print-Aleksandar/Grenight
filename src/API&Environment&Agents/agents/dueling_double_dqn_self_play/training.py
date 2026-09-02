@@ -22,6 +22,9 @@ print(f"will save checkpoints in: {CHECKPOINT_DIR}")
 
 env = GrenightEnvironment()
 
+global_step = 0
+episode_start = 1
+
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 current_agent = Agent(
@@ -38,6 +41,7 @@ current_agent.target_net.load_state_dict(checkpoint["target_state_dict"])
 current_agent.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
 current_agent.replay_buffer = checkpoint["replay_buffer"]
 current_agent.train_steps = checkpoint["train_steps"]
+episode_start = checkpoint["episode_start"] + 1
 
 agent_5k = Agent(
     num_planes=env.state_encoder.NUM_PLANES,
@@ -56,8 +60,7 @@ agent_5k.train_steps = checkpoint["train_steps"]
 
 print(f"policy_net device: {next(current_agent.policy_net.parameters()).device}")
 
-global_step = 0
-episode_start = 1
+
 
 
 def epsilon_at(step: int) -> float:
