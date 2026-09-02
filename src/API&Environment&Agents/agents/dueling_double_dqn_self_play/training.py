@@ -110,15 +110,9 @@ try:
 
         else:
             if who_is_on_turn:
-                if reward == 1:
-                    recent_outcomes["white_win"] += 1
-                else:
-                    recent_outcomes["black_win"] += 1
+                recent_outcomes["white_win"] += 1
             else:
-                if reward == 1:
-                    recent_outcomes["black_win"] += 1
-                else:
-                    recent_outcomes["white_win"] += 1
+                recent_outcomes["black_win"] += 1
 
         if episode % CHECKPOINT_EVERY_EPISODES == 0:
             save_checkpoint(episode)

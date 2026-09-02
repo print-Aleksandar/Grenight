@@ -58,6 +58,7 @@ def evaluate_agent(env: GrenightEnvironment,
 
                     loss = agent.calculate_td_loss(
                         state,
+                        legal_mask,
                         action,
                         reward,
                         new_state,
@@ -93,6 +94,7 @@ def evaluate_agent(env: GrenightEnvironment,
 
                     loss = agent.calculate_td_loss(
                         state,
+                        legal_mask,
                         action,
                         -reward,
                         new_state,
