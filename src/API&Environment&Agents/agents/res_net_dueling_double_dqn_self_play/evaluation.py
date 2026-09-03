@@ -39,12 +39,13 @@ def evaluate_agent(env: GrenightEnvironment,
         move_count = 0
 
         while not done and move_count < MAX_STEPS_PER_EPISODE:
+            who_is_on_turn = env.is_white_on_turn
             if env.is_white_on_turn:
                 if is_agent_playing_for_white:
                     legal_mask = env.action_mask()
                     action = agent.select_action(state, legal_mask, 0)
 
-                    new_state, reward, done, info = env.step(action)
+                    new_state, reward, done, is_draw, _ = env.step(action)
                     current_global_step += 1
 
                     if current_global_step % log_q_every == 0:
@@ -74,13 +75,13 @@ def evaluate_agent(env: GrenightEnvironment,
                         td_abs_values.append(agent.last_td_abs)
                 else:
                     action = env.sample()
-                    new_state, reward, done, _ = env.step(action)
+                    new_state, reward, done, is_draw, _ = env.step(action)
             else:
                 if is_agent_playing_for_black:
                     legal_mask = env.action_mask()
                     action = agent.select_action(state, legal_mask, 0)
 
-                    new_state, reward, done, info = env.step(action)
+                    new_state, reward, done, is_draw, _ = env.step(action)
                     current_global_step += 1
 
                     if current_global_step % log_q_every == 0:
@@ -110,7 +111,7 @@ def evaluate_agent(env: GrenightEnvironment,
                         td_abs_values.append(agent.last_td_abs)
                 else:
                     action = env.sample()
-                    new_state, reward, done, _ = env.step(action)
+                    new_state, reward, done, is_draw, _ = env.step(action)
 
             move_count += 1
             state = new_state
@@ -118,12 +119,11 @@ def evaluate_agent(env: GrenightEnvironment,
         if not done:
             recent_outcomes["truncated"] += 1
 
-        elif reward == 0.0:
-            recent_outcomes["draw"] += 1
-
         else:
-            is_winner_white = reward == 1
-            recent_outcomes["white_win" if is_winner_white else "black_win"] += 1
+            if is_draw:
+                recent_outcomes["draw"] += 1
+            else:
+                recent_outcomes["white_win" if who_is_on_turn else "black_win"] += 1
 
     process_stats(recent_outcomes, eval_losses, q_averages, q_maxs, q_mins,False,
                   is_agent_playing_for_white, is_agent_playing_for_black,
