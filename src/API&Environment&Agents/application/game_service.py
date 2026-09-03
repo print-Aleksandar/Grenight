@@ -33,25 +33,30 @@ def is_player_having_any_valid_moves(pieces: list[Piece],
 def return_ongoing(request: MoveRequest,
                    move_registry: MoveRegistry) -> MoveResponse:
 
-    return MoveResponse(move_registry.move.new_pieces,
-                        False,
-                        False,
-                        False,
-                        request.is_white_on_turn if move_registry.is_next_move_promotion else not request.is_white_on_turn,
-                        move_registry.is_next_move_promotion,
-                        move_registry.move.is_enemy_in_check)
+    return MoveResponse(
+        move_registry.move.new_pieces,
+        False,
+        False,
+        False,
+        request.is_white_on_turn if move_registry.is_next_move_promotion else not request.is_white_on_turn,
+        move_registry.is_next_move_promotion,
+        move_registry.attacked_piece_value,
+        move_registry.move.is_enemy_in_check,
+    )
 
 
-def return_draw(request: MoveRequest, new_pieces: list[Piece]) -> MoveResponse:
+def return_draw(request: MoveRequest, new_pieces: list[Piece], attack_piece_value: float | None) -> MoveResponse:
 
     return MoveResponse(new_pieces, True, True, False,
-                        not request.is_white_on_turn, False)
+                        not request.is_white_on_turn, False,
+                        attack_piece_value, False)
 
 
-def return_winner(request: MoveRequest, new_pieces: list[Piece]) -> MoveResponse:
+def return_winner(request: MoveRequest, new_pieces: list[Piece], attack_piece_value: float | None) -> MoveResponse:
 
     return MoveResponse(new_pieces, True, False, request.is_white_on_turn,
-                        not request.is_white_on_turn, False)
+                        not request.is_white_on_turn, False,
+                        attack_piece_value, True)
 
 
 def make_move(request: MoveRequest) -> MoveResponse:
@@ -90,8 +95,8 @@ def make_move(request: MoveRequest) -> MoveResponse:
 
     if not enemy_next_valid_moves:
         if move_registry.move.is_enemy_in_check:
-            return return_winner(request, new_pieces)
-        return return_draw(request, new_pieces)
+            return return_winner(request, new_pieces, move_registry.attacked_piece_value)
+        return return_draw(request, new_pieces, move_registry.attacked_piece_value)
     return return_ongoing(request, move_registry)
 
 

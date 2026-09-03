@@ -1,11 +1,9 @@
 import os
-import random
-
 import torch
 from collections import Counter
-from agents.dueling_double_dqn_self_play.evaluation import process_stats, evaluate_agent_by_all_combos
-from environment.canonical_version.grenight_environment import GrenightEnvironment
-from agents.dueling_double_dqn_self_play.agent import Agent
+from agents.res_net_dueling_double_dqn_self_play.evaluation import process_stats, evaluate_agent_by_all_combos
+from environment.canonical_with_history_and_reward_shaping.grenight_environment import GrenightEnvironment
+from agents.res_net_dueling_double_dqn_self_play.agent import Agent
 from domain.configs import (
     MAX_STEPS_PER_EPISODE,
     TRAIN_EPISODES,
@@ -45,7 +43,7 @@ def epsilon_at(step: int) -> float:
 
 
 def save_checkpoint(ep: int):
-    path = os.path.join(CHECKPOINT_DIR, f"dueling_ddqn_self_play_ep{ep}.pt")
+    path = os.path.join(CHECKPOINT_DIR, f"res_net_dueling_double_dqn_self_play_ep{ep}.pt")
     torch.save({
         "episode": ep,
         "policy_state_dict": current_agent.policy_net.state_dict(),
@@ -90,14 +88,12 @@ try:
 
             action = current_agent.select_action(state, legal_mask, epsilon)
 
-            new_state, reward, done, _ = env.step(action)
-
-            if not who_is_on_turn and reward == -1.0:
-                reward = -reward
+            new_state, reward, done, is_draw, _ = env.step(action)
 
             next_legal_mask = env.action_mask()
 
             current_agent.store(state, legal_mask, action, reward, new_state, done, next_legal_mask)
+
             global_step += 1
 
             loss = None
@@ -119,14 +115,11 @@ try:
         if not done:
             recent_outcomes["truncated"] += 1
 
-        elif reward == 0.0:
-            recent_outcomes["draw"] += 1
-
         else:
-            if who_is_on_turn:
-                recent_outcomes["white_win"] += 1
+            if is_draw:
+                recent_outcomes["draw"] += 1
             else:
-                recent_outcomes["black_win"] += 1
+                recent_outcomes["white_win" if who_is_on_turn else "black_win"] += 1
 
         if episode % CHECKPOINT_EVERY_EPISODES == 0:
             save_checkpoint(episode)

@@ -356,6 +356,15 @@ PIECES_CLASSES = {
     3: King
 }
 
+PIECES_VALUES = {
+    Pawn: 0.01,
+    Knight: 0.03,
+    Bishop: 0.03,
+    Rook: 0.05,
+    Queen: 0.09,
+    King: -float("inf")
+}
+
 PIECES_NUMBERS = dict()
 for num, cl in PIECES_CLASSES.items():
     PIECES_NUMBERS[cl] = num

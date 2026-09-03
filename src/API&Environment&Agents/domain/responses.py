@@ -8,6 +8,7 @@ class MoveResponse:
                  is_white_winner: bool,
                  is_white_on_turn: bool,
                  is_next_move_promotion: bool,
+                 attacked_piece_value: bool | None,
                  is_enemy_in_check: bool | None = None) -> None:
 
         self.pieces = pieces
@@ -16,6 +17,7 @@ class MoveResponse:
         self.is_white_winner = is_white_winner
         self.is_white_on_turn = is_white_on_turn
         self.is_next_move_promotion = is_next_move_promotion
+        self.attacked_piece_value = attacked_piece_value
         self.is_enemy_in_check = is_enemy_in_check
 
 

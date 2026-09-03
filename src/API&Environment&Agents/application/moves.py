@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from domain.pieces import Piece, Rook, Queen, PIECES_CLASSES, Bishop, Knight, King
+from domain.pieces import Piece, Rook, Queen, PIECES_CLASSES, Bishop, Knight, King, PIECES_VALUES
 from domain.configs import ROWS, COLUMNS
 from domain.exceptions import (NonExistentPiecePromotionException,
                                NonExistentValidMoveException,
@@ -296,8 +296,11 @@ class MoveRegistry:
         self.current_uid_index = current_uid_index if current_uid_index is not None \
             else {p.uid: p for p in current_pieces}
 
+        self.attacked_piece_value = None
+
         self.move = self.registry()
         self.is_next_move_promotion = self.is_next_promotable()
+
 
     def registry(self) -> Move:
 
@@ -327,6 +330,7 @@ class MoveRegistry:
                 return free_position_move
 
             if enemy_position_move.supports:
+                self.attacked_piece_value = enemy_position_move.attacked_piece_value
                 return enemy_position_move
 
         raise NonExistentValidMoveException()
@@ -370,6 +374,8 @@ class EnemyPositionMove(Move):
                  promote_to: int | None,
                  current_uid_index: dict[str, Piece] | None = None) -> None:
 
+        self.attacked_piece_value = None
+
         super().__init__(current_pieces, uid, position,
                          current_free_positions, is_current_move_promotion, promote_to,
                          current_uid_index)
@@ -391,6 +397,7 @@ class EnemyPositionMove(Move):
         attacked_piece = get_piece_by_position(self.current_pieces, self.position)
         if attacked_piece is None:
             return False
+        self.attacked_piece_value = PIECES_VALUES[type(attacked_piece)]
         return piece.is_white != attacked_piece.is_white \
                if attacked_piece is not None else False
 
