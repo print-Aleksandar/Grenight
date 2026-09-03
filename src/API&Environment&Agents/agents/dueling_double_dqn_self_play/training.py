@@ -162,10 +162,8 @@ try:
             print()
 
             print(
-                f"  from checkpoint at 5k with 0 epsilon          : {0.4:>8}\n"
-                f"  from current agent with no random             : {0.48:>8}\n"
-                f"  from current agent with random (epsilon)      : {0.12:>8.4f}\n"
-                f"  global steps                                  : {global_step:>8,}"
+                f"  ε (epsilon)     : {epsilon:>8.4f}\n"
+                f"  global steps    : {global_step:>8,}"
             )
 
             print()
