@@ -65,6 +65,7 @@ current_agent = Agent(
     num_actions=env.action_encoder.NUM_ACTIONS,
     device=device )
 
+"""
 checkpoint = torch.load("/kaggle/input/datasets/mojavoda/grenight-1/dueling_ddqn_self_play_ep10000.pt", map_location=device, weights_only=False)
 
 current_agent.policy_net.load_state_dict(checkpoint["policy_state_dict"])
@@ -74,21 +75,7 @@ current_agent.replay_buffer = checkpoint["replay_buffer"]
 current_agent.train_steps = checkpoint["train_steps"]
 
 episode_start = checkpoint["episode"] + 1
-
-agent_5k = Agent(
-    num_planes=env.state_encoder.NUM_PLANES,
-    rows=5,
-    columns=4,
-    num_actions=env.action_encoder.NUM_ACTIONS,
-    device=device )
-
-checkpoint = torch.load("/kaggle/input/datasets/mojavoda/grenight-1/dueling_ddqn_self_play_ep5000.pt", map_location=device, weights_only=False)
-
-agent_5k.policy_net.load_state_dict(checkpoint["policy_state_dict"])
-agent_5k.target_net.load_state_dict(checkpoint["target_state_dict"])
-agent_5k.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
-agent_5k.replay_buffer = checkpoint["replay_buffer"]
-agent_5k.train_steps = checkpoint["train_steps"]
+"""
 
 losses = []
 recent_outcomes = Counter()
@@ -109,10 +96,7 @@ try:
 
             who_is_on_turn = env.is_white_on_turn
 
-            if random.random() < 0.4:
-                action = agent_5k.select_action(state, legal_mask, 0.0)
-            else:
-                action = current_agent.select_action(state, legal_mask, 0.2)
+            action = current_agent.select_action(state, legal_mask, epsilon)
 
             new_state, reward, done, _ = env.step(action)
 
