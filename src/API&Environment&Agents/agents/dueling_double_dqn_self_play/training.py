@@ -1,4 +1,6 @@
 import os
+import random
+
 import torch
 from collections import Counter
 from agents.dueling_double_dqn_self_play.evaluation import process_stats, evaluate_agent_by_all_combos
@@ -56,6 +58,38 @@ def save_checkpoint(ep: int):
     print(f"[checkpoint] saved: {path}")
 
 
+current_agent = Agent(
+    num_planes=env.state_encoder.NUM_PLANES,
+    rows=5,
+    columns=4,
+    num_actions=env.action_encoder.NUM_ACTIONS,
+    device=device )
+
+checkpoint = torch.load("/kaggle/input/datasets/mojavoda/grenight-1/ep10000.pt", map_location=device, weights_only=False)
+
+current_agent.policy_net.load_state_dict(checkpoint["policy_state_dict"])
+current_agent.target_net.load_state_dict(checkpoint["target_state_dict"])
+current_agent.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+current_agent.replay_buffer = checkpoint["replay_buffer"]
+current_agent.train_steps = checkpoint["train_steps"]
+
+episode_start = checkpoint["episode"] + 1
+
+agent_5k = Agent(
+    num_planes=env.state_encoder.NUM_PLANES,
+    rows=5,
+    columns=4,
+    num_actions=env.action_encoder.NUM_ACTIONS,
+    device=device )
+
+checkpoint = torch.load("/kaggle/input/datasets/mojavoda/grenight-1/ep5000.pt", map_location=device, weights_only=False)
+
+agent_5k.policy_net.load_state_dict(checkpoint["policy_state_dict"])
+agent_5k.target_net.load_state_dict(checkpoint["target_state_dict"])
+agent_5k.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+agent_5k.replay_buffer = checkpoint["replay_buffer"]
+agent_5k.train_steps = checkpoint["train_steps"]
+
 losses = []
 recent_outcomes = Counter()
 q_averages = []
@@ -75,7 +109,10 @@ try:
 
             who_is_on_turn = env.is_white_on_turn
 
-            action = current_agent.select_action(state, legal_mask, epsilon)
+            if random.random() < 0.4:
+                action = agent_5k.select_action(state, legal_mask, 0.0)
+            else:
+                action = current_agent.select_action(state, legal_mask, 0.2)
 
             new_state, reward, done, _ = env.step(action)
 
@@ -125,8 +162,10 @@ try:
             print()
 
             print(
-                f"  ε (epsilon)     : {epsilon:>8.4f}\n"
-                f"  global steps    : {global_step:>8,}"
+                f"  from checkpoint at 5k with 0 epsilon          : {0.4:>8}\n"
+                f"  from current agent with no random             : {0.48:>8}\n"
+                f"  from current agent with random (epsilon)      : {0.12:>8.4f}\n"
+                f"  global steps                                  : {global_step:>8,}"
             )
 
             print()
