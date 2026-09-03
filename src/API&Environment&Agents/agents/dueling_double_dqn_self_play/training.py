@@ -65,7 +65,7 @@ current_agent = Agent(
     num_actions=env.action_encoder.NUM_ACTIONS,
     device=device )
 
-checkpoint = torch.load("/kaggle/input/datasets/mojavoda/grenight-1/ep10000.pt", map_location=device, weights_only=False)
+checkpoint = torch.load("/kaggle/input/datasets/mojavoda/grenight-1/dueling_ddqn_self_play_ep10000.pt", map_location=device, weights_only=False)
 
 current_agent.policy_net.load_state_dict(checkpoint["policy_state_dict"])
 current_agent.target_net.load_state_dict(checkpoint["target_state_dict"])
@@ -82,7 +82,7 @@ agent_5k = Agent(
     num_actions=env.action_encoder.NUM_ACTIONS,
     device=device )
 
-checkpoint = torch.load("/kaggle/input/datasets/mojavoda/grenight-1/ep5000.pt", map_location=device, weights_only=False)
+checkpoint = torch.load("/kaggle/input/datasets/mojavoda/grenight-1/dueling_ddqn_self_play_ep5000.pt", map_location=device, weights_only=False)
 
 agent_5k.policy_net.load_state_dict(checkpoint["policy_state_dict"])
 agent_5k.target_net.load_state_dict(checkpoint["target_state_dict"])
