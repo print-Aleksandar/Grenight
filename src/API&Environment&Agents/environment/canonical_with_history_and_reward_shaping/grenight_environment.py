@@ -253,7 +253,7 @@ class GrenightEnvironment:
             "draw_reason": self.draw_reason,
         }
 
-        return next_state, reward, self.done, self.draw_reason is None, info
+        return next_state, reward, self.done, self.draw_reason is not None, info
 
     def sample(self) -> int:
 
