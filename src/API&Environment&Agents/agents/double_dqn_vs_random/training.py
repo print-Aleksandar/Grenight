@@ -36,18 +36,6 @@ agent_step = 0
 global_step = 0
 episode_start = 1
 
-"""
-checkpoint = torch.load(f"../double_dqn_vs_random/checkpoints/v2/ep30000.pt", map_location=device, weights_only=False)
-
-episode_start = checkpoint["episode"] + 1
-agent.policy_net.load_state_dict(checkpoint["policy_state_dict"])
-agent.target_net.load_state_dict(checkpoint["target_state_dict"])
-agent.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
-agent.replay_buffer = checkpoint["replay_buffer"]
-agent.train_steps = checkpoint["train_steps"]
-agent_step = checkpoint["agent_step"]
-global_step = checkpoint["global_step"]
-"""
 
 def epsilon_at(step: int) -> float:
 
@@ -56,7 +44,7 @@ def epsilon_at(step: int) -> float:
 
 
 def save_checkpoint(ep: int):
-    path = os.path.join(CHECKPOINT_DIR, f"ep{ep}.pt")
+    path = os.path.join(CHECKPOINT_DIR, f"ddqn_vs_random_ep{ep}.pt")
     torch.save({
         "episode": ep,
         "policy_state_dict": agent.policy_net.state_dict(),
