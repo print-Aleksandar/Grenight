@@ -1,27 +1,50 @@
 import numpy as np
-from domain.configs import MAX_STEPS_WITHOUT_PROGRESS
-from domain.pieces import Piece, PIECES_NUMBERS
+from domain.configs import MAX_STEPS_WITHOUT_PROGRESS, ROWS, PREVIOUS_K_STEPS_IN_STATE
+from domain.pieces import Piece, Pawn, PIECES_NUMBERS
 from domain.requests import MoveRequest, AgentMoveRequest
 from domain.exceptions import GrenightException
 from domain.board_initialization import create_initial_board
 from application.game_service import make_move, gather_valid_moves_player
 from application.board_getter import get_piece_by_position
-from environment.absolute_perspective_version.action_encoder import ActionEncoder
-from environment.absolute_perspective_version.piece_plane_encoder import PiecePlaneEncoder
+from environment.action_encoder import ActionEncoder
+from environment.piece_plane_encoder import PiecePlaneEncoder
+from environment.previous_pieces_encoded_q import PreviousPiecesEncodedQ
+
+
+def rotate_pieces_helper(pieces: list[Piece]) -> None:
+    for piece in pieces:
+        piece.is_white = not piece.is_white
+
+        y, x = piece.position
+        piece.position = ROWS - 1 - y, x
+
+        piece.update_after_flipping()
 
 
 class GrenightEnvironment:
 
     PAWN, ROOK, QUEEN = 0, 1, 2
+    OTHER_DRAWS = -0.5
+    THREEFOLD_REPETITION_RULE_VALUE = 0.5
+    ENEMY_IN_CHECK_REWARD = 0.1
 
-    def __init__(self):
+    def __init__(self, is_canonical_version: bool,
+                 will_store_history_in_state: bool,
+                 will_do_reward_shaping: bool) -> None:
 
-        self.is_canonical = False
+        self.is_canonical_version = is_canonical_version
+        self.will_store_history_in_state = will_store_history_in_state
+        self.will_do_reward_shaping = will_do_reward_shaping
 
-        self.state_encoder = PiecePlaneEncoder()
-        self.action_encoder = ActionEncoder()
+        self.action_encoder = ActionEncoder(self.is_canonical_version)
+        self.state_encoder = PiecePlaneEncoder(self.will_store_history_in_state)
 
-        self.pieces: list[Piece] = []
+        self.pieces = None
+        self.previous_pieces_encoded_q = PreviousPiecesEncodedQ(
+            PREVIOUS_K_STEPS_IN_STATE if self.will_store_history_in_state
+            else 0
+        )
+
         self.is_white_on_turn = True
         self.done = False
 
@@ -35,8 +58,9 @@ class GrenightEnvironment:
         self._legal_actions_cache: list[int] | None = None
         self._legal_actions_set_cache: set[int] | None = None
 
-    def reset(self) -> np.ndarray:
+        self._state_cache: np.ndarray | None = None
 
+    def reset(self) -> np.ndarray:
         self.pieces = create_initial_board()
         self.is_white_on_turn = True
         self.done = False
@@ -45,36 +69,26 @@ class GrenightEnvironment:
         self.current_repetition_count = 0
         self.is_draw_by_rule = False
         self.draw_reason = None
+        self._state_cache = None
         self._invalidate_legal_actions_cache()
 
         key = self.position_key()
         self.current_repetition_count = self.position_counts.get(key, 0) + 1
         self.position_counts[key] = self.current_repetition_count
 
-        return self.get_state()
-
-    # TODO: ADDITIONAL RESET FUNCTION, LOAD EXISTING BOARD INSTEAD OF NEW
-    def load(self, pieces: list[Piece],
-             is_white_on_turn: bool,
-             steps_without_pawn_move_or_capture: int,
-             position_counts: dict,
-             current_repetition_count: int | None=0) -> np.ndarray:
-
-        self.pieces = pieces
-        self.is_white_on_turn = is_white_on_turn
-        self.done = False
-        self.steps_without_pawn_move_or_capture = steps_without_pawn_move_or_capture
-        self.position_counts = position_counts
-        self.position_counts = current_repetition_count
-        self.is_draw_by_rule = False
-        self.draw_reason = None
-        self._invalidate_legal_actions_cache()
-    # TODO: NOT FINISHED
+        state = self.get_state()
+        self.previous_pieces_encoded_q.push(state[-13:-3])
+        self._state_cache = state
+        return state
 
     def get_state(self) -> np.ndarray:
+        if self._state_cache is not None:
+            return self._state_cache
 
         return self.state_encoder.encode_planes(
+            previous_pieces_encoded_q=self.previous_pieces_encoded_q,
             pieces=self.pieces,
+            current_player_is_white=self.is_white_on_turn,
             steps_without_progress=self.steps_without_pawn_move_or_capture,
             max_steps_without_progress=MAX_STEPS_WITHOUT_PROGRESS,
             repetition_count=self.current_repetition_count,
@@ -95,17 +109,17 @@ class GrenightEnvironment:
 
         request = AgentMoveRequest(
             pieces=self.pieces,
-            is_for_white=self.is_white_on_turn,
-            is_for_white_turn=self.is_white_on_turn,
-            is_current_move_promotion=False,
+            is_for_white=True if self.is_canonical_version else self.is_white_on_turn,
+            is_for_white_turn=True if self.is_canonical_version else self.is_white_on_turn,
+            is_current_move_promotion=False
         )
 
-        uid_to_positions = gather_valid_moves_player(request)
-        uid_to_piece = {piece.uid: piece for piece in self.pieces}
+        uids_with_valid_moves = gather_valid_moves_player(request)
+        uids_with_piece = {piece.uid: piece for piece in self.pieces}
         actions = []
 
-        for uid, positions in uid_to_positions.items():
-            piece = uid_to_piece.get(uid)
+        for uid, positions in uids_with_valid_moves.items():
+            piece = uids_with_piece.get(uid)
             if piece is None:
                 continue
 
@@ -120,7 +134,7 @@ class GrenightEnvironment:
                             from_position=piece.position,
                             to_position=to_position,
                             promote_to=promote_to,
-                            current_player_is_white=self.is_white_on_turn,
+                            current_player_is_white=self.is_white_on_turn
                         )
                         actions.append(action)
                 else:
@@ -135,7 +149,7 @@ class GrenightEnvironment:
         return actions
 
     def action_mask(self) -> np.ndarray:
-        mask = np.zeros(self.action_encoder.NUM_ACTIONS, dtype=bool)
+        mask = np.zeros(self.action_encoder.num_actions, dtype=bool)
         if self.done:
             return mask
 
@@ -144,7 +158,7 @@ class GrenightEnvironment:
             mask[actions] = True
         return mask
 
-    def step(self, action: int) -> tuple[np.ndarray, float, bool, dict]:
+    def step(self, action: int) -> tuple[np.ndarray, float, bool, bool, dict]:
 
         if self.done:
             raise RuntimeError("step() called on a finished episode; call reset() first.")
@@ -155,13 +169,8 @@ class GrenightEnvironment:
         if action not in self._legal_actions_set_cache:
             raise ValueError(f"Illegal action {action}")
 
-        acting_player_is_white = self.is_white_on_turn
-
         if self.action_encoder.is_promotion_action(action):
-            from_position, to_position, promote_to = self.action_encoder.decode_promotion(
-                action,
-                current_player_is_white=acting_player_is_white,
-            )
+            from_position, to_position, promote_to = self.action_encoder.decode_promotion(action, self.is_white_on_turn)
             is_promotion = True
 
         else:
@@ -173,9 +182,6 @@ class GrenightEnvironment:
         if piece is None:
             raise ValueError(f"Illegal action {action}: no piece at {from_position}")
 
-        if piece.is_white != acting_player_is_white:
-            raise ValueError(f"Illegal action {action}: piece belongs to the other player")
-
         if piece.can_implement_pawn_moves:
             self.steps_without_pawn_move_or_capture = 0
 
@@ -183,10 +189,10 @@ class GrenightEnvironment:
             pieces=self.pieces,
             uid=piece.uid,
             position=to_position,
-            is_white_on_turn=self.is_white_on_turn,
-            is_from_white_player=acting_player_is_white,
+            is_white_on_turn=True if self.is_canonical_version else self.is_white_on_turn,
+            is_from_white_player=True if self.is_canonical_version else self.is_white_on_turn,
             is_current_move_promotion=False,
-            promote_to=None,
+            promote_to=None
         )
 
         try:
@@ -199,10 +205,10 @@ class GrenightEnvironment:
                 pieces=response.pieces,
                 uid=piece.uid,
                 position=to_position,
-                is_white_on_turn=response.is_white_on_turn,
-                is_from_white_player=acting_player_is_white,
+                is_white_on_turn=True if self.is_canonical_version else self.is_white_on_turn,
+                is_from_white_player=True if self.is_canonical_version else self.is_white_on_turn,
                 is_current_move_promotion=True,
-                promote_to=promote_to,
+                promote_to=promote_to
             )
 
             try:
@@ -210,21 +216,31 @@ class GrenightEnvironment:
             except GrenightException as e:
                 raise ValueError(f"Action {action} rejected by make_move: {type(e).__name__}")
 
-        if len(response.pieces) < len(self.pieces):
+        self.pieces = response.pieces
+
+        if (response.attacked_piece_value is not None
+                or type(piece) == Pawn):
             self.steps_without_pawn_move_or_capture = 0
 
-        self.pieces = response.pieces
-        self.is_white_on_turn = response.is_white_on_turn
+        if self.is_canonical_version and not self.is_white_on_turn and not self.done:
+            rotate_pieces_helper(self.pieces)
+            self.previous_pieces_encoded_q.rotate()
+
+        self.is_white_on_turn = not self.is_white_on_turn
         self.done = response.is_game_finished
         self.is_draw_by_rule = False
         self.draw_reason = None
+        self._state_cache = None
         self._invalidate_legal_actions_cache()
 
         if not self.done:
-
             key = self.position_key()
             self.current_repetition_count = self.position_counts.get(key, 0) + 1
             self.position_counts[key] = self.current_repetition_count
+
+            if self.is_canonical_version and not self.is_white_on_turn:
+                rotate_pieces_helper(self.pieces)
+                self.previous_pieces_encoded_q.rotate()
 
             if self.steps_without_pawn_move_or_capture >= MAX_STEPS_WITHOUT_PROGRESS:
                 self.done = True
@@ -243,20 +259,22 @@ class GrenightEnvironment:
 
         else:
             if response.is_game_finished and response.is_draw:
+                self.done = True
                 self.draw_reason = "stalemate"
 
-        reward = self.calculate_reward(
-            response=response,
-            acting_player_is_white=acting_player_is_white,
-        )
+        reward = self.calculate_reward_registry(response)
 
         next_state = self.get_state()
+        self.previous_pieces_encoded_q.push(next_state[-13:-3])
+
+        self._state_cache = next_state
+
         info = {
             "is_enemy_in_check": response.is_enemy_in_check,
             "draw_reason": self.draw_reason,
         }
 
-        return next_state, reward, self.done, info
+        return next_state, reward, self.done, self.draw_reason is not None, info
 
     def sample(self) -> int:
 
@@ -278,15 +296,40 @@ class GrenightEnvironment:
             return False
         return True
 
-    def calculate_reward(self, response, acting_player_is_white: bool) -> float:
+    def calculate_reward_registry(self, response) -> float:
+        if self.will_do_reward_shaping:
+            return self.calculate_reward_with_shaping(response)
+        else:
+            return self.calculate_reward_terminal_only(response)
 
+    def calculate_reward_terminal_only(self, response) -> float:
         if not self.done:
             return 0.0
 
-        if self.is_draw_by_rule or response.is_draw:
+        if response.is_draw or self.is_draw_by_rule:
             return 0.0
+        return 1.0
 
-        if response.is_white_winner == acting_player_is_white:
-            return 1.0
+    def calculate_reward_with_shaping(self, response) -> float:
+        rew_sum = 0.0
 
-        return -1.0
+        if response.attacked_piece_value is not None:
+            rew_sum += response.attacked_piece_value
+
+        if response.is_enemy_in_check is not None:
+            if response.is_enemy_in_check:
+                rew_sum += self.ENEMY_IN_CHECK_REWARD
+
+        if self.done:
+            if self.is_draw_by_rule or response.is_draw:
+                if self.draw_reason == "threefold_repetition":
+                    rew_sum += self.THREEFOLD_REPETITION_RULE_VALUE
+                else:
+                    rew_sum += self.OTHER_DRAWS
+                return rew_sum
+
+            else:
+                return rew_sum + 1.0
+
+        else:
+            return rew_sum

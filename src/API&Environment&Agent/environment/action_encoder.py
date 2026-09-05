@@ -2,10 +2,27 @@ from domain.configs import ROWS, COLUMNS
 
 
 class ActionEncoder:
-
     NUM_SQUARES = ROWS * COLUMNS
-    NUM_PROMOTION_ACTIONS = ((COLUMNS - 2) * 6 + 4 + 4) * 2
-    NUM_ACTIONS = NUM_SQUARES * NUM_SQUARES + NUM_PROMOTION_ACTIONS
+
+    NUM_PROMOTION_ACTIONS_ABSOLUTE = ((COLUMNS - 2) * 6 + 4 + 4) * 2
+
+    NUM_PROMOTION_ACTIONS_CANONICAL = (COLUMNS - 2) * 6 + 4 + 4
+
+    def __init__(self, is_canonical_version) -> None:
+
+        self.is_canonical_version = is_canonical_version
+
+        self.num_promotions_actions = (
+            self.NUM_PROMOTION_ACTIONS_CANONICAL if self.is_canonical_version
+            else self.NUM_PROMOTION_ACTIONS_ABSOLUTE
+        )
+
+        self.num_actions = (self.NUM_SQUARES * self.NUM_SQUARES) + self.num_promotions_actions
+
+        self.black_promotion_offest = (
+            0 if self.is_canonical_version
+            else self.NUM_PROMOTION_ACTIONS_ABSOLUTE // 2
+        )
 
     @staticmethod
     def position_to_square(position: tuple[int, int]) -> int:
@@ -49,7 +66,7 @@ class ActionEncoder:
         from_col = from_position[1]
         dir_offset = to_position[1] - from_position[1]
 
-        base_offset = 0 if current_player_is_white else ((COLUMNS - 2) * 6 + 4 + 4)
+        base_offset = 0 if current_player_is_white else self.black_promotion_offest
 
         if from_col == 0:
             dir_idx = 0 if dir_offset == 0 else 1
@@ -72,7 +89,7 @@ class ActionEncoder:
 
         offset = action - (self.NUM_SQUARES * self.NUM_SQUARES)
 
-        base_offset = 0 if current_player_is_white else ((COLUMNS - 2) * 6 + 4 + 4)
+        base_offset = 0 if current_player_is_white else self.black_promotion_offest
         offset -= base_offset
 
         promote_to = (offset % 2) + 1
@@ -93,7 +110,7 @@ class ActionEncoder:
             dir_idx = mid_offset % 3
             dir_offset = dir_idx - 1
 
-        if current_player_is_white:
+        if current_player_is_white or self.is_canonical_version:
             from_position = (ROWS - 2, from_col)
             to_position = (ROWS - 1, from_col + dir_offset)
         else:
