@@ -189,11 +189,22 @@ def train_agent(is_self_play: bool,
                 is_residual_net: bool,
                 is_canonical_version: bool,
                 will_store_history_in_state: bool,
-                will_do_reward_shaping: bool,
-                is_bulk_update: bool | None=True) -> None:
+                will_do_reward_shaping: bool) -> None:
 
     os.makedirs(CHECKPOINT_DIR, exist_ok=True)
     print(f"will save checkpoints in: {CHECKPOINT_DIR}")
+
+    print()
+
+    print(f"is self play                     : {is_self_play}\n"
+          f"is double net                    : {is_double_net}\n"
+          f"is dueling net                   : {is_dueling_net}\n"
+          f"is residual net                  : {is_residual_net}\n"
+          f"is canonical version             : {is_canonical_version}\n"
+          f"will store history in state      : {will_store_history_in_state}\n"
+          f"will do reward shaping           : {will_store_history_in_state}\n")
+
+    print()
 
     env = GrenightEnvironment(
         is_canonical_version=is_canonical_version,
@@ -210,8 +221,7 @@ def train_agent(is_self_play: bool,
         columns=COLUMNS,
         num_actions=env.action_encoder.num_actions,
         num_planes=env.state_encoder.num_planes,
-        device=device,
-        is_bulk_update=is_bulk_update
+        device=device
     )
 
     print(f"policy_net device: {next(agent.policy_net.parameters()).device}")
@@ -287,4 +297,4 @@ def train_agent(is_self_play: bool,
         save_checkpoint(agent, episode, agent_step, is_double_net)
         print("Done.")
 
-train_agent(False, True, False, False, False, False, False)
+train_agent(False, False, False, False, False, False, False)
