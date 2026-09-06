@@ -29,7 +29,7 @@ EPSILON_DECAY_STEPS = 700_000
 LOG_EVERY_EPISODE = 1_000
 LOG_Q_EVERY_STEPS = 2_000
 
-EVALUATE_GAMES = 10
+EVALUATE_GAMES = 200
 
 CHECKPOINT_DIR_KAGGLE = "/kaggle/working/checkpoints"
 CHECKPOINT_DIR_COLAB = "/content/drive/MyDrive/Grenight/checkpoints"
