@@ -192,9 +192,7 @@ def train_agent(is_self_play: bool,
                 will_do_reward_shaping: bool) -> None:
 
     os.makedirs(CHECKPOINT_DIR, exist_ok=True)
-    print(f"will save checkpoints in: {CHECKPOINT_DIR}")
-
-    print()
+    print(f"will save checkpoints in: {CHECKPOINT_DIR}\n")
 
     print(f"is self play                     : {is_self_play}\n"
           f"is double net                    : {is_double_net}\n"
@@ -203,8 +201,6 @@ def train_agent(is_self_play: bool,
           f"is canonical version             : {is_canonical_version}\n"
           f"will store history in state      : {will_store_history_in_state}\n"
           f"will do reward shaping           : {will_store_history_in_state}\n")
-
-    print()
 
     env = GrenightEnvironment(
         is_canonical_version=is_canonical_version,
@@ -297,4 +293,4 @@ def train_agent(is_self_play: bool,
         save_checkpoint(agent, episode, agent_step, is_double_net)
         print("Done.")
 
-train_agent(False, True, False, False, False, False, False)
+train_agent(True, True, True, True, True, True, True)
