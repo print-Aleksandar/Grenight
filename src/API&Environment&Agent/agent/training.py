@@ -136,7 +136,7 @@ def train_vs_random_episode(env: GrenightEnvironment, agent: GrenightAgent,
         epsilon = epsilon_at(agent_step)
 
         white_action = agent.select_action(white_old_state, old_legal_mask, epsilon)
-        next_white_state, white_reward, done, is_draw, info = env.step(white_action)
+        _, white_reward, done, is_draw, info = env.step(white_action)
 
         agent_step += 1
         move_count += 1
@@ -146,9 +146,7 @@ def train_vs_random_episode(env: GrenightEnvironment, agent: GrenightAgent,
         if not done and move_count < MAX_STEPS_PER_EPISODE:
             is_white_on_turn = False
             black_action = env.sample()
-            next_white_state, black_reward, done, is_draw, info = env.step(
-                black_action
-            )
+            _, black_reward, done, is_draw, info = env.step(black_action)
 
             move_count += 1
 
@@ -161,7 +159,7 @@ def train_vs_random_episode(env: GrenightEnvironment, agent: GrenightAgent,
             old_legal_mask,
             white_action,
             total_reward,
-            next_white_state,
+            env.get_state(),
             done,
             next_legal_mask,
         )
@@ -178,7 +176,7 @@ def train_vs_random_episode(env: GrenightEnvironment, agent: GrenightAgent,
             if loss is not None:
                 losses.append(loss)
 
-        state = next_white_state
+        state = env.get_state()
 
     return done, is_draw, is_white_on_turn, agent_step
 
@@ -213,6 +211,7 @@ def train_agent(is_self_play: bool,
         is_double_net=is_double_net,
         is_dueling_net=is_dueling_net,
         is_residual_net=is_residual_net,
+        is_bulk_update=False,
         rows=ROWS,
         columns=COLUMNS,
         num_actions=env.action_encoder.num_actions,
@@ -227,9 +226,7 @@ def train_agent(is_self_play: bool,
 
     losses = []
     recent_outcomes = Counter()
-    q_averages = []
-    q_maxs = []
-    q_mins = []
+    q_averages, q_maxs, q_mins = [], [], []
 
     try:
         for episode in range(episode_start, TRAIN_EPISODES + 1):
@@ -238,6 +235,7 @@ def train_agent(is_self_play: bool,
                 done, is_draw, is_white_on_turn, agent_step = train_self_play_episode(
                     env, agent, agent_step, losses, q_averages, q_maxs, q_mins
                 )
+
             else:
                 done, is_draw, is_white_on_turn, agent_step = train_vs_random_episode(
                     env, agent, agent_step, losses, q_averages, q_maxs, q_mins
@@ -253,7 +251,7 @@ def train_agent(is_self_play: bool,
                     recent_outcomes["white_win" if is_white_on_turn else "black_win"] += 1
 
             if episode % CHECKPOINT_EVERY_EPISODES == 0:
-                save_checkpoint(agent, episode, agent_step)
+                save_checkpoint(agent, episode, agent_step, is_double_net)
 
             if episode % LOG_EVERY_EPISODE == 0:
                 print()
@@ -268,7 +266,7 @@ def train_agent(is_self_play: bool,
 
                 print()
 
-                process_stats(recent_outcomes, losses, q_averages, q_maxs, q_mins, True, True, is_self_play)
+                process_stats(recent_outcomes, losses, q_averages, q_maxs, q_mins,True, True, is_self_play)
 
                 print()
 
@@ -293,4 +291,4 @@ def train_agent(is_self_play: bool,
         save_checkpoint(agent, episode, agent_step, is_double_net)
         print("Done.")
 
-train_agent(True, True, True, True, True, True, True)
+train_agent(True, True, True, True, True, True, False)

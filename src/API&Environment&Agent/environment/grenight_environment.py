@@ -24,9 +24,10 @@ def rotate_pieces_helper(pieces: list[Piece]) -> None:
 class GrenightEnvironment:
 
     PAWN, ROOK, QUEEN = 0, 1, 2
-    OTHER_DRAWS = -0.5
-    THREEFOLD_REPETITION_RULE_VALUE = 0.5
-    ENEMY_IN_CHECK_REWARD = 0.1
+
+    OTHER_DRAWS = -0.6
+    THREEFOLD_REPETITION_RULE_VALUE = 0.0
+    ENEMY_IN_CHECK_REWARD = 0.02
 
     def __init__(self, is_canonical_version: bool,
                  will_store_history_in_state: bool,
@@ -296,6 +297,27 @@ class GrenightEnvironment:
             return False
         return True
 
+    def is_better_to_force_threefold_repetition(self) -> bool:
+        ally_pieces = [p for p in self.pieces if (
+            (not self.is_canonical_version and p.is_white == self.is_white_on_turn)
+             or (self.is_canonical_version and p.is_white == True)
+        )]
+
+        enemy_pieces = [p for p in self.pieces if (
+            (not self.is_canonical_version and p.is_white == self.is_white_on_turn)
+             or (self.is_canonical_version and p.is_white == False)
+        )]
+
+        if not any(p for p in ally_pieces if PIECES_NUMBERS[type(p)] in [self.QUEEN, self.ROOK]) \
+            and any(p for p in enemy_pieces if PIECES_NUMBERS[type(p)] in [self.QUEEN, self.ROOK]):
+            return True
+
+        return len(ally_pieces) <= len(enemy_pieces) and \
+            not any(p for p in ally_pieces if PIECES_NUMBERS[type(p)] in [self.QUEEN, self.ROOK]) \
+            and not any(p for p in enemy_pieces if PIECES_NUMBERS[type(p)] in [self.QUEEN, self.ROOK])
+
+
+
     def calculate_reward_registry(self, response) -> float:
         if self.will_do_reward_shaping:
             return self.calculate_reward_with_shaping(response)
@@ -323,7 +345,10 @@ class GrenightEnvironment:
         if self.done:
             if self.is_draw_by_rule or response.is_draw:
                 if self.draw_reason == "threefold_repetition":
-                    rew_sum += self.THREEFOLD_REPETITION_RULE_VALUE
+                    if self.is_better_to_force_threefold_repetition():
+                        rew_sum += self.THREEFOLD_REPETITION_RULE_VALUE
+                    else:
+                        rew_sum += self.OTHER_DRAWS
                 else:
                     rew_sum += self.OTHER_DRAWS
                 return rew_sum

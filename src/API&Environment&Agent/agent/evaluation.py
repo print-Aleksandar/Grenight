@@ -1,6 +1,6 @@
 from collections import Counter
 import numpy as np
-from domain.configs import MAX_STEPS_PER_EPISODE, LOG_EVERY_EPISODE, EVALUATE_GAMES
+from domain.configs import MAX_STEPS_PER_EPISODE, LOG_EVERY_EPISODE, EVALUATE_GAMES, DISCOUNT_FACTOR_GAMMA
 from environment.grenight_environment import GrenightEnvironment
 from agent.grenight_agent import GrenightAgent
 
@@ -9,130 +9,127 @@ def evaluate_agent_by_all_combos(env: GrenightEnvironment,
                                  agent: GrenightAgent,
                                  is_self_play: bool) -> None:
 
-    evaluate_agent(env, agent, True, False)
+    evaluate_agent(env, agent, is_self_play,True, False)
 
     if is_self_play:
-        evaluate_agent(env, agent, False, True)
+        evaluate_agent(env, agent, is_self_play,False, True)
 
 
 def evaluate_agent(env: GrenightEnvironment,
                    agent: GrenightAgent,
+                   is_self_play: bool,
                    is_agent_playing_for_white: bool,
                    is_agent_playing_for_black: bool) -> None:
 
     current_agent_step = 0
     log_q_every = EVALUATE_GAMES // 10
-    if not is_agent_playing_for_white or not is_agent_playing_for_black:
+    if not is_self_play:
         log_q_every //= 2
 
     eval_losses = []
-
     recent_outcomes = Counter()
-    q_averages = []
-    q_maxs = []
-    q_mins = []
-
-    td_target_values = []
-    td_abs_values = []
+    q_averages, q_maxs, q_mins = [], [], []
+    td_target_values, td_abs_values = [], []
 
     for _ in range(EVALUATE_GAMES):
-        state = env.reset()
+        env.reset()
         done = False
         is_draw = False
         is_white_on_turn = True
         move_count = 0
 
         while not done and move_count < MAX_STEPS_PER_EPISODE:
-            is_white_on_turn = env.is_white_on_turn
-            if env.is_white_on_turn:
-                if is_agent_playing_for_white:
-                    legal_mask = env.action_mask()
-                    action = agent.select_action(state, legal_mask, 0)
+            is_white_on_turn = True
+            white_old_state = env.get_state()
+            white_legal_mask = env.action_mask()
 
-                    new_state, reward, done, is_draw, _ = env.step(action)
-                    current_agent_step += 1
-
-                    if current_agent_step % log_q_every == 0:
-                        agent.set_legal_q_stats(state, legal_mask)
-
-                        q_averages.append(agent.last_mean_legal_q)
-                        q_mins.append(agent.last_min_legal_q)
-                        q_maxs.append(agent.last_max_legal_q)
-
-                    next_legal_mask = env.action_mask()
-
-                    loss = agent.calculate_td_loss(
-                        state,
-                        legal_mask,
-                        action,
-                        reward,
-                        new_state,
-                        done,
-                        next_legal_mask,
-                        current_agent_step % log_q_every == 0
-                    )
-
-                    eval_losses.append(loss)
-
-                    if current_agent_step % log_q_every == 0:
-                        td_target_values.append(agent.last_td_target)
-                        td_abs_values.append(agent.last_td_abs)
-                else:
-                    action = env.sample()
-                    new_state, reward, done, is_draw, _ = env.step(action)
+            if is_agent_playing_for_white:
+                white_action = agent.select_action(white_old_state, white_legal_mask, 0.0)
             else:
+                white_action = env.sample()
+
+            black_old_state, white_reward, done, is_draw, _ = env.step(white_action)
+            move_count += 1
+
+            if is_agent_playing_for_white:
+                current_agent_step += 1
+                collect = current_agent_step % log_q_every == 0
+                if collect:
+                    agent.set_legal_q_stats(white_old_state, white_legal_mask)
+                    q_averages.append(agent.last_mean_legal_q)
+                    q_mins.append(agent.last_min_legal_q)
+                    q_maxs.append(agent.last_max_legal_q)
+
+            black_legal_mask = env.action_mask()
+            black_reward = 0.0
+
+            if not done and move_count < MAX_STEPS_PER_EPISODE:
                 if is_agent_playing_for_black:
-                    legal_mask = env.action_mask()
-                    action = agent.select_action(state, legal_mask, 0)
+                    black_action = agent.select_action(black_old_state, black_legal_mask, 0.0)
+                else:
+                    black_action = env.sample()
 
-                    new_state, reward, done, is_draw, _ = env.step(action)
+                is_white_on_turn = False
+                white_new_state, black_reward, done, is_draw, _ = env.step(black_action)
+                move_count += 1
+
+                if is_self_play and is_agent_playing_for_black:
                     current_agent_step += 1
-
-                    if current_agent_step % log_q_every == 0:
-                        agent.set_legal_q_stats(state, legal_mask)
-
+                    collect = current_agent_step % log_q_every == 0
+                    if collect:
+                        agent.set_legal_q_stats(black_old_state, black_legal_mask)
                         q_averages.append(agent.last_mean_legal_q)
                         q_mins.append(agent.last_min_legal_q)
                         q_maxs.append(agent.last_max_legal_q)
 
-                    next_legal_mask = env.action_mask()
-
                     loss = agent.calculate_td_loss(
-                        state,
-                        legal_mask,
-                        action,
-                        reward,
-                        new_state,
-                        done,
-                        next_legal_mask,
-                        current_agent_step % log_q_every == 0
+                        black_old_state, black_legal_mask, black_action,
+                        black_reward, env.get_state(), done, env.action_mask(), collect
                     )
 
                     eval_losses.append(loss)
-
-                    if current_agent_step % log_q_every == 0:
+                    if collect:
                         td_target_values.append(agent.last_td_target)
                         td_abs_values.append(agent.last_td_abs)
-                else:
-                    action = env.sample()
-                    new_state, reward, done, is_draw, _ = env.step(action)
 
-            move_count += 1
-            state = new_state
+            if is_agent_playing_for_white:
+                if not is_self_play:
+                    white_reward -= DISCOUNT_FACTOR_GAMMA * black_reward
+
+                collect = current_agent_step % log_q_every == 0
+
+                if is_self_play:
+                    loss = agent.calculate_td_loss(
+                        white_old_state, white_legal_mask, white_action,
+                        white_reward, black_old_state, done, black_legal_mask, collect
+                    )
+
+                    eval_losses.append(loss)
+                    if collect:
+                        td_target_values.append(agent.last_td_target)
+                        td_abs_values.append(agent.last_td_abs)
+
+                else:
+                    loss = agent.calculate_td_loss(
+                        white_old_state, white_legal_mask, white_action,
+                        white_reward, env.get_state(), done, env.legal_actions(), collect
+                    )
+
+                    eval_losses.append(loss)
+                    if collect:
+                        td_target_values.append(agent.last_td_target)
+                        td_abs_values.append(agent.last_td_abs)
 
         if not done:
             recent_outcomes["truncated"] += 1
-
+        elif is_draw:
+            recent_outcomes["draw"] += 1
         else:
-            if is_draw:
-                recent_outcomes["draw"] += 1
-            else:
-                recent_outcomes["white_win" if is_white_on_turn else "black_win"] += 1
+            recent_outcomes["white_win" if is_white_on_turn else "black_win"] += 1
 
-    process_stats(recent_outcomes, eval_losses, q_averages, q_maxs, q_mins,False,
+    process_stats(recent_outcomes, eval_losses, q_averages, q_maxs, q_mins, True,
                   is_agent_playing_for_white, is_agent_playing_for_black,
                   td_target_values, td_abs_values)
-
 
 def process_stats(outcomes: Counter,
                   losses: list[float],
