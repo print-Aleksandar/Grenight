@@ -291,4 +291,4 @@ def train_agent(is_self_play: bool,
         save_checkpoint(agent, episode, agent_step, is_double_net)
         print("Done.")
 
-train_agent(True, True, True, True, True, True, False)
+train_agent(True, True, False, False, True, True, False)
