@@ -112,7 +112,7 @@ def evaluate_agent(env: GrenightEnvironment,
                 else:
                     loss = agent.calculate_td_loss(
                         white_old_state, white_legal_mask, white_action,
-                        white_reward, env.get_state(), done, env.legal_actions(), collect
+                        white_reward, env.get_state(), done, env.action_mask(), collect
                     )
 
                     eval_losses.append(loss)
