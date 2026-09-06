@@ -198,7 +198,7 @@ def train_agent(is_self_play: bool,
           f"is residual net                  : {is_residual_net}\n"
           f"is canonical version             : {is_canonical_version}\n"
           f"will store history in state      : {will_store_history_in_state}\n"
-          f"will do reward shaping           : {will_store_history_in_state}\n")
+          f"will do reward shaping           : {will_do_reward_shaping}\n")
 
     env = GrenightEnvironment(
         is_canonical_version=is_canonical_version,
