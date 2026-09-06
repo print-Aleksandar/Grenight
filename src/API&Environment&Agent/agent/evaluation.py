@@ -127,7 +127,7 @@ def evaluate_agent(env: GrenightEnvironment,
         else:
             recent_outcomes["white_win" if is_white_on_turn else "black_win"] += 1
 
-    process_stats(recent_outcomes, eval_losses, q_averages, q_maxs, q_mins, True,
+    process_stats(recent_outcomes, eval_losses, q_averages, q_maxs, q_mins, False,
                   is_agent_playing_for_white, is_agent_playing_for_black,
                   td_target_values, td_abs_values)
 
