@@ -290,7 +290,6 @@ def train_agent(is_self_play: bool,
                 q_maxs = []
                 q_mins = []
 
-
     except KeyboardInterrupt:
         print("\n[interrupted] saving checkpoint before exit...")
         save_checkpoint(agent, episode, agent_step, is_double_net)

@@ -331,7 +331,6 @@ class GrenightEnvironment:
             not any(p for p in ally_pieces if PIECES_NUMBERS[type(p)] in [self.QUEEN, self.ROOK]) \
             and not any(p for p in enemy_pieces if PIECES_NUMBERS[type(p)] in [self.QUEEN, self.ROOK])
 
-
     def calculate_reward_registry(self, response, phi_after, phi_before) -> float:
         if self.will_do_reward_shaping:
             return self.calculate_reward_with_shaping(response, phi_after, phi_before)
