@@ -2,6 +2,7 @@ import os
 from collections import Counter
 import torch
 from agent.evaluation import process_stats, evaluate_agent_by_all_combos
+from domain.board_initialization import create_initial_board
 from domain.configs import (
     ROWS,
     COLUMNS,
@@ -192,7 +193,10 @@ def train_agent(is_self_play: bool,
     os.makedirs(CHECKPOINT_DIR, exist_ok=True)
     print(f"will save checkpoints in: {CHECKPOINT_DIR}\n")
 
-    print(f"is self play                     : {is_self_play}\n"
+    print(f"number of rows                   : {ROWS}\n"
+          f"number of columns                : {COLUMNS}\n"
+          f"number of pieces                 : {len(create_initial_board())}\n"
+          f"is self play                     : {is_self_play}\n"
           f"is double net                    : {is_double_net}\n"
           f"is dueling net                   : {is_dueling_net}\n"
           f"is residual net                  : {is_residual_net}\n"
@@ -291,4 +295,4 @@ def train_agent(is_self_play: bool,
         save_checkpoint(agent, episode, agent_step, is_double_net)
         print("Done.")
 
-train_agent(False, True, False, True, False, False, False)
+train_agent(False, True, False, False, False, True, False)
