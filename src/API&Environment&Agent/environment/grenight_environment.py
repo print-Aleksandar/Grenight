@@ -362,7 +362,6 @@ class GrenightEnvironment:
         else:
             return 1.0
 
-
     """
     def calculate_reward_with_shaping(self, response) -> float:
         rew_sum = 0.0
