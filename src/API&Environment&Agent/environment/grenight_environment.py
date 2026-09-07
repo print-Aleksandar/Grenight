@@ -174,7 +174,10 @@ class GrenightEnvironment:
         if self.done:
             raise RuntimeError("step() called on a finished episode; call reset() first.")
 
-        phi_before = self.material_balance(self.pieces, True if self.is_canonical_version else self.is_white_on_turn)
+        if self.will_do_reward_shaping:
+            phi_before = self.material_balance(self.pieces, True if self.is_canonical_version else self.is_white_on_turn)
+        else:
+            phi_before = 0
 
         self.steps_without_pawn_move_or_capture += 1
 
@@ -275,8 +278,10 @@ class GrenightEnvironment:
                 self.done = True
                 self.draw_reason = "stalemate"
 
-
-        phi_after = self.material_balance(self.pieces, False if self.is_canonical_version else not self.is_white_on_turn)
+        if self.will_do_reward_shaping:
+            phi_after = self.material_balance(self.pieces, False if self.is_canonical_version else not self.is_white_on_turn)
+        else:
+            phi_after = 0
 
         reward = self.calculate_reward_registry(response, phi_after, phi_before)
 
@@ -360,32 +365,3 @@ class GrenightEnvironment:
 
         else:
             return 1.0
-
-    """
-    def calculate_reward_with_shaping(self, response) -> float:
-        rew_sum = 0.0
-
-        if response.attacked_piece_value is not None:
-            rew_sum += response.attacked_piece_value
-
-        if response.is_enemy_in_check is not None:
-            if response.is_enemy_in_check:
-                rew_sum += self.ENEMY_IN_CHECK_REWARD
-
-        if self.done:
-            if self.is_draw_by_rule or response.is_draw:
-                if self.draw_reason == "threefold_repetition":
-                    if self.is_better_to_force_threefold_repetition():
-                        rew_sum += self.THREEFOLD_REPETITION_RULE_VALUE
-                    else:
-                        rew_sum += self.OTHER_DRAWS
-                else:
-                    rew_sum += self.OTHER_DRAWS
-                return rew_sum
-
-            else:
-                return rew_sum + 1.0
-
-        else:
-            return rew_sum
-    """

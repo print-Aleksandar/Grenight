@@ -286,9 +286,7 @@ def train_agent(is_self_play: bool,
                 print()
 
                 recent_outcomes.clear()
-                q_averages = []
-                q_maxs = []
-                q_mins = []
+                q_averages, q_maxs, q_mins = [], [], []
 
     except KeyboardInterrupt:
         print("\n[interrupted] saving checkpoint before exit...")
@@ -298,4 +296,4 @@ def train_agent(is_self_play: bool,
         save_checkpoint(agent, episode, agent_step, is_double_net)
         print("Done.")
 
-train_agent(False, True, False, False, False, False, True)
+train_agent(False, True, False, True, False, True, False)
