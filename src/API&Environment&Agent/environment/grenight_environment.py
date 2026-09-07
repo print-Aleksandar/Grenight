@@ -1,5 +1,5 @@
 import numpy as np
-from domain.configs import MAX_STEPS_WITHOUT_PROGRESS, ROWS, PREVIOUS_K_STEPS_IN_STATE
+from domain.configs import MAX_STEPS_WITHOUT_PROGRESS, ROWS, PREVIOUS_K_STEPS_IN_STATE, DISCOUNT_FACTOR_GAMMA
 from domain.pieces import Piece, Pawn, PIECES_NUMBERS
 from domain.requests import MoveRequest, AgentMoveRequest
 from domain.exceptions import GrenightException
@@ -24,10 +24,10 @@ def rotate_pieces_helper(pieces: list[Piece]) -> None:
 class GrenightEnvironment:
 
     PAWN, ROOK, QUEEN = 0, 1, 2
+    PIECE_VALUES = {PAWN: 0.01, ROOK: 0.05, QUEEN: 0.09}
 
     OTHER_DRAWS = -0.6
     THREEFOLD_REPETITION_RULE_VALUE = 0.0
-    ENEMY_IN_CHECK_REWARD = 0.02
 
     def __init__(self, is_canonical_version: bool,
                  will_store_history_in_state: bool,
@@ -100,6 +100,16 @@ class GrenightEnvironment:
         self._legal_actions_cache = None
         self._legal_actions_set_cache = None
 
+    def material_balance(self, pieces: list[Piece], is_white_perspective: bool) -> float:
+        balance = 0.0
+        for p in pieces:
+            value = self.PIECE_VALUES.get(PIECES_NUMBERS[type(p)], 0.0)
+            if p.is_white == is_white_perspective:
+                balance += value
+            else:
+                balance -= value
+        return balance
+
     def legal_actions(self) -> list[int]:
 
         if self._legal_actions_cache is not None:
@@ -163,6 +173,8 @@ class GrenightEnvironment:
 
         if self.done:
             raise RuntimeError("step() called on a finished episode; call reset() first.")
+
+        phi_before = self.material_balance(self.pieces, True if self.is_canonical_version else self.is_white_on_turn)
 
         self.steps_without_pawn_move_or_capture += 1
 
@@ -263,7 +275,10 @@ class GrenightEnvironment:
                 self.done = True
                 self.draw_reason = "stalemate"
 
-        reward = self.calculate_reward_registry(response)
+
+        phi_after = self.material_balance(self.pieces, False if self.is_canonical_version else not self.is_white_on_turn)
+
+        reward = self.calculate_reward_registry(response, phi_after, phi_before)
 
         next_state = self.get_state()
         self.previous_pieces_encoded_q.push(next_state[-13:-3])
@@ -299,13 +314,13 @@ class GrenightEnvironment:
 
     def is_better_to_force_threefold_repetition(self) -> bool:
         ally_pieces = [p for p in self.pieces if (
-            (not self.is_canonical_version and p.is_white == self.is_white_on_turn)
-             or (self.is_canonical_version and p.is_white == True)
+            (not self.is_canonical_version and p.is_white != self.is_white_on_turn)
+             or (self.is_canonical_version and p.is_white == False)
         )]
 
         enemy_pieces = [p for p in self.pieces if (
             (not self.is_canonical_version and p.is_white == self.is_white_on_turn)
-             or (self.is_canonical_version and p.is_white == False)
+             or (self.is_canonical_version and p.is_white == True)
         )]
 
         if not any(p for p in ally_pieces if PIECES_NUMBERS[type(p)] in [self.QUEEN, self.ROOK]) \
@@ -317,10 +332,9 @@ class GrenightEnvironment:
             and not any(p for p in enemy_pieces if PIECES_NUMBERS[type(p)] in [self.QUEEN, self.ROOK])
 
 
-
-    def calculate_reward_registry(self, response) -> float:
+    def calculate_reward_registry(self, response, phi_after, phi_before) -> float:
         if self.will_do_reward_shaping:
-            return self.calculate_reward_with_shaping(response)
+            return self.calculate_reward_with_shaping(response, phi_after, phi_before)
         else:
             return self.calculate_reward_terminal_only(response)
 
@@ -332,6 +346,24 @@ class GrenightEnvironment:
             return 0.0
         return 1.0
 
+    def calculate_reward_with_shaping(self, response, phi_after, phi_before) -> float:
+        if not self.done:
+            return DISCOUNT_FACTOR_GAMMA * phi_after - phi_before
+
+        if self.is_draw_by_rule or response.is_draw:
+            if self.draw_reason == "threefold_repetition":
+                if self.is_better_to_force_threefold_repetition():
+                    return self.THREEFOLD_REPETITION_RULE_VALUE
+                else:
+                    return self.OTHER_DRAWS
+            else:
+                return self.OTHER_DRAWS
+
+        else:
+            return 1.0
+
+
+    """
     def calculate_reward_with_shaping(self, response) -> float:
         rew_sum = 0.0
 
@@ -358,3 +390,4 @@ class GrenightEnvironment:
 
         else:
             return rew_sum
+    """

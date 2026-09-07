@@ -143,17 +143,21 @@ def train_vs_random_episode(env: GrenightEnvironment, agent: GrenightAgent,
         move_count += 1
 
         total_reward = white_reward
+        # print(total_reward, len([p for p in env.pieces if p.is_white == True]), len([p for p in env.pieces if p.is_white == False]))
 
         if not done and move_count < MAX_STEPS_PER_EPISODE:
             is_white_on_turn = False
             black_action = env.sample()
             _, black_reward, done, is_draw, info = env.step(black_action)
-
             move_count += 1
 
             total_reward -= DISCOUNT_FACTOR_GAMMA * black_reward
+            # print(total_reward, len([p for p in env.pieces if p.is_white == True]), len([p for p in env.pieces if p.is_white == False]))
+
+        # print('-----------')
 
         next_legal_mask = env.action_mask()
+
 
         agent.store(
             white_old_state,
