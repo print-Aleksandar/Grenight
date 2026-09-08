@@ -1,5 +1,4 @@
 import numpy as np
-import pickle
 from domain.configs import MAX_STEPS_WITHOUT_PROGRESS, ROWS, PREVIOUS_K_STEPS_IN_STATE, DISCOUNT_FACTOR_GAMMA
 from domain.pieces import Piece, Pawn, PIECES_NUMBERS
 from domain.requests import MoveRequest, AgentMoveRequest
@@ -62,16 +61,9 @@ class GrenightEnvironment:
 
         self._state_cache: np.ndarray | None = None
 
-    def export_attributes(self, path: str) -> None:
-        with open(path, "wb") as f:
-            pickle.dump(self.__dict__, f)
-
-    def import_attributes(self, path: str) -> None:
-        with open(path, "rb") as f:
-            self.__dict__.update(pickle.load(f))
-
     def reset(self) -> np.ndarray:
         self.pieces = create_initial_board()
+        self.previous_pieces_encoded_q.queue.clear()
         self.is_white_on_turn = True
         self.done = False
         self.steps_without_pawn_move_or_capture = 0
