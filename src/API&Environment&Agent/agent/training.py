@@ -158,7 +158,6 @@ def train_vs_random_episode(env: GrenightEnvironment, agent: GrenightAgent,
 
         next_legal_mask = env.action_mask()
 
-
         agent.store(
             white_old_state,
             old_legal_mask,
@@ -296,4 +295,4 @@ def train_agent(is_self_play: bool,
         save_checkpoint(agent, episode, agent_step, is_double_net)
         print("Done.")
 
-train_agent(False, True, False, True, False, False, True)
+train_agent(False, True, False, True, False, True, True)

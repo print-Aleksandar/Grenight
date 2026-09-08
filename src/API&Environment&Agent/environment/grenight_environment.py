@@ -1,4 +1,5 @@
 import numpy as np
+import pickle
 from domain.configs import MAX_STEPS_WITHOUT_PROGRESS, ROWS, PREVIOUS_K_STEPS_IN_STATE, DISCOUNT_FACTOR_GAMMA
 from domain.pieces import Piece, Pawn, PIECES_NUMBERS
 from domain.requests import MoveRequest, AgentMoveRequest
@@ -26,7 +27,7 @@ class GrenightEnvironment:
     PAWN, ROOK, QUEEN = 0, 1, 2
     PIECE_VALUES = {PAWN: 0.01, ROOK: 0.05, QUEEN: 0.09}
 
-    OTHER_DRAWS = -0.6
+    OTHER_DRAWS = -0.3
     THREEFOLD_REPETITION_RULE_VALUE = 0.0
 
     def __init__(self, is_canonical_version: bool,
@@ -60,6 +61,14 @@ class GrenightEnvironment:
         self._legal_actions_set_cache: set[int] | None = None
 
         self._state_cache: np.ndarray | None = None
+
+    def export_attributes(self, path: str) -> None:
+        with open(path, "wb") as f:
+            pickle.dump(self.__dict__, f)
+
+    def import_attributes(self, path: str) -> None:
+        with open(path, "rb") as f:
+            self.__dict__.update(pickle.load(f))
 
     def reset(self) -> np.ndarray:
         self.pieces = create_initial_board()
@@ -145,7 +154,7 @@ class GrenightEnvironment:
                             from_position=piece.position,
                             to_position=to_position,
                             promote_to=promote_to,
-                            current_player_is_white=self.is_white_on_turn
+                            current_player_is_white=True if self.is_canonical_version else self.is_white_on_turn
                         )
                         actions.append(action)
                 else:
@@ -186,7 +195,7 @@ class GrenightEnvironment:
             raise ValueError(f"Illegal action {action}")
 
         if self.action_encoder.is_promotion_action(action):
-            from_position, to_position, promote_to = self.action_encoder.decode_promotion(action, self.is_white_on_turn)
+            from_position, to_position, promote_to = self.action_encoder.decode_promotion(action, True if self.is_canonical_version else self.is_white_on_turn)
             is_promotion = True
 
         else:
