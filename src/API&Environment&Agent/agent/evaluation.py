@@ -28,7 +28,7 @@ def load_checkpoint(agent: GrenightAgent,
                     is_double_net: bool) -> None:
 
     current_dir = Path(__file__).resolve().parent
-    checkpoint_path = current_dir / "../implementations/ver50/p_111000/current_implementation_ep8000.pt"
+    checkpoint_path = current_dir / "/implementations/ver50/p_111000/current_implementation_ep8000.pt"
 
     checkpoint = torch.load(
         checkpoint_path,
