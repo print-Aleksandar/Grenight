@@ -1,4 +1,5 @@
 from collections import Counter
+from pathlib import Path
 import numpy as np
 import torch
 from domain.configs import MAX_STEPS_PER_EPISODE, LOG_EVERY_EPISODE, EVALUATE_GAMES, DISCOUNT_FACTOR_GAMMA, ROWS, \
@@ -26,8 +27,11 @@ agent_tester = GrenightAgent(
 def load_checkpoint(agent: GrenightAgent,
                     is_double_net: bool) -> None:
 
+    current_dir = Path(__file__).resolve().parent
+    checkpoint_path = current_dir / "../implementations/ver50/p_111000/current_implementation_ep8000.pt"
+
     checkpoint = torch.load(
-     "implementations/ver50/p_111000/current_implementation_ep8000.pt",
+        checkpoint_path,
         map_location="cuda" if torch.cuda.is_available() else "cpu",
         weights_only=False
     )
