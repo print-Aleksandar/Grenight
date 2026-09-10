@@ -2,7 +2,7 @@ from domain.pieces import Piece
 from domain.exceptions import NonExistentValidMoveException, PiecePinnedException
 from domain.requests import MoveRequest, ValidMovesPieceRequest, AgentMoveRequest
 from domain.responses import MoveResponse, ValidMovesPieceResponse
-from application.board_getter import all_per_move_getter, BoardGetter, get_piece_by_uid
+from application.board_getter import all_per_move_getter, BoardGetter
 from application.filters import filter_valid_attacks, filter_initial_moves
 from application.moves import MoveRegistry
 
@@ -40,23 +40,20 @@ def return_ongoing(request: MoveRequest,
         False,
         request.is_white_on_turn if move_registry.is_next_move_promotion else not request.is_white_on_turn,
         move_registry.is_next_move_promotion,
-        move_registry.attacked_piece_value,
         move_registry.move.is_enemy_in_check,
     )
 
 
-def return_draw(request: MoveRequest, new_pieces: list[Piece], attack_piece_value: float | None) -> MoveResponse:
+def return_draw(request: MoveRequest, new_pieces: list[Piece]) -> MoveResponse:
 
     return MoveResponse(new_pieces, True, True, False,
-                        not request.is_white_on_turn, False,
-                        attack_piece_value, False)
+                        not request.is_white_on_turn, False, False)
 
 
-def return_winner(request: MoveRequest, new_pieces: list[Piece], attack_piece_value: float | None) -> MoveResponse:
+def return_winner(request: MoveRequest, new_pieces: list[Piece]) -> MoveResponse:
 
     return MoveResponse(new_pieces, True, False, request.is_white_on_turn,
-                        not request.is_white_on_turn, False,
-                        attack_piece_value, True)
+                        not request.is_white_on_turn, False, True)
 
 
 def make_move(request: MoveRequest) -> MoveResponse:
@@ -95,8 +92,8 @@ def make_move(request: MoveRequest) -> MoveResponse:
 
     if not enemy_next_valid_moves:
         if move_registry.move.is_enemy_in_check:
-            return return_winner(request, new_pieces, move_registry.attacked_piece_value)
-        return return_draw(request, new_pieces, move_registry.attacked_piece_value)
+            return return_winner(request, new_pieces)
+        return return_draw(request, new_pieces)
     return return_ongoing(request, move_registry)
 
 

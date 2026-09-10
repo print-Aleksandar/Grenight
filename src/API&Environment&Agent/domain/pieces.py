@@ -346,7 +346,6 @@ class King(Piece):
                     position=position, had_first_move=True)
 
 
-# TODO: CHANGE IN FRONTEND
 PIECES_CLASSES = {
     0: Pawn,
     4: Knight,
@@ -354,15 +353,6 @@ PIECES_CLASSES = {
     1: Rook,
     2: Queen,
     3: King
-}
-
-PIECES_VALUES = {
-    Pawn: 0.01,
-    Knight: 0.03,
-    Bishop: 0.03,
-    Rook: 0.05,
-    Queen: 0.09,
-    King: -float("inf")
 }
 
 PIECES_NUMBERS = dict()

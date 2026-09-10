@@ -3,11 +3,11 @@ const API_BASE = "http://localhost:8000";
 const BOARD_BOUNDS = { rows: 5, cols: 4 };
 
 const CLASS_NUMBERS = {
-    king: 5,
-    queen: 4,
-    rook: 3,
-    bishop: 2,
-    knight: 1,
+    king: 3,
+    queen: 2,
+    rook: 1,
+    bishop: 5,
+    knight: 4,
     pawn: 0
 };
 
@@ -279,6 +279,12 @@ async function restart_game() {
     } catch (error) {
         console.error("restart_game failed:", error);
     }
+
+    if (is_playing_against_agent) {
+        setTimeout(() => {
+            return call_agent_for_move();
+        }, 500);
+    }
 }
 
 // FETCH VALID MOVES FOR A PIECE (first click):
@@ -488,55 +494,6 @@ async function call_agent_for_move() {
                 is_for_white: is_white_on_turn,
                 is_white_on_turn: is_white_on_turn,
                 is_current_move_promotion: false
-            })
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error("Validation Error Details:", errorData.detail);
-            return;
-        }
-
-        const data = await response.json();
-
-        await render_board(data.pieces);
-
-        if (data.is_enemy_in_check) {
-
-            const enemyKingSquare = find_king_square(!is_white_on_turn);
-            flash_red([enemyKingSquare]);
-        }
-
-        if (data.is_next_move_promotion === true) {
-            setTimeout(() => {
-                return call_agent_for_promotion();
-            }, 500);
-        }
-
-        end_game_if_finished(data.is_game_finished, data.is_draw, data.is_white_winner);
-
-        is_white_on_turn = data.is_white_on_turn;
-        is_from_white_player = data.is_from_white_player;
-
-    } catch (error) {
-        console.error("call_agent_for_move failed:", error);
-    }
-}
-
-async function call_agent_for_promotion() {
-
-    const pieces = get_pieces();
-    const piecesDto = make_dto_from_pieces(pieces);
-
-    try {
-        const response = await fetch(`${API_BASE}/api/agent_move`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                pieces: piecesDto,
-                is_for_white: is_white_on_turn,
-                is_white_on_turn: is_white_on_turn,
-                is_current_move_promotion: true
             })
         });
 

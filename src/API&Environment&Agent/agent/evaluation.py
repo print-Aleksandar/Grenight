@@ -1,8 +1,42 @@
 from collections import Counter
 import numpy as np
-from domain.configs import MAX_STEPS_PER_EPISODE, LOG_EVERY_EPISODE, EVALUATE_GAMES, DISCOUNT_FACTOR_GAMMA
+import torch
+from domain.configs import MAX_STEPS_PER_EPISODE, LOG_EVERY_EPISODE, EVALUATE_GAMES, DISCOUNT_FACTOR_GAMMA, ROWS, \
+    COLUMNS
+from environment.action_encoder import ActionEncoder
 from environment.grenight_environment import GrenightEnvironment
 from agent.grenight_agent import GrenightAgent
+from environment.piece_plane_encoder import PiecePlaneEncoder
+
+
+agent_tester = GrenightAgent(
+    is_self_play=False,
+    is_double_net=True,
+    is_dueling_net=True,
+    is_residual_net=True,
+    is_bulk_update=False,
+    rows=ROWS,
+    columns=COLUMNS,
+    num_actions=ActionEncoder(is_canonical_version=False).num_actions,
+    num_planes=PiecePlaneEncoder.NUM_PLANES_ONLY_CURRENT,
+    device="cuda" if torch.cuda.is_available() else "cpu"
+)
+
+
+def load_checkpoint(agent: GrenightAgent,
+                    is_double_net: bool) -> None:
+
+    checkpoint = torch.load(
+     "implementations/ver50/p_111000/current_implementation_ep8000.pt",
+        map_location="cuda" if torch.cuda.is_available() else "cpu",
+        weights_only=False
+    )
+
+    agent.policy_net.load_state_dict(checkpoint["policy_state_dict"])
+    if is_double_net:
+        agent.target_net.load_state_dict(checkpoint["target_state_dict"])
+
+load_checkpoint(agent_tester, True)
 
 
 def evaluate_agent_by_all_combos(env: GrenightEnvironment,
@@ -13,6 +47,83 @@ def evaluate_agent_by_all_combos(env: GrenightEnvironment,
 
     if is_self_play:
         evaluate_agent(env, agent, is_self_play,False, True)
+        evaluate_again_against_test_agent(env, agent, agent_tester)
+
+
+def evaluate_again_against_test_agent(env_arg: GrenightEnvironment,
+                                      agent_to_test: GrenightAgent,
+                                      agent_tester: GrenightAgent) -> None:
+
+    outcomes = Counter()
+    for _ in range(EVALUATE_GAMES):
+        env_arg.reset()
+        done = False
+        is_draw = False
+        is_white_on_turn = True
+        move_count = 0
+
+        while not done and move_count < MAX_STEPS_PER_EPISODE:
+            is_white_on_turn = env_arg.is_white_on_turn
+
+            if is_white_on_turn:
+                action = agent_tester.select_action(env_arg.get_state(), env_arg.action_mask(), 0.05)
+            else:
+                action = agent_to_test.select_action(env_arg.get_state(), env_arg.action_mask(), 0.05)
+
+            _, _, done, is_draw, _ = env_arg.step(action)
+
+            move_count += 1
+
+        if not done:
+            outcomes["truncated"] += 1
+        elif is_draw:
+            outcomes["draw"] += 1
+        else:
+            outcomes["white_win" if is_white_on_turn else "black_win"] += 1
+
+    completed = (
+            outcomes.get("white_win", 0)
+            + outcomes.get("black_win", 0)
+            + outcomes.get("draw", 0)
+    )
+
+    total_episodes = completed + outcomes.get("truncated", 0)
+
+    win_pct = (
+        100.0 * outcomes.get("white_win", 0) / completed
+        if completed > 0 else 0.0
+    )
+
+    black_pct = (
+        100.0 * outcomes.get("black_win", 0) / completed
+        if completed > 0 else 0.0
+    )
+
+    draw_pct = (
+        100.0 * outcomes.get("draw", 0) / completed
+        if completed > 0 else 0.0
+    )
+
+    truncated_pct = (
+        100.0 * outcomes.get("truncated", 0) / total_episodes
+        if total_episodes > 0 else 0.0
+    )
+
+    label = "(self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white)"
+
+    print()
+
+    print(f"evaluation {label} statistics — another new {EVALUATE_GAMES:,} games")
+
+    print(
+        f"  outcomes    "
+        f"white {win_pct:5.1f}%   "
+        f"black {black_pct:5.1f}%   "
+        f"draw {draw_pct:5.1f}%   "
+        f"truncated {truncated_pct:5.1f}%"
+    )
+
+    print(f"  distribution {dict(outcomes)}")
 
 
 def evaluate_agent(env: GrenightEnvironment,

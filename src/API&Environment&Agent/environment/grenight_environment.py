@@ -48,6 +48,7 @@ class GrenightEnvironment:
 
         self.is_white_on_turn = True
         self.done = False
+        self.is_enemy_in_check = False
 
         self.current_repetition_count = 0
         self.steps_without_pawn_move_or_capture = 0
@@ -60,6 +61,13 @@ class GrenightEnvironment:
         self._legal_actions_set_cache: set[int] | None = None
 
         self._state_cache: np.ndarray | None = None
+
+    def load_pieces_absolute(self, pieces: list[Piece]) -> None:
+        self.pieces = pieces
+        self.is_white_on_turn = not self.is_white_on_turn
+        key = self.position_key()
+        self.current_repetition_count = self.position_counts.get(key, 0) + 1
+        self.position_counts[key] = self.current_repetition_count
 
     def reset(self) -> np.ndarray:
         self.pieces = create_initial_board()
@@ -181,6 +189,7 @@ class GrenightEnvironment:
             phi_before = 0
 
         self.steps_without_pawn_move_or_capture += 1
+        self.is_enemy_in_check = False
 
         self.legal_actions()
         if action not in self._legal_actions_set_cache:
@@ -234,9 +243,9 @@ class GrenightEnvironment:
                 raise ValueError(f"Action {action} rejected by make_move: {type(e).__name__}")
 
         self.pieces = response.pieces
+        self.is_enemy_in_check = response.is_enemy_in_check
 
-        if (response.attacked_piece_value is not None
-                or type(piece) == Pawn):
+        if len(response.pieces) < len(self.pieces) or type(piece) == Pawn:
             self.steps_without_pawn_move_or_capture = 0
 
         if self.is_canonical_version and not self.is_white_on_turn and not self.done:
