@@ -1,0 +1,1718 @@
+will save checkpoints in: /kaggle/working/checkpoints
+
+number of rows                   : 5
+number of columns                : 4
+number of pieces                 : 16
+is self play                     : True
+is double net                    : True
+is dueling net                   : True
+is residual net                  : True
+is canonical version             : False
+will store history in state      : False
+will do reward shaping           : False
+
+policy_net device: cuda:0
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 1,000
+
+  ε (epsilon)     :   0.9606
+  agent step      :   53,904
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  17.3%   black  18.9%   draw  63.8%   truncated   0.0%
+  distribution {'draw': 638, 'white_win': 173, 'black_win': 189}
+  agent       loss 0.00186105   Q avg  -0.0283   Q max   0.0710   Q min  -0.1206
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  31.0%   black   7.0%   draw  62.0%   truncated   0.0%
+  distribution {'draw': 124, 'black_win': 14, 'white_win': 62}
+  agent       loss 0.00852809   Q avg  -0.0436   Q max   0.0153   Q min  -0.1000
+  diagnostics target avg  -0.0046   target max   1.0000   target min  -0.2758
+              |TD| avg   0.0551   |TD| max   0.6961
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   4.5%   black  39.5%   draw  56.0%   truncated   0.0%
+  distribution {'black_win': 79, 'draw': 112, 'white_win': 9}
+  agent       loss 0.00933803   Q avg  -0.0250   Q max   0.0276   Q min  -0.0691
+  diagnostics target avg   0.0357   target max   1.0000   target min  -0.2627
+              |TD| avg   0.0707   |TD| max   0.9680
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white  76.0%   black  14.5%   draw   9.5%   truncated   0.0%
+  distribution {'white_win': 152, 'black_win': 29, 'draw': 19}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 2,000
+
+  ε (epsilon)     :   0.9226
+  agent step      :  105,976
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  16.6%   black  20.4%   draw  63.0%   truncated   0.0%
+  distribution {'draw': 630, 'black_win': 204, 'white_win': 166}
+  agent       loss 0.00183199   Q avg  -0.0364   Q max   0.0086   Q min  -0.0752
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  65.0%   black   1.5%   draw  33.5%   truncated   0.0%
+  distribution {'draw': 67, 'white_win': 130, 'black_win': 3}
+  agent       loss 0.01383697   Q avg   0.0542   Q max   0.1235   Q min  -0.0044
+  diagnostics target avg   0.1105   target max   1.0000   target min  -0.1417
+              |TD| avg   0.0723   |TD| max   0.8697
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   3.0%   black  60.5%   draw  36.5%   truncated   0.0%
+  distribution {'black_win': 121, 'draw': 73, 'white_win': 6}
+  agent       loss 0.01287304   Q avg   0.0948   Q max   0.1818   Q min   0.0251
+  diagnostics target avg   0.1517   target max   1.0000   target min  -0.3680
+              |TD| avg   0.0858   |TD| max   0.7769
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white  85.0%   black   7.5%   draw   7.5%   truncated   0.0%
+  distribution {'white_win': 170, 'black_win': 15, 'draw': 15}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 3,000
+
+  ε (epsilon)     :   0.8856
+  agent step      :  156,519
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  18.3%   black  20.1%   draw  61.6%   truncated   0.0%
+  distribution {'white_win': 183, 'draw': 616, 'black_win': 201}
+  agent       loss 0.00159380   Q avg  -0.0345   Q max   0.0204   Q min  -0.0871
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  67.5%   black   1.5%   draw  31.0%   truncated   0.0%
+  distribution {'white_win': 135, 'draw': 62, 'black_win': 3}
+  agent       loss 0.01618692   Q avg   0.0194   Q max   0.0966   Q min  -0.0612
+  diagnostics target avg   0.1242   target max   1.0000   target min  -0.2975
+              |TD| avg   0.0973   |TD| max   0.9549
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   1.5%   black  62.5%   draw  36.0%   truncated   0.0%
+  distribution {'draw': 72, 'black_win': 125, 'white_win': 3}
+  agent       loss 0.01226064   Q avg   0.1071   Q max   0.1962   Q min   0.0328
+  diagnostics target avg   0.1781   target max   1.0000   target min  -0.2614
+              |TD| avg   0.0914   |TD| max   0.8287
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white  27.0%   black  14.0%   draw  59.0%   truncated   0.0%
+  distribution {'white_win': 54, 'draw': 118, 'black_win': 28}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 4,000
+
+  ε (epsilon)     :   0.8487
+  agent step      :  207,089
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  18.5%   black  20.0%   draw  61.5%   truncated   0.0%
+  distribution {'draw': 615, 'white_win': 185, 'black_win': 200}
+  agent       loss 0.00159405   Q avg  -0.0032   Q max   0.0715   Q min  -0.0666
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  70.5%   black   1.5%   draw  28.0%   truncated   0.0%
+  distribution {'white_win': 141, 'draw': 56, 'black_win': 3}
+  agent       loss 0.01502834   Q avg   0.0582   Q max   0.1630   Q min  -0.0372
+  diagnostics target avg   0.1852   target max   1.0000   target min  -0.3175
+              |TD| avg   0.1078   |TD| max   0.8589
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   1.0%   black  73.5%   draw  25.5%   truncated   0.0%
+  distribution {'draw': 51, 'black_win': 147, 'white_win': 2}
+  agent       loss 0.01467117   Q avg   0.2051   Q max   0.3412   Q min   0.0755
+  diagnostics target avg   0.3468   target max   1.0000   target min  -0.0264
+              |TD| avg   0.1065   |TD| max   0.7748
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white  69.5%   black  11.0%   draw  19.5%   truncated   0.0%
+  distribution {'white_win': 139, 'draw': 39, 'black_win': 22}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 5,000
+
+  ε (epsilon)     :   0.8135
+  agent step      :  255,264
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  17.7%   black  20.7%   draw  61.6%   truncated   0.0%
+  distribution {'draw': 616, 'black_win': 207, 'white_win': 177}
+  agent       loss 0.00149235   Q avg  -0.0797   Q max   0.0375   Q min  -0.1928
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  74.0%   black   1.0%   draw  25.0%   truncated   0.0%
+  distribution {'white_win': 148, 'draw': 50, 'black_win': 2}
+  agent       loss 0.01446456   Q avg   0.1309   Q max   0.2911   Q min   0.0185
+  diagnostics target avg   0.2456   target max   1.1115   target min  -0.1873
+              |TD| avg   0.1234   |TD| max   0.8757
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   3.0%   black  71.5%   draw  25.5%   truncated   0.0%
+  distribution {'black_win': 143, 'draw': 51, 'white_win': 6}
+  agent       loss 0.01339149   Q avg   0.1600   Q max   0.2678   Q min   0.0585
+  diagnostics target avg   0.2438   target max   1.1248   target min  -0.1800
+              |TD| avg   0.0951   |TD| max   0.6370
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white  10.0%   black  76.0%   draw  14.0%   truncated   0.0%
+  distribution {'black_win': 152, 'white_win': 20, 'draw': 28}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 6,000
+
+  ε (epsilon)     :   0.7815
+  agent step      :  299,000
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  24.4%   black  22.2%   draw  53.4%   truncated   0.0%
+  distribution {'draw': 534, 'white_win': 244, 'black_win': 222}
+  agent       loss 0.00173732   Q avg  -0.0916   Q max   0.0100   Q min  -0.1873
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  83.5%   black   0.0%   draw  16.5%   truncated   0.0%
+  distribution {'white_win': 167, 'draw': 33}
+  agent       loss 0.01553736   Q avg   0.1255   Q max   0.2643   Q min  -0.0074
+  diagnostics target avg   0.2603   target max   1.1339   target min  -0.5586
+              |TD| avg   0.1070   |TD| max   0.6513
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   1.0%   black  76.5%   draw  22.5%   truncated   0.0%
+  distribution {'draw': 45, 'black_win': 153, 'white_win': 2}
+  agent       loss 0.01369687   Q avg   0.2591   Q max   0.3966   Q min   0.1350
+  diagnostics target avg   0.3619   target max   1.1467   target min  -0.3136
+              |TD| avg   0.0982   |TD| max   0.7875
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   6.5%   black  36.0%   draw  57.5%   truncated   0.0%
+  distribution {'black_win': 72, 'draw': 115, 'white_win': 13}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 7,000
+
+  ε (epsilon)     :   0.7485
+  agent step      :  344,220
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  20.3%   black  20.9%   draw  58.8%   truncated   0.0%
+  distribution {'white_win': 203, 'draw': 588, 'black_win': 209}
+  agent       loss 0.00168585   Q avg  -0.1242   Q max  -0.0093   Q min  -0.2200
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  78.0%   black   0.0%   draw  22.0%   truncated   0.0%
+  distribution {'draw': 44, 'white_win': 156}
+  agent       loss 0.01878199   Q avg   0.1603   Q max   0.3049   Q min   0.0276
+  diagnostics target avg   0.2726   target max   1.1212   target min  -0.2372
+              |TD| avg   0.1195   |TD| max   0.9481
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.0%   black  69.5%   draw  30.5%   truncated   0.0%
+  distribution {'black_win': 139, 'draw': 61}
+  agent       loss 0.01671701   Q avg   0.2643   Q max   0.4175   Q min   0.1213
+  diagnostics target avg   0.3513   target max   1.0000   target min  -0.2255
+              |TD| avg   0.1166   |TD| max   0.9299
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   8.5%   black  31.5%   draw  60.0%   truncated   0.0%
+  distribution {'black_win': 63, 'draw': 120, 'white_win': 17}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 8,000
+
+  ε (epsilon)     :   0.7175
+  agent step      :  386,608
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  23.3%   black  22.3%   draw  54.4%   truncated   0.0%
+  distribution {'draw': 544, 'black_win': 223, 'white_win': 233}
+  agent       loss 0.00176785   Q avg  -0.0962   Q max  -0.0023   Q min  -0.1788
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  79.0%   black   0.0%   draw  21.0%   truncated   0.0%
+  distribution {'white_win': 158, 'draw': 42}
+  agent       loss 0.01553173   Q avg   0.1277   Q max   0.2849   Q min  -0.0105
+  diagnostics target avg   0.2615   target max   1.0000   target min  -0.4777
+              |TD| avg   0.1022   |TD| max   0.7124
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   1.0%   black  70.0%   draw  29.0%   truncated   0.0%
+  distribution {'draw': 58, 'black_win': 140, 'white_win': 2}
+  agent       loss 0.01864241   Q avg   0.2372   Q max   0.3743   Q min   0.0986
+  diagnostics target avg   0.3241   target max   1.0101   target min  -0.0880
+              |TD| avg   0.0970   |TD| max   0.8516
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white  49.5%   black  38.0%   draw  12.5%   truncated   0.0%
+  distribution {'black_win': 76, 'white_win': 99, 'draw': 25}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 9,000
+
+  ε (epsilon)     :   0.6851
+  agent step      :  430,860
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  22.5%   black  20.0%   draw  57.5%   truncated   0.0%
+  distribution {'draw': 575, 'black_win': 200, 'white_win': 225}
+  agent       loss 0.00168053   Q avg  -0.0821   Q max   0.0632   Q min  -0.2296
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  76.0%   black   0.0%   draw  24.0%   truncated   0.0%
+  distribution {'draw': 48, 'white_win': 152}
+  agent       loss 0.01872267   Q avg   0.1768   Q max   0.3391   Q min   0.0361
+  diagnostics target avg   0.2827   target max   1.1163   target min  -0.4824
+              |TD| avg   0.1124   |TD| max   0.8103
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.0%   black  74.5%   draw  25.5%   truncated   0.0%
+  distribution {'black_win': 149, 'draw': 51}
+  agent       loss 0.01595234   Q avg   0.2430   Q max   0.4166   Q min   0.0740
+  diagnostics target avg   0.3870   target max   1.1082   target min  -0.4938
+              |TD| avg   0.1217   |TD| max   1.0162
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   3.5%   black  82.5%   draw  14.0%   truncated   0.0%
+  distribution {'black_win': 165, 'draw': 28, 'white_win': 7}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 10,000
+
+  ε (epsilon)     :   0.6539
+  agent step      :  473,552
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  23.2%   black  22.4%   draw  54.4%   truncated   0.0%
+  distribution {'draw': 544, 'white_win': 232, 'black_win': 224}
+  agent       loss 0.00173383   Q avg  -0.1656   Q max  -0.0572   Q min  -0.2678
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  87.0%   black   0.0%   draw  13.0%   truncated   0.0%
+  distribution {'white_win': 174, 'draw': 26}
+  agent       loss 0.01552775   Q avg   0.2529   Q max   0.4656   Q min   0.0539
+  diagnostics target avg   0.4303   target max   1.1151   target min  -0.7329
+              |TD| avg   0.1297   |TD| max   0.9280
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.5%   black  76.0%   draw  23.5%   truncated   0.0%
+  distribution {'black_win': 152, 'draw': 47, 'white_win': 1}
+  agent       loss 0.01403483   Q avg   0.2549   Q max   0.4035   Q min   0.1197
+  diagnostics target avg   0.3756   target max   1.2878   target min  -0.4352
+              |TD| avg   0.0891   |TD| max   0.7906
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   5.0%   black  70.0%   draw  25.0%   truncated   0.0%
+  distribution {'black_win': 140, 'white_win': 10, 'draw': 50}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 11,000
+
+  ε (epsilon)     :   0.6240
+  agent step      :  514,584
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  26.7%   black  20.7%   draw  52.6%   truncated   0.0%
+  distribution {'draw': 526, 'white_win': 267, 'black_win': 207}
+  agent       loss 0.00175568   Q avg   0.1139   Q max   0.2557   Q min  -0.0296
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  77.5%   black   0.0%   draw  22.5%   truncated   0.0%
+  distribution {'white_win': 155, 'draw': 45}
+  agent       loss 0.01511585   Q avg   0.2183   Q max   0.4082   Q min   0.0408
+  diagnostics target avg   0.3697   target max   1.0000   target min  -0.3155
+              |TD| avg   0.1012   |TD| max   0.7625
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.5%   black  67.0%   draw  32.5%   truncated   0.0%
+  distribution {'black_win': 134, 'draw': 65, 'white_win': 1}
+  agent       loss 0.01459360   Q avg   0.2501   Q max   0.4225   Q min   0.0812
+  diagnostics target avg   0.4059   target max   1.0136   target min  -0.1168
+              |TD| avg   0.0913   |TD| max   0.5760
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   1.5%   black  39.5%   draw  59.0%   truncated   0.0%
+  distribution {'black_win': 79, 'draw': 118, 'white_win': 3}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 12,000
+
+  ε (epsilon)     :   0.5945
+  agent step      :  554,935
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  28.0%   black  23.3%   draw  48.7%   truncated   0.0%
+  distribution {'black_win': 233, 'white_win': 280, 'draw': 487}
+  agent       loss 0.00183346   Q avg  -0.1729   Q max  -0.0610   Q min  -0.3027
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  79.5%   black   0.0%   draw  20.5%   truncated   0.0%
+  distribution {'white_win': 159, 'draw': 41}
+  agent       loss 0.01318432   Q avg   0.3205   Q max   0.5337   Q min   0.1144
+  diagnostics target avg   0.5047   target max   1.0000   target min  -0.0114
+              |TD| avg   0.0997   |TD| max   0.9294
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.0%   black  79.5%   draw  20.5%   truncated   0.0%
+  distribution {'black_win': 159, 'draw': 41}
+  agent       loss 0.01411733   Q avg   0.3151   Q max   0.4910   Q min   0.1375
+  diagnostics target avg   0.4434   target max   1.0559   target min  -0.1641
+              |TD| avg   0.1190   |TD| max   0.8939
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   0.5%   black  36.0%   draw  63.5%   truncated   0.0%
+  distribution {'draw': 127, 'black_win': 72, 'white_win': 1}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 13,000
+
+  ε (epsilon)     :   0.5652
+  agent step      :  595,001
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  25.6%   black  24.2%   draw  50.2%   truncated   0.0%
+  distribution {'draw': 502, 'black_win': 242, 'white_win': 256}
+  agent       loss 0.00188714   Q avg  -0.1174   Q max   0.0191   Q min  -0.2695
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  84.5%   black   0.0%   draw  15.5%   truncated   0.0%
+  distribution {'white_win': 169, 'draw': 31}
+  agent       loss 0.01348066   Q avg   0.2545   Q max   0.4624   Q min   0.0903
+  diagnostics target avg   0.4452   target max   1.0000   target min  -0.2702
+              |TD| avg   0.0907   |TD| max   0.7185
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.5%   black  74.0%   draw  25.5%   truncated   0.0%
+  distribution {'black_win': 148, 'draw': 51, 'white_win': 1}
+  agent       loss 0.01438369   Q avg   0.2408   Q max   0.4250   Q min   0.0820
+  diagnostics target avg   0.4166   target max   1.0255   target min  -0.2702
+              |TD| avg   0.1344   |TD| max   0.9210
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   1.0%   black  76.5%   draw  22.5%   truncated   0.0%
+  distribution {'black_win': 153, 'draw': 45, 'white_win': 2}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 14,000
+
+  ε (epsilon)     :   0.5360
+  agent step      :  634,903
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  28.2%   black  24.1%   draw  47.7%   truncated   0.0%
+  distribution {'draw': 477, 'black_win': 241, 'white_win': 282}
+  agent       loss 0.00191285   Q avg  -0.0086   Q max   0.1240   Q min  -0.1457
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  81.5%   black   0.0%   draw  18.5%   truncated   0.0%
+  distribution {'draw': 37, 'white_win': 163}
+  agent       loss 0.01373861   Q avg   0.2712   Q max   0.4881   Q min   0.0783
+  diagnostics target avg   0.4251   target max   1.0093   target min  -0.0891
+              |TD| avg   0.1224   |TD| max   0.9604
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.5%   black  78.5%   draw  21.0%   truncated   0.0%
+  distribution {'black_win': 157, 'draw': 42, 'white_win': 1}
+  agent       loss 0.01572550   Q avg   0.1719   Q max   0.3648   Q min  -0.0292
+  diagnostics target avg   0.3501   target max   1.0000   target min  -0.3307
+              |TD| avg   0.0887   |TD| max   0.8003
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   2.5%   black  37.5%   draw  60.0%   truncated   0.0%
+  distribution {'draw': 120, 'black_win': 75, 'white_win': 5}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 15,000
+
+  ε (epsilon)     :   0.5085
+  agent step      :  672,612
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  29.2%   black  23.5%   draw  47.3%   truncated   0.0%
+  distribution {'draw': 473, 'black_win': 235, 'white_win': 292}
+  agent       loss 0.00182430   Q avg  -0.0577   Q max   0.0656   Q min  -0.1883
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  81.0%   black   1.0%   draw  18.0%   truncated   0.0%
+  distribution {'white_win': 162, 'draw': 36, 'black_win': 2}
+  agent       loss 0.01137407   Q avg   0.2365   Q max   0.4356   Q min   0.0678
+  diagnostics target avg   0.4220   target max   1.0000   target min  -0.0096
+              |TD| avg   0.0650   |TD| max   0.7969
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.0%   black  72.5%   draw  27.5%   truncated   0.0%
+  distribution {'black_win': 145, 'draw': 55}
+  agent       loss 0.01645094   Q avg   0.3703   Q max   0.5592   Q min   0.1726
+  diagnostics target avg   0.5193   target max   1.0728   target min  -0.1310
+              |TD| avg   0.1143   |TD| max   1.1329
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   4.5%   black  47.0%   draw  48.5%   truncated   0.0%
+  distribution {'draw': 97, 'black_win': 94, 'white_win': 9}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 16,000
+
+  ε (epsilon)     :   0.4810
+  agent step      :  710,208
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  28.9%   black  25.3%   draw  45.8%   truncated   0.0%
+  distribution {'white_win': 289, 'draw': 458, 'black_win': 253}
+  agent       loss 0.00186227   Q avg   0.0280   Q max   0.2257   Q min  -0.1512
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  84.5%   black   0.0%   draw  15.5%   truncated   0.0%
+  distribution {'white_win': 169, 'draw': 31}
+  agent       loss 0.01352735   Q avg   0.3102   Q max   0.4802   Q min   0.1612
+  diagnostics target avg   0.4471   target max   1.1148   target min   0.0000
+              |TD| avg   0.0994   |TD| max   0.9189
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   1.0%   black  84.5%   draw  14.5%   truncated   0.0%
+  distribution {'black_win': 169, 'draw': 29, 'white_win': 2}
+  agent       loss 0.01259838   Q avg   0.3414   Q max   0.5481   Q min   0.1321
+  diagnostics target avg   0.5333   target max   1.0382   target min  -0.4906
+              |TD| avg   0.0828   |TD| max   0.4333
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   2.5%   black  83.0%   draw  14.5%   truncated   0.0%
+  distribution {'draw': 29, 'black_win': 166, 'white_win': 5}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 17,000
+
+  ε (epsilon)     :   0.4539
+  agent step      :  747,334
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  27.9%   black  26.5%   draw  45.6%   truncated   0.0%
+  distribution {'black_win': 265, 'draw': 456, 'white_win': 279}
+  agent       loss 0.00189314   Q avg  -0.3051   Q max  -0.1883   Q min  -0.4324
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  80.5%   black   0.0%   draw  19.5%   truncated   0.0%
+  distribution {'white_win': 161, 'draw': 39}
+  agent       loss 0.01444087   Q avg   0.3057   Q max   0.5175   Q min   0.0722
+  diagnostics target avg   0.4741   target max   1.0000   target min  -0.2455
+              |TD| avg   0.0964   |TD| max   0.9513
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.0%   black  84.5%   draw  15.5%   truncated   0.0%
+  distribution {'black_win': 169, 'draw': 31}
+  agent       loss 0.01272182   Q avg   0.2172   Q max   0.4196   Q min   0.0272
+  diagnostics target avg   0.3962   target max   1.0000   target min  -0.2818
+              |TD| avg   0.0667   |TD| max   0.3996
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   5.5%   black  77.0%   draw  17.5%   truncated   0.0%
+  distribution {'black_win': 154, 'draw': 35, 'white_win': 11}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 18,000
+
+  ε (epsilon)     :   0.4270
+  agent step      :  784,108
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  28.4%   black  29.5%   draw  42.1%   truncated   0.0%
+  distribution {'black_win': 295, 'draw': 421, 'white_win': 284}
+  agent       loss 0.00181347   Q avg  -0.2474   Q max  -0.0982   Q min  -0.3878
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  79.0%   black   0.5%   draw  20.5%   truncated   0.0%
+  distribution {'white_win': 158, 'draw': 41, 'black_win': 1}
+  agent       loss 0.01210665   Q avg   0.2125   Q max   0.4243   Q min   0.0306
+  diagnostics target avg   0.3888   target max   1.0000   target min  -0.3136
+              |TD| avg   0.0935   |TD| max   0.8195
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.5%   black  80.5%   draw  19.0%   truncated   0.0%
+  distribution {'black_win': 161, 'draw': 38, 'white_win': 1}
+  agent       loss 0.01226631   Q avg   0.2337   Q max   0.4178   Q min   0.0537
+  diagnostics target avg   0.4073   target max   1.0302   target min  -0.8214
+              |TD| avg   0.0926   |TD| max   0.6193
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   2.5%   black  31.0%   draw  66.5%   truncated   0.0%
+  distribution {'black_win': 62, 'draw': 133, 'white_win': 5}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 19,000
+
+  ε (epsilon)     :   0.3989
+  agent step      :  822,504
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  30.2%   black  28.6%   draw  41.2%   truncated   0.0%
+  distribution {'white_win': 302, 'black_win': 286, 'draw': 412}
+  agent       loss 0.00171726   Q avg  -0.0534   Q max   0.1001   Q min  -0.2102
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  89.5%   black   0.0%   draw  10.5%   truncated   0.0%
+  distribution {'white_win': 179, 'draw': 21}
+  agent       loss 0.01028350   Q avg   0.2723   Q max   0.4710   Q min   0.0786
+  diagnostics target avg   0.4437   target max   1.0604   target min   0.0000
+              |TD| avg   0.0775   |TD| max   0.8367
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   1.0%   black  82.5%   draw  16.5%   truncated   0.0%
+  distribution {'black_win': 165, 'draw': 33, 'white_win': 2}
+  agent       loss 0.01138731   Q avg   0.2626   Q max   0.4609   Q min   0.0769
+  diagnostics target avg   0.4361   target max   1.0000   target min  -0.4130
+              |TD| avg   0.0849   |TD| max   0.9133
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   3.0%   black  52.5%   draw  44.5%   truncated   0.0%
+  distribution {'black_win': 105, 'draw': 89, 'white_win': 6}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 20,000
+
+  ε (epsilon)     :   0.3718
+  agent step      :  859,578
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  31.2%   black  26.6%   draw  42.2%   truncated   0.0%
+  distribution {'white_win': 312, 'black_win': 266, 'draw': 422}
+  agent       loss 0.00186658   Q avg  -0.1243   Q max  -0.0031   Q min  -0.2573
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  89.5%   black   0.0%   draw  10.5%   truncated   0.0%
+  distribution {'white_win': 179, 'draw': 21}
+  agent       loss 0.01026816   Q avg   0.2513   Q max   0.5318   Q min  -0.0054
+  diagnostics target avg   0.5263   target max   1.0431   target min   0.0000
+              |TD| avg   0.0661   |TD| max   0.7541
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   1.5%   black  80.0%   draw  18.5%   truncated   0.0%
+  distribution {'black_win': 160, 'draw': 37, 'white_win': 3}
+  agent       loss 0.01312356   Q avg   0.2836   Q max   0.4832   Q min   0.0619
+  diagnostics target avg   0.4432   target max   1.0000   target min  -0.1517
+              |TD| avg   0.0880   |TD| max   0.8282
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   3.5%   black  87.5%   draw   9.0%   truncated   0.0%
+  distribution {'draw': 18, 'white_win': 7, 'black_win': 175}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 21,000
+
+  ε (epsilon)     :   0.3452
+  agent step      :  895,976
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  30.8%   black  28.0%   draw  41.2%   truncated   0.0%
+  distribution {'draw': 412, 'black_win': 280, 'white_win': 308}
+  agent       loss 0.00180380   Q avg   0.0223   Q max   0.1635   Q min  -0.1198
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  90.5%   black   0.0%   draw   9.5%   truncated   0.0%
+  distribution {'white_win': 181, 'draw': 19}
+  agent       loss 0.01010357   Q avg   0.2656   Q max   0.5328   Q min  -0.0050
+  diagnostics target avg   0.5226   target max   1.1484   target min   0.0344
+              |TD| avg   0.0726   |TD| max   0.6930
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   1.0%   black  76.5%   draw  22.5%   truncated   0.0%
+  distribution {'black_win': 153, 'draw': 45, 'white_win': 2}
+  agent       loss 0.01245463   Q avg   0.3266   Q max   0.5387   Q min   0.1147
+  diagnostics target avg   0.5224   target max   1.0178   target min  -0.7424
+              |TD| avg   0.1145   |TD| max   0.9773
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   1.5%   black  86.5%   draw  12.0%   truncated   0.0%
+  distribution {'black_win': 173, 'draw': 24, 'white_win': 3}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 22,000
+
+  ε (epsilon)     :   0.3188
+  agent step      :  932,113
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  33.3%   black  27.7%   draw  39.0%   truncated   0.0%
+  distribution {'white_win': 333, 'draw': 390, 'black_win': 277}
+  agent       loss 0.00197808   Q avg  -0.1360   Q max   0.0302   Q min  -0.2581
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  90.0%   black   0.0%   draw  10.0%   truncated   0.0%
+  distribution {'white_win': 180, 'draw': 20}
+  agent       loss 0.00906656   Q avg   0.2618   Q max   0.5312   Q min   0.0076
+  diagnostics target avg   0.5387   target max   1.0041   target min   0.0289
+              |TD| avg   0.0568   |TD| max   0.2912
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.5%   black  82.5%   draw  17.0%   truncated   0.0%
+  distribution {'black_win': 165, 'draw': 34, 'white_win': 1}
+  agent       loss 0.01134521   Q avg   0.2811   Q max   0.5064   Q min   0.0740
+  diagnostics target avg   0.4961   target max   1.0131   target min  -0.2021
+              |TD| avg   0.0968   |TD| max   0.8658
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   2.5%   black  78.5%   draw  19.0%   truncated   0.0%
+  distribution {'black_win': 157, 'draw': 38, 'white_win': 5}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 23,000
+
+  ε (epsilon)     :   0.2925
+  agent step      :  968,190
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  34.2%   black  27.2%   draw  38.6%   truncated   0.0%
+  distribution {'black_win': 272, 'draw': 386, 'white_win': 342}
+  agent       loss 0.00176721   Q avg  -0.2683   Q max  -0.1655   Q min  -0.3914
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  90.0%   black   0.0%   draw  10.0%   truncated   0.0%
+  distribution {'white_win': 180, 'draw': 20}
+  agent       loss 0.00977535   Q avg   0.3048   Q max   0.5594   Q min   0.0474
+  diagnostics target avg   0.5271   target max   1.0711   target min  -0.0084
+              |TD| avg   0.1034   |TD| max   0.8698
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.5%   black  79.0%   draw  20.5%   truncated   0.0%
+  distribution {'black_win': 158, 'draw': 41, 'white_win': 1}
+  agent       loss 0.01711773   Q avg   0.3003   Q max   0.5037   Q min   0.1028
+  diagnostics target avg   0.4013   target max   1.0000   target min  -0.1509
+              |TD| avg   0.1497   |TD| max   1.0890
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   2.5%   black  37.5%   draw  60.0%   truncated   0.0%
+  distribution {'black_win': 75, 'draw': 120, 'white_win': 5}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 24,000
+
+  ε (epsilon)     :   0.2666
+  agent step      : 1,003,657
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  34.9%   black  28.8%   draw  36.3%   truncated   0.0%
+  distribution {'white_win': 349, 'draw': 363, 'black_win': 288}
+  agent       loss 0.00191234   Q avg  -0.0530   Q max   0.0678   Q min  -0.1491
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  88.0%   black   0.5%   draw  11.5%   truncated   0.0%
+  distribution {'white_win': 176, 'draw': 23, 'black_win': 1}
+  agent       loss 0.01039894   Q avg   0.2655   Q max   0.5348   Q min   0.0041
+  diagnostics target avg   0.5242   target max   1.0199   target min  -0.5336
+              |TD| avg   0.0531   |TD| max   0.3554
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   1.0%   black  79.0%   draw  20.0%   truncated   0.0%
+  distribution {'black_win': 158, 'draw': 40, 'white_win': 2}
+  agent       loss 0.01244625   Q avg   0.2057   Q max   0.3891   Q min   0.0412
+  diagnostics target avg   0.3431   target max   1.0000   target min  -0.7218
+              |TD| avg   0.1071   |TD| max   0.8196
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   3.5%   black  91.0%   draw   5.5%   truncated   0.0%
+  distribution {'black_win': 182, 'draw': 11, 'white_win': 7}
+────────────────────────────────────────────────────────────────────────
+
+[checkpoint] saved: /kaggle/working/checkpoints/current_implementation_ep25000.pt
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 25,000
+
+  ε (epsilon)     :   0.2413
+  agent step      : 1,038,203
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  31.7%   black  28.0%   draw  40.3%   truncated   0.0%
+  distribution {'draw': 403, 'black_win': 280, 'white_win': 317}
+  agent       loss 0.00177078   Q avg  -0.1155   Q max   0.0230   Q min  -0.2961
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  84.5%   black   0.0%   draw  15.5%   truncated   0.0%
+  distribution {'white_win': 169, 'draw': 31}
+  agent       loss 0.01311655   Q avg   0.2243   Q max   0.4562   Q min   0.0202
+  diagnostics target avg   0.4079   target max   1.0000   target min  -0.1045
+              |TD| avg   0.0894   |TD| max   1.0120
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   1.0%   black  78.0%   draw  21.0%   truncated   0.0%
+  distribution {'black_win': 156, 'draw': 42, 'white_win': 2}
+  agent       loss 0.01331101   Q avg   0.3865   Q max   0.5669   Q min   0.2181
+  diagnostics target avg   0.5193   target max   1.0937   target min  -0.2298
+              |TD| avg   0.1227   |TD| max   0.8314
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   2.5%   black  87.5%   draw  10.0%   truncated   0.0%
+  distribution {'black_win': 175, 'draw': 20, 'white_win': 5}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 26,000
+
+  ε (epsilon)     :   0.2160
+  agent step      : 1,072,774
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  32.6%   black  33.1%   draw  34.3%   truncated   0.0%
+  distribution {'white_win': 326, 'draw': 343, 'black_win': 331}
+  agent       loss 0.00173716   Q avg  -0.0907   Q max   0.0749   Q min  -0.2318
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  82.0%   black   0.5%   draw  17.5%   truncated   0.0%
+  distribution {'white_win': 164, 'draw': 35, 'black_win': 1}
+  agent       loss 0.01225780   Q avg   0.2806   Q max   0.5213   Q min   0.0652
+  diagnostics target avg   0.4722   target max   1.0180   target min  -0.5323
+              |TD| avg   0.1188   |TD| max   0.9661
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.0%   black  82.5%   draw  17.5%   truncated   0.0%
+  distribution {'draw': 35, 'black_win': 165}
+  agent       loss 0.01172206   Q avg   0.2823   Q max   0.4820   Q min   0.0662
+  diagnostics target avg   0.4351   target max   1.0000   target min  -0.6274
+              |TD| avg   0.1075   |TD| max   0.6195
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   1.5%   black  79.0%   draw  19.5%   truncated   0.0%
+  distribution {'black_win': 158, 'draw': 39, 'white_win': 3}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 27,000
+
+  ε (epsilon)     :   0.1912
+  agent step      : 1,106,813
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  34.0%   black  30.7%   draw  35.3%   truncated   0.0%
+  distribution {'black_win': 307, 'draw': 353, 'white_win': 340}
+  agent       loss 0.00177905   Q avg  -0.1452   Q max   0.0388   Q min  -0.2953
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  86.0%   black   0.5%   draw  13.5%   truncated   0.0%
+  distribution {'white_win': 172, 'draw': 27, 'black_win': 1}
+  agent       loss 0.01053415   Q avg   0.2775   Q max   0.5102   Q min   0.0463
+  diagnostics target avg   0.4673   target max   1.0035   target min  -0.0075
+              |TD| avg   0.0760   |TD| max   0.8446
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.0%   black  79.5%   draw  20.5%   truncated   0.0%
+  distribution {'black_win': 159, 'draw': 41}
+  agent       loss 0.01192942   Q avg   0.2593   Q max   0.4594   Q min   0.0678
+  diagnostics target avg   0.4275   target max   1.0000   target min  -0.5356
+              |TD| avg   0.1021   |TD| max   0.9314
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   2.0%   black  87.0%   draw  11.0%   truncated   0.0%
+  distribution {'black_win': 174, 'white_win': 4, 'draw': 22}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 28,000
+
+  ε (epsilon)     :   0.1665
+  agent step      : 1,140,547
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  34.0%   black  30.4%   draw  35.6%   truncated   0.0%
+  distribution {'draw': 356, 'white_win': 340, 'black_win': 304}
+  agent       loss 0.00176348   Q avg  -0.2151   Q max  -0.0603   Q min  -0.3984
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  86.5%   black   0.0%   draw  13.5%   truncated   0.0%
+  distribution {'white_win': 173, 'draw': 27}
+  agent       loss 0.01028692   Q avg   0.3272   Q max   0.5585   Q min   0.0951
+  diagnostics target avg   0.5343   target max   1.1184   target min   0.0000
+              |TD| avg   0.0617   |TD| max   0.7149
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.0%   black  85.0%   draw  15.0%   truncated   0.0%
+  distribution {'black_win': 170, 'draw': 30}
+  agent       loss 0.01121491   Q avg   0.3051   Q max   0.5073   Q min   0.1129
+  diagnostics target avg   0.4784   target max   1.0000   target min  -0.2564
+              |TD| avg   0.0831   |TD| max   0.5150
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   2.5%   black  88.0%   draw   9.5%   truncated   0.0%
+  distribution {'black_win': 176, 'draw': 19, 'white_win': 5}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 29,000
+
+  ε (epsilon)     :   0.1408
+  agent step      : 1,175,679
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  36.0%   black  26.4%   draw  37.6%   truncated   0.0%
+  distribution {'white_win': 360, 'black_win': 264, 'draw': 376}
+  agent       loss 0.00160194   Q avg  -0.1648   Q max  -0.0464   Q min  -0.3225
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  87.0%   black   0.0%   draw  13.0%   truncated   0.0%
+  distribution {'white_win': 174, 'draw': 26}
+  agent       loss 0.00836291   Q avg   0.3301   Q max   0.5721   Q min   0.0833
+  diagnostics target avg   0.5496   target max   1.0583   target min   0.0000
+              |TD| avg   0.0780   |TD| max   0.9328
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.0%   black  87.0%   draw  13.0%   truncated   0.0%
+  distribution {'draw': 26, 'black_win': 174}
+  agent       loss 0.01004199   Q avg   0.2933   Q max   0.4717   Q min   0.1209
+  diagnostics target avg   0.4799   target max   1.0000   target min  -0.5391
+              |TD| avg   0.0800   |TD| max   0.4652
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   1.5%   black  83.0%   draw  15.5%   truncated   0.0%
+  distribution {'draw': 31, 'black_win': 166, 'white_win': 3}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 30,000
+
+  ε (epsilon)     :   0.1156
+  agent step      : 1,210,297
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  33.5%   black  30.1%   draw  36.4%   truncated   0.0%
+  distribution {'draw': 364, 'white_win': 335, 'black_win': 301}
+  agent       loss 0.00170952   Q avg  -0.0362   Q max   0.1288   Q min  -0.2241
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  86.5%   black   0.0%   draw  13.5%   truncated   0.0%
+  distribution {'white_win': 173, 'draw': 27}
+  agent       loss 0.01160286   Q avg   0.2047   Q max   0.4106   Q min   0.0136
+  diagnostics target avg   0.3937   target max   1.0000   target min  -0.5412
+              |TD| avg   0.0976   |TD| max   0.7484
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.0%   black  83.0%   draw  17.0%   truncated   0.0%
+  distribution {'black_win': 166, 'draw': 34}
+  agent       loss 0.01339823   Q avg   0.2340   Q max   0.4130   Q min   0.0576
+  diagnostics target avg   0.3640   target max   1.0000   target min  -0.2186
+              |TD| avg   0.1070   |TD| max   0.8504
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   2.0%   black  85.5%   draw  12.5%   truncated   0.0%
+  distribution {'black_win': 171, 'draw': 25, 'white_win': 4}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 31,000
+
+  ε (epsilon)     :   0.0892
+  agent step      : 1,246,354
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  32.5%   black  30.1%   draw  37.4%   truncated   0.0%
+  distribution {'draw': 374, 'white_win': 325, 'black_win': 301}
+  agent       loss 0.00156834   Q avg  -0.1790   Q max  -0.0269   Q min  -0.3400
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  86.0%   black   0.5%   draw  13.5%   truncated   0.0%
+  distribution {'white_win': 172, 'draw': 27, 'black_win': 1}
+  agent       loss 0.01108441   Q avg   0.2602   Q max   0.4799   Q min   0.0591
+  diagnostics target avg   0.4927   target max   1.0000   target min  -0.7103
+              |TD| avg   0.0745   |TD| max   0.5145
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.5%   black  85.5%   draw  14.0%   truncated   0.0%
+  distribution {'black_win': 171, 'draw': 28, 'white_win': 1}
+  agent       loss 0.01018804   Q avg   0.1883   Q max   0.3855   Q min  -0.0205
+  diagnostics target avg   0.3781   target max   1.0000   target min  -0.5093
+              |TD| avg   0.0844   |TD| max   0.5886
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   3.0%   black  83.0%   draw  14.0%   truncated   0.0%
+  distribution {'black_win': 166, 'draw': 28, 'white_win': 6}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 32,000
+
+  ε (epsilon)     :   0.0638
+  agent step      : 1,281,106
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  34.2%   black  25.7%   draw  40.1%   truncated   0.0%
+  distribution {'draw': 401, 'white_win': 342, 'black_win': 257}
+  agent       loss 0.00156231   Q avg  -0.0926   Q max   0.1084   Q min  -0.2830
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  92.0%   black   0.0%   draw   8.0%   truncated   0.0%
+  distribution {'white_win': 184, 'draw': 16}
+  agent       loss 0.00850691   Q avg   0.2930   Q max   0.5288   Q min   0.0490
+  diagnostics target avg   0.5269   target max   1.0202   target min  -0.2043
+              |TD| avg   0.0663   |TD| max   0.3611
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   1.0%   black  74.5%   draw  24.5%   truncated   0.0%
+  distribution {'black_win': 149, 'draw': 49, 'white_win': 2}
+  agent       loss 0.01280455   Q avg   0.2725   Q max   0.4442   Q min   0.0956
+  diagnostics target avg   0.4331   target max   1.0000   target min  -0.1708
+              |TD| avg   0.0974   |TD| max   0.6144
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   2.5%   black  79.5%   draw  18.0%   truncated   0.0%
+  distribution {'black_win': 159, 'draw': 36, 'white_win': 5}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 33,000
+
+  ε (epsilon)     :   0.0500
+  agent step      : 1,314,357
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  33.0%   black  30.4%   draw  36.6%   truncated   0.0%
+  distribution {'draw': 366, 'black_win': 304, 'white_win': 330}
+  agent       loss 0.00157626   Q avg  -0.2140   Q max  -0.0928   Q min  -0.3679
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  89.5%   black   0.0%   draw  10.5%   truncated   0.0%
+  distribution {'white_win': 179, 'draw': 21}
+  agent       loss 0.01036397   Q avg   0.2510   Q max   0.5008   Q min   0.0091
+  diagnostics target avg   0.4563   target max   1.0330   target min  -0.1003
+              |TD| avg   0.0904   |TD| max   0.7933
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.5%   black  79.0%   draw  20.5%   truncated   0.0%
+  distribution {'black_win': 158, 'draw': 41, 'white_win': 1}
+  agent       loss 0.01198500   Q avg   0.2952   Q max   0.4903   Q min   0.1082
+  diagnostics target avg   0.4666   target max   1.0087   target min  -0.2194
+              |TD| avg   0.0848   |TD| max   0.8471
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   4.5%   black  77.5%   draw  18.0%   truncated   0.0%
+  distribution {'black_win': 155, 'draw': 36, 'white_win': 9}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 34,000
+
+  ε (epsilon)     :   0.0500
+  agent step      : 1,347,546
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  35.3%   black  28.9%   draw  35.8%   truncated   0.0%
+  distribution {'draw': 358, 'black_win': 289, 'white_win': 353}
+  agent       loss 0.00168507   Q avg  -0.2154   Q max  -0.0663   Q min  -0.3746
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  87.0%   black   0.5%   draw  12.5%   truncated   0.0%
+  distribution {'white_win': 174, 'draw': 25, 'black_win': 1}
+  agent       loss 0.01279251   Q avg   0.3009   Q max   0.4890   Q min   0.1175
+  diagnostics target avg   0.4819   target max   1.0000   target min  -0.1516
+              |TD| avg   0.1118   |TD| max   0.8540
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.5%   black  80.5%   draw  19.0%   truncated   0.0%
+  distribution {'black_win': 161, 'draw': 38, 'white_win': 1}
+  agent       loss 0.01168237   Q avg   0.2906   Q max   0.4826   Q min   0.1221
+  diagnostics target avg   0.4671   target max   1.0000   target min  -0.4043
+              |TD| avg   0.0786   |TD| max   0.4283
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   1.0%   black  33.5%   draw  65.5%   truncated   0.0%
+  distribution {'draw': 131, 'black_win': 67, 'white_win': 2}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 35,000
+
+  ε (epsilon)     :   0.0500
+  agent step      : 1,382,351
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  30.3%   black  32.9%   draw  36.8%   truncated   0.0%
+  distribution {'black_win': 329, 'draw': 368, 'white_win': 303}
+  agent       loss 0.00144083   Q avg  -0.1302   Q max   0.0204   Q min  -0.2984
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  83.5%   black   0.0%   draw  16.5%   truncated   0.0%
+  distribution {'white_win': 167, 'draw': 33}
+  agent       loss 0.01234362   Q avg   0.2774   Q max   0.4666   Q min   0.0927
+  diagnostics target avg   0.4684   target max   1.0475   target min  -0.1086
+              |TD| avg   0.0890   |TD| max   0.7141
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.0%   black  79.5%   draw  20.5%   truncated   0.0%
+  distribution {'black_win': 159, 'draw': 41}
+  agent       loss 0.01279371   Q avg   0.2696   Q max   0.4486   Q min   0.0839
+  diagnostics target avg   0.4305   target max   1.0000   target min  -0.3576
+              |TD| avg   0.1034   |TD| max   0.8206
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   1.0%   black  88.5%   draw  10.5%   truncated   0.0%
+  distribution {'black_win': 177, 'draw': 21, 'white_win': 2}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 36,000
+
+  ε (epsilon)     :   0.0500
+  agent step      : 1,415,624
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  31.8%   black  28.9%   draw  39.3%   truncated   0.0%
+  distribution {'draw': 393, 'black_win': 289, 'white_win': 318}
+  agent       loss 0.00143497   Q avg  -0.0519   Q max   0.0614   Q min  -0.2038
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  88.5%   black   0.0%   draw  11.5%   truncated   0.0%
+  distribution {'draw': 23, 'white_win': 177}
+  agent       loss 0.01141600   Q avg   0.2623   Q max   0.4932   Q min   0.0614
+  diagnostics target avg   0.4947   target max   1.0000   target min  -0.0030
+              |TD| avg   0.0735   |TD| max   0.4169
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.5%   black  80.0%   draw  19.5%   truncated   0.0%
+  distribution {'draw': 39, 'black_win': 160, 'white_win': 1}
+  agent       loss 0.01201611   Q avg   0.3029   Q max   0.4964   Q min   0.0986
+  diagnostics target avg   0.4379   target max   1.0000   target min  -0.1071
+              |TD| avg   0.1055   |TD| max   0.7584
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   2.5%   black  57.5%   draw  40.0%   truncated   0.0%
+  distribution {'black_win': 115, 'draw': 80, 'white_win': 5}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 37,000
+
+  ε (epsilon)     :   0.0500
+  agent step      : 1,450,263
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  32.1%   black  23.4%   draw  44.5%   truncated   0.0%
+  distribution {'draw': 445, 'white_win': 321, 'black_win': 234}
+  agent       loss 0.00140949   Q avg  -0.1979   Q max   0.0137   Q min  -0.3752
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  83.5%   black   0.0%   draw  16.5%   truncated   0.0%
+  distribution {'draw': 33, 'white_win': 167}
+  agent       loss 0.01290155   Q avg   0.2244   Q max   0.3962   Q min   0.0627
+  diagnostics target avg   0.4016   target max   1.0003   target min  -0.1795
+              |TD| avg   0.0837   |TD| max   0.4840
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.5%   black  80.0%   draw  19.5%   truncated   0.0%
+  distribution {'black_win': 160, 'draw': 39, 'white_win': 1}
+  agent       loss 0.01321904   Q avg   0.2845   Q max   0.4553   Q min   0.1216
+  diagnostics target avg   0.4498   target max   1.0000   target min  -0.2149
+              |TD| avg   0.0956   |TD| max   0.9166
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   1.5%   black  88.5%   draw  10.0%   truncated   0.0%
+  distribution {'black_win': 177, 'draw': 20, 'white_win': 3}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 38,000
+
+  ε (epsilon)     :   0.0500
+  agent step      : 1,485,675
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  37.7%   black  24.6%   draw  37.7%   truncated   0.0%
+  distribution {'white_win': 377, 'black_win': 246, 'draw': 377}
+  agent       loss 0.00142043   Q avg  -0.2704   Q max  -0.1084   Q min  -0.4701
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  85.0%   black   0.5%   draw  14.5%   truncated   0.0%
+  distribution {'white_win': 170, 'draw': 29, 'black_win': 1}
+  agent       loss 0.01215576   Q avg   0.2262   Q max   0.3863   Q min   0.0660
+  diagnostics target avg   0.3795   target max   1.0620   target min  -0.7801
+              |TD| avg   0.1072   |TD| max   0.8792
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.0%   black  77.5%   draw  22.5%   truncated   0.0%
+  distribution {'black_win': 155, 'draw': 45}
+  agent       loss 0.01334339   Q avg   0.2079   Q max   0.4162   Q min   0.0279
+  diagnostics target avg   0.4223   target max   1.0000   target min  -0.6475
+              |TD| avg   0.0940   |TD| max   0.8723
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   3.5%   black  55.0%   draw  41.5%   truncated   0.0%
+  distribution {'black_win': 110, 'draw': 83, 'white_win': 7}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 39,000
+
+  ε (epsilon)     :   0.0500
+  agent step      : 1,521,004
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  30.0%   black  28.5%   draw  41.5%   truncated   0.0%
+  distribution {'black_win': 285, 'draw': 415, 'white_win': 300}
+  agent       loss 0.00147669   Q avg  -0.0632   Q max   0.1321   Q min  -0.2060
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  88.5%   black   0.0%   draw  11.5%   truncated   0.0%
+  distribution {'white_win': 177, 'draw': 23}
+  agent       loss 0.01151979   Q avg   0.2835   Q max   0.4727   Q min   0.1339
+  diagnostics target avg   0.4455   target max   1.0415   target min  -0.0188
+              |TD| avg   0.0807   |TD| max   0.6773
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.0%   black  78.5%   draw  21.5%   truncated   0.0%
+  distribution {'black_win': 157, 'draw': 43}
+  agent       loss 0.01435946   Q avg   0.3340   Q max   0.5223   Q min   0.1562
+  diagnostics target avg   0.5140   target max   1.0000   target min  -0.1874
+              |TD| avg   0.1042   |TD| max   0.6529
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   5.5%   black  51.5%   draw  43.0%   truncated   0.0%
+  distribution {'black_win': 103, 'draw': 86, 'white_win': 11}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 40,000
+
+  ε (epsilon)     :   0.0500
+  agent step      : 1,552,634
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  25.4%   black  30.1%   draw  44.5%   truncated   0.0%
+  distribution {'black_win': 301, 'white_win': 254, 'draw': 445}
+  agent       loss 0.00144549   Q avg  -0.1521   Q max  -0.0043   Q min  -0.2829
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  89.5%   black   0.5%   draw  10.0%   truncated   0.0%
+  distribution {'white_win': 179, 'draw': 20, 'black_win': 1}
+  agent       loss 0.01144426   Q avg   0.2679   Q max   0.4527   Q min   0.0963
+  diagnostics target avg   0.4161   target max   1.0000   target min  -0.1331
+              |TD| avg   0.1146   |TD| max   0.7098
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.5%   black  78.5%   draw  21.0%   truncated   0.0%
+  distribution {'draw': 42, 'black_win': 157, 'white_win': 1}
+  agent       loss 0.01316825   Q avg   0.2975   Q max   0.4878   Q min   0.1177
+  diagnostics target avg   0.4619   target max   1.0112   target min  -0.3991
+              |TD| avg   0.0935   |TD| max   0.8517
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   4.5%   black  85.5%   draw  10.0%   truncated   0.0%
+  distribution {'black_win': 171, 'white_win': 9, 'draw': 20}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 41,000
+
+  ε (epsilon)     :   0.0500
+  agent step      : 1,589,521
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  33.2%   black  24.6%   draw  42.2%   truncated   0.0%
+  distribution {'white_win': 332, 'draw': 422, 'black_win': 246}
+  agent       loss 0.00144460   Q avg  -0.0990   Q max   0.0476   Q min  -0.2578
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  82.5%   black   1.0%   draw  16.5%   truncated   0.0%
+  distribution {'white_win': 165, 'draw': 33, 'black_win': 2}
+  agent       loss 0.01291018   Q avg   0.2763   Q max   0.4773   Q min   0.0828
+  diagnostics target avg   0.4546   target max   1.0000   target min  -0.1267
+              |TD| avg   0.1198   |TD| max   0.7439
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.5%   black  80.5%   draw  19.0%   truncated   0.0%
+  distribution {'black_win': 161, 'draw': 38, 'white_win': 1}
+  agent       loss 0.01410977   Q avg   0.3920   Q max   0.5749   Q min   0.1921
+  diagnostics target avg   0.5124   target max   1.0000   target min  -0.8049
+              |TD| avg   0.1023   |TD| max   0.9065
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   1.5%   black  75.5%   draw  23.0%   truncated   0.0%
+  distribution {'black_win': 151, 'draw': 46, 'white_win': 3}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 42,000
+
+  ε (epsilon)     :   0.0500
+  agent step      : 1,624,930
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  29.6%   black  23.6%   draw  46.8%   truncated   0.0%
+  distribution {'white_win': 296, 'draw': 468, 'black_win': 236}
+  agent       loss 0.00140106   Q avg  -0.0573   Q max   0.0572   Q min  -0.1976
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  80.5%   black   0.0%   draw  19.5%   truncated   0.0%
+  distribution {'white_win': 161, 'draw': 39}
+  agent       loss 0.01416542   Q avg   0.2701   Q max   0.4756   Q min   0.0823
+  diagnostics target avg   0.4437   target max   1.0000   target min   0.0000
+              |TD| avg   0.0868   |TD| max   0.7886
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.0%   black  85.5%   draw  14.5%   truncated   0.0%
+  distribution {'black_win': 171, 'draw': 29}
+  agent       loss 0.01113204   Q avg   0.2617   Q max   0.4415   Q min   0.0808
+  diagnostics target avg   0.4113   target max   1.0000   target min  -0.0937
+              |TD| avg   0.0931   |TD| max   0.8747
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   6.0%   black  84.0%   draw  10.0%   truncated   0.0%
+  distribution {'black_win': 168, 'white_win': 12, 'draw': 20}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 43,000
+
+  ε (epsilon)     :   0.0500
+  agent step      : 1,657,576
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  32.2%   black  27.9%   draw  39.9%   truncated   0.0%
+  distribution {'draw': 399, 'white_win': 322, 'black_win': 279}
+  agent       loss 0.00148149   Q avg   0.0076   Q max   0.2069   Q min  -0.1746
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  84.5%   black   0.0%   draw  15.5%   truncated   0.0%
+  distribution {'white_win': 169, 'draw': 31}
+  agent       loss 0.01169466   Q avg   0.2892   Q max   0.4894   Q min   0.1009
+  diagnostics target avg   0.4755   target max   1.0017   target min  -0.2981
+              |TD| avg   0.0967   |TD| max   0.8531
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.0%   black  85.5%   draw  14.5%   truncated   0.0%
+  distribution {'black_win': 171, 'draw': 29}
+  agent       loss 0.01200793   Q avg   0.2325   Q max   0.4001   Q min   0.0615
+  diagnostics target avg   0.4040   target max   1.0000   target min  -0.3758
+              |TD| avg   0.0758   |TD| max   0.4528
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   6.5%   black  79.0%   draw  14.5%   truncated   0.0%
+  distribution {'draw': 29, 'black_win': 158, 'white_win': 13}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 44,000
+
+  ε (epsilon)     :   0.0500
+  agent step      : 1,691,990
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  31.0%   black  26.8%   draw  42.2%   truncated   0.0%
+  distribution {'draw': 422, 'black_win': 268, 'white_win': 310}
+  agent       loss 0.00162873   Q avg  -0.0219   Q max   0.1393   Q min  -0.2013
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  91.5%   black   0.5%   draw   8.0%   truncated   0.0%
+  distribution {'white_win': 183, 'draw': 16, 'black_win': 1}
+  agent       loss 0.00929549   Q avg   0.2494   Q max   0.4838   Q min   0.0529
+  diagnostics target avg   0.4764   target max   1.2120   target min  -0.0099
+              |TD| avg   0.0855   |TD| max   0.6308
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.5%   black  85.0%   draw  14.5%   truncated   0.0%
+  distribution {'black_win': 170, 'draw': 29, 'white_win': 1}
+  agent       loss 0.01430727   Q avg   0.2315   Q max   0.4265   Q min   0.0477
+  diagnostics target avg   0.4020   target max   1.0000   target min  -0.5708
+              |TD| avg   0.0978   |TD| max   0.7134
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   7.0%   black  39.0%   draw  54.0%   truncated   0.0%
+  distribution {'draw': 108, 'black_win': 78, 'white_win': 14}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 45,000
+
+  ε (epsilon)     :   0.0500
+  agent step      : 1,727,908
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  26.6%   black  25.3%   draw  48.1%   truncated   0.0%
+  distribution {'draw': 481, 'white_win': 266, 'black_win': 253}
+  agent       loss 0.00134487   Q avg  -0.1273   Q max   0.0014   Q min  -0.2841
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  87.5%   black   0.5%   draw  12.0%   truncated   0.0%
+  distribution {'white_win': 175, 'draw': 24, 'black_win': 1}
+  agent       loss 0.01102895   Q avg   0.2727   Q max   0.4340   Q min   0.1132
+  diagnostics target avg   0.4224   target max   1.0000   target min  -0.6231
+              |TD| avg   0.0699   |TD| max   0.4759
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.5%   black  82.0%   draw  17.5%   truncated   0.0%
+  distribution {'black_win': 164, 'draw': 35, 'white_win': 1}
+  agent       loss 0.01188117   Q avg   0.3286   Q max   0.5041   Q min   0.1560
+  diagnostics target avg   0.4727   target max   1.0000   target min  -0.2374
+              |TD| avg   0.0856   |TD| max   0.4628
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   4.5%   black  50.0%   draw  45.5%   truncated   0.0%
+  distribution {'draw': 91, 'black_win': 100, 'white_win': 9}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 46,000
+
+  ε (epsilon)     :   0.0500
+  agent step      : 1,761,945
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  29.4%   black  23.7%   draw  46.9%   truncated   0.0%
+  distribution {'white_win': 294, 'draw': 469, 'black_win': 237}
+  agent       loss 0.00136310   Q avg  -0.0628   Q max   0.1366   Q min  -0.2753
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  93.0%   black   0.0%   draw   7.0%   truncated   0.0%
+  distribution {'white_win': 186, 'draw': 14}
+  agent       loss 0.01247366   Q avg   0.3043   Q max   0.5248   Q min   0.1052
+  diagnostics target avg   0.5002   target max   1.0285   target min   0.0000
+              |TD| avg   0.0775   |TD| max   0.7790
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.0%   black  75.0%   draw  25.0%   truncated   0.0%
+  distribution {'draw': 50, 'black_win': 150}
+  agent       loss 0.01454162   Q avg   0.3319   Q max   0.5092   Q min   0.1606
+  diagnostics target avg   0.4589   target max   1.0160   target min  -0.2480
+              |TD| avg   0.1131   |TD| max   0.8879
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white  46.5%   black  34.5%   draw  19.0%   truncated   0.0%
+  distribution {'black_win': 69, 'draw': 38, 'white_win': 93}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 47,000
+
+  ε (epsilon)     :   0.0500
+  agent step      : 1,794,864
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  32.1%   black  29.0%   draw  38.9%   truncated   0.0%
+  distribution {'draw': 389, 'black_win': 290, 'white_win': 321}
+  agent       loss 0.00147252   Q avg  -0.1607   Q max  -0.0358   Q min  -0.3230
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  87.5%   black   0.0%   draw  12.5%   truncated   0.0%
+  distribution {'white_win': 175, 'draw': 25}
+  agent       loss 0.01284894   Q avg   0.2901   Q max   0.4519   Q min   0.1291
+  diagnostics target avg   0.4633   target max   1.0000   target min  -0.2659
+              |TD| avg   0.0827   |TD| max   0.8128
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   1.0%   black  84.0%   draw  15.0%   truncated   0.0%
+  distribution {'black_win': 168, 'draw': 30, 'white_win': 2}
+  agent       loss 0.01106331   Q avg   0.3431   Q max   0.5264   Q min   0.1762
+  diagnostics target avg   0.5103   target max   1.0000   target min  -0.5005
+              |TD| avg   0.1050   |TD| max   0.7242
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   3.5%   black  86.5%   draw  10.0%   truncated   0.0%
+  distribution {'black_win': 173, 'draw': 20, 'white_win': 7}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 48,000
+
+  ε (epsilon)     :   0.0500
+  agent step      : 1,827,881
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  28.3%   black  24.8%   draw  46.9%   truncated   0.0%
+  distribution {'black_win': 248, 'draw': 469, 'white_win': 283}
+  agent       loss 0.00138968   Q avg  -0.1580   Q max  -0.0057   Q min  -0.3669
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  86.0%   black   0.0%   draw  14.0%   truncated   0.0%
+  distribution {'white_win': 172, 'draw': 28}
+  agent       loss 0.01174123   Q avg   0.2887   Q max   0.4794   Q min   0.1161
+  diagnostics target avg   0.4671   target max   1.0000   target min  -0.0176
+              |TD| avg   0.0712   |TD| max   0.4799
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.0%   black  82.5%   draw  17.5%   truncated   0.0%
+  distribution {'black_win': 165, 'draw': 35}
+  agent       loss 0.01279342   Q avg   0.2826   Q max   0.4511   Q min   0.1174
+  diagnostics target avg   0.4444   target max   1.0000   target min  -0.1228
+              |TD| avg   0.0834   |TD| max   0.4514
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   9.0%   black  84.0%   draw   7.0%   truncated   0.0%
+  distribution {'black_win': 168, 'draw': 14, 'white_win': 18}
+────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 49,000
+
+  ε (epsilon)     :   0.0500
+  agent step      : 1,863,226
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  29.8%   black  27.8%   draw  42.4%   truncated   0.0%
+  distribution {'black_win': 278, 'draw': 424, 'white_win': 298}
+  agent       loss 0.00135560   Q avg  -0.2121   Q max  -0.0951   Q min  -0.3831
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  88.0%   black   0.5%   draw  11.5%   truncated   0.0%
+  distribution {'white_win': 176, 'draw': 23, 'black_win': 1}
+  agent       loss 0.01123104   Q avg   0.2362   Q max   0.3990   Q min   0.0710
+  diagnostics target avg   0.3898   target max   1.0271   target min  -0.3002
+              |TD| avg   0.0805   |TD| max   0.8143
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   0.5%   black  82.0%   draw  17.5%   truncated   0.0%
+  distribution {'draw': 35, 'black_win': 164, 'white_win': 1}
+  agent       loss 0.01139231   Q avg   0.2831   Q max   0.4683   Q min   0.1125
+  diagnostics target avg   0.4609   target max   1.0000   target min  -0.1234
+              |TD| avg   0.0757   |TD| max   0.8111
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   1.5%   black  84.0%   draw  14.5%   truncated   0.0%
+  distribution {'draw': 29, 'black_win': 168, 'white_win': 3}
+────────────────────────────────────────────────────────────────────────
+
+[checkpoint] saved: /kaggle/working/checkpoints/current_implementation_ep50000.pt
+
+────────────────────────────────────────────────────────────────────────
+  EPISODE 50,000
+
+  ε (epsilon)     :   0.0500
+  agent step      : 1,895,193
+
+
+training self play statistics — last 1,000 episodes
+  outcomes    white  27.2%   black  26.9%   draw  45.9%   truncated   0.0%
+  distribution {'black_win': 269, 'draw': 459, 'white_win': 272}
+  agent       loss 0.00132236   Q avg  -0.2056   Q max  -0.0907   Q min  -0.3483
+
+  Running evaluation...
+
+evaluation (agent=white vs random) statistics — another new 200 games
+  outcomes    white  86.0%   black   0.0%   draw  14.0%   truncated   0.0%
+  distribution {'white_win': 172, 'draw': 28}
+  agent       loss 0.01145965   Q avg   0.2456   Q max   0.4087   Q min   0.0795
+  diagnostics target avg   0.3937   target max   1.0000   target min  -0.5702
+              |TD| avg   0.0784   |TD| max   0.9493
+
+evaluation (agent=black vs random) statistics — another new 200 games
+  outcomes    white   1.0%   black  80.0%   draw  19.0%   truncated   0.0%
+  distribution {'black_win': 160, 'draw': 38, 'white_win': 2}
+  agent       loss 0.01380685   Q avg   0.3448   Q max   0.5148   Q min   0.1758
+  diagnostics target avg   0.4851   target max   1.0300   target min  -0.1751
+              |TD| avg   0.1131   |TD| max   0.7723
+
+evaluation (self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white) statistics — another new 200 games
+  outcomes    white   3.0%   black  86.0%   draw  11.0%   truncated   0.0%
+  distribution {'black_win': 172, 'draw': 22, 'white_win': 6}
+────────────────────────────────────────────────────────────────────────
+
+[checkpoint] saved: /kaggle/working/checkpoints/current_implementation_ep50000.pt
+Done.
