@@ -1,5 +1,6 @@
 import os
 from collections import Counter
+from pathlib import Path
 import torch
 from agent.evaluation import process_stats, evaluate_agent_by_all_combos
 from domain.board_initialization import create_initial_board
@@ -60,9 +61,12 @@ def save_checkpoint(agent: GrenightAgent,
 def load_checkpoint(agent: GrenightAgent,
                     is_double_net: bool) -> tuple[GrenightAgent, int, int]:
 
+    current_dir = Path(__file__).resolve().parent
+    checkpoint_path = current_dir / "implementations/ver51/p_111000/current_implementation_ep50000.pt"
+
     checkpoint = torch.load(
-     "path.checkpoint.pt",
-        map_location=device,
+        checkpoint_path,
+        map_location="cuda" if torch.cuda.is_available() else "cpu",
         weights_only=False
     )
 
@@ -230,6 +234,9 @@ def train_agent(is_self_play: bool,
 
     agent_step = 0
     episode_start = 1
+
+    agent, episode, agent_step = load_checkpoint(agent, True)
+    episode_start = episode + 1
 
     losses = []
     recent_outcomes = Counter()

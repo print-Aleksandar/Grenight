@@ -28,7 +28,7 @@ def load_checkpoint(agent: GrenightAgent,
                     is_double_net: bool) -> None:
 
     current_dir = Path(__file__).resolve().parent
-    checkpoint_path = current_dir / "implementations/ver50/p_111000/current_implementation_ep8000.pt"
+    checkpoint_path = current_dir / "implementations/ver51/p_111000/current_implementation_ep50000.pt"
 
     checkpoint = torch.load(
         checkpoint_path,
@@ -48,15 +48,17 @@ def evaluate_agent_by_all_combos(env: GrenightEnvironment,
                                  is_self_play: bool) -> None:
 
     evaluate_agent(env, agent, is_self_play,True, False)
+    evaluate_again_against_test_agent(env, agent, agent_tester, True)
 
     if is_self_play:
         evaluate_agent(env, agent, is_self_play,False, True)
-        evaluate_again_against_test_agent(env, agent, agent_tester)
+        evaluate_again_against_test_agent(env, agent, agent_tester, False)
 
 
 def evaluate_again_against_test_agent(env_arg: GrenightEnvironment,
                                       agent_to_test: GrenightAgent,
-                                      agent_tester: GrenightAgent) -> None:
+                                      agent_tester: GrenightAgent,
+                                      is_agent_to_test_white: bool) -> None:
 
     outcomes = Counter()
     for _ in range(EVALUATE_GAMES):
@@ -69,10 +71,10 @@ def evaluate_again_against_test_agent(env_arg: GrenightEnvironment,
         while not done and move_count < MAX_STEPS_PER_EPISODE:
             is_white_on_turn = env_arg.is_white_on_turn
 
-            if is_white_on_turn:
-                action = agent_tester.select_action(env_arg.get_state(), env_arg.action_mask(), 0.05)
-            else:
+            if is_white_on_turn == is_agent_to_test_white:
                 action = agent_to_test.select_action(env_arg.get_state(), env_arg.action_mask(), 0.05)
+            else:
+                action = agent_tester.select_action(env_arg.get_state(), env_arg.action_mask(), 0.05)
 
             _, _, done, is_draw, _ = env_arg.step(action)
 
@@ -113,7 +115,10 @@ def evaluate_again_against_test_agent(env_arg: GrenightEnvironment,
         if total_episodes > 0 else 0.0
     )
 
-    label = "(self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white)"
+    if is_agent_to_test_white:
+        label = "(self_play_agent=white vs self_play_50k_checkpoint=black)"
+    else:
+        label = "(self_play_agent=black vs self_play_50k_checkpoint=white)"
 
     print()
 
