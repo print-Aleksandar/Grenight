@@ -28,7 +28,7 @@ def load_checkpoint(agent: GrenightAgent,
                     is_double_net: bool) -> None:
 
     current_dir = Path(__file__).resolve().parent
-    checkpoint_path = current_dir / "implementations/ver51/p_111000/current_implementation_ep50000.pt"
+    checkpoint_path = current_dir / "implementations/ver50/p_111000/current_implementation_ep8000.pt"
 
     checkpoint = torch.load(
         checkpoint_path,
@@ -74,7 +74,9 @@ def evaluate_again_against_test_agent(env_arg: GrenightEnvironment,
             if is_white_on_turn == is_agent_to_test_white:
                 action = agent_to_test.select_action(env_arg.get_state(), env_arg.action_mask(), 0.05)
             else:
+                env_arg.action_encoder = ActionEncoder(is_canonical_version=False)
                 action = agent_tester.select_action(env_arg.get_state(), env_arg.action_mask(), 0.05)
+                env_arg.action_encoder = ActionEncoder(is_canonical_version=True)
 
             _, _, done, is_draw, _ = env_arg.step(action)
 
@@ -116,9 +118,9 @@ def evaluate_again_against_test_agent(env_arg: GrenightEnvironment,
     )
 
     if is_agent_to_test_white:
-        label = "(self_play_agent=white vs self_play_50k_checkpoint=black)"
+        label = "(self_play_agent=white vs fixed_res_dueling_ddqn_checkpoint=black)"
     else:
-        label = "(self_play_agent=black vs self_play_50k_checkpoint=white)"
+        label = "(self_play_agent=black vs fixed_res_dueling_ddqn_checkpoint=white)"
 
     print()
 

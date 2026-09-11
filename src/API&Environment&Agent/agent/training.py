@@ -235,9 +235,6 @@ def train_agent(is_self_play: bool,
     agent_step = 0
     episode_start = 1
 
-    agent, episode, agent_step = load_checkpoint(agent, True)
-    episode_start = episode + 1
-
     losses = []
     recent_outcomes = Counter()
     q_averages, q_maxs, q_mins = [], [], []
@@ -302,4 +299,4 @@ def train_agent(is_self_play: bool,
         save_checkpoint(agent, episode, agent_step, is_double_net)
         print("Done.")
 
-train_agent(True, True, True, True, False, False, True)
+train_agent(True, True, True, True, True, False, False)
