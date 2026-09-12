@@ -166,7 +166,7 @@ env = GrenightEnvironment(is_canonical_version=False,
 agent = GrenightAgent(
     is_self_play=False,
     is_double_net=True,
-    is_dueling_net=False,
+    is_dueling_net=True,
     is_residual_net=True,
     is_bulk_update=False,
     rows=ROWS,
@@ -177,7 +177,7 @@ agent = GrenightAgent(
 )
 
 current_dir = Path(__file__).resolve().parent
-checkpoint_path = current_dir / "../agent/implementations/ver50/p_101000/current_implementation_ep8000.pt"
+checkpoint_path = current_dir / "../agent/implementations/ver51/p_111000/current_implementation_ep50000.pt"
 checkpoint = torch.load(checkpoint_path.resolve(), map_location="cpu",weights_only=False)
 agent.policy_net.load_state_dict(checkpoint["policy_state_dict"])
 if agent.is_double_net:

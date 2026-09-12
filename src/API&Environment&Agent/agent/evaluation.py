@@ -48,11 +48,11 @@ def evaluate_agent_by_all_combos(env: GrenightEnvironment,
                                  is_self_play: bool) -> None:
 
     evaluate_agent(env, agent, is_self_play,True, False)
-    evaluate_again_against_test_agent(env, agent, agent_tester, True)
+    # evaluate_again_against_test_agent(env, agent, agent_tester, True)
 
     if is_self_play:
         evaluate_agent(env, agent, is_self_play,False, True)
-        evaluate_again_against_test_agent(env, agent, agent_tester, False)
+        # evaluate_again_against_test_agent(env, agent, agent_tester, False)
 
 
 def evaluate_again_against_test_agent(env_arg: GrenightEnvironment,

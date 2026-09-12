@@ -66,6 +66,10 @@ class GrenightEnvironment:
         self.pieces = pieces
         self.is_white_on_turn = not self.is_white_on_turn
 
+        key = self.position_key()
+        self.current_repetition_count = self.position_counts.get(key, 0) + 1
+        self.position_counts[key] = self.current_repetition_count
+
     def reset(self) -> np.ndarray:
         self.pieces = create_initial_board()
         self.previous_pieces_encoded_q.queue.clear()
@@ -239,11 +243,11 @@ class GrenightEnvironment:
             except GrenightException as e:
                 raise ValueError(f"Action {action} rejected by make_move: {type(e).__name__}")
 
-        self.pieces = response.pieces
-        self.is_enemy_in_check = response.is_enemy_in_check
-
         if len(response.pieces) < len(self.pieces) or type(piece) == Pawn:
             self.steps_without_pawn_move_or_capture = 0
+
+        self.pieces = response.pieces
+        self.is_enemy_in_check = response.is_enemy_in_check
 
         if self.is_canonical_version and not self.is_white_on_turn and not self.done:
             rotate_pieces_helper(self.pieces)
